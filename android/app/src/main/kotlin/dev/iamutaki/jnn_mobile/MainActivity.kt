@@ -1,4 +1,4 @@
-package com.example.jnn_mobile
+package dev.iamutaki.jnn_mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
