@@ -1,0 +1,20 @@
+flavors:
+  staging:
+    app:
+      name: "JNN Mobile (Staging)"
+
+    android:
+      applicationId: "dev.iamutaki.jnn_mobile.staging"
+
+    ios:
+      bundleId: "dev.iamutaki.jnnMobile.staging"
+
+  production:
+    app:
+      name: "JNN Mobile"
+
+    android:
+      applicationId: "dev.iamutaki.jnn_mobile"
+
+    ios:
+      bundleId: "dev.iamutaki.jnnMobile"
