@@ -1,51 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:forui/forui.dart';
 
+import 'core/router/app_router.dart' show AppRouter;
+import 'core/widgets/version_banner.dart';
 import 'flavors.dart';
-import 'pages/my_home_page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final theme = FThemes.blue.light.touch;
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      locale: const Locale('id', 'ID'),
       title: F.title,
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: FutureBuilder<PackageInfo>(
-        future: PackageInfo.fromPlatform(),
-        builder: (context, snapshot) {
-          final version = (snapshot.hasData)
-              ? '${snapshot.data!.version}+${snapshot.data!.buildNumber}'
-              : '';
-          return _flavorBanner(
-            child: MyHomePage(),
-            show: F.appFlavor == Flavor.staging,
-            version: version,
-          );
-        },
+      supportedLocales: FLocalizations.supportedLocales,
+      localizationsDelegates: const [...FLocalizations.localizationsDelegates],
+      theme: theme.toApproximateMaterialTheme(),
+      builder: (_, child) => FTheme(
+        data: theme,
+        child: FToaster(
+          child: FTooltipGroup(
+            child: VersionBanner(child: child ?? const SizedBox.shrink()),
+          ),
+        ),
       ),
+      routerConfig: AppRouter.router,
     );
   }
-
-  Widget _flavorBanner({
-    required Widget child,
-    bool show = true,
-    String version = '',
-  }) =>
-      show
-          ? Banner(
-              location: BannerLocation.topEnd,
-              message: version,
-              color: Colors.orange.withAlpha(200),
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 10.0,
-                letterSpacing: 1.0,
-                color: Colors.white,
-              ),
-              textDirection: TextDirection.ltr,
-              child: child,
-            )
-          : child;
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "905091883876",
+    "project_id": "jnn-mobile",
+    "storage_bucket": "jnn-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:905091883876:android:4519876b6c032d21875071",
+        "android_client_info": {
+          "package_name": "dev.iamutaki.jnn_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNWDvizprubpJ0HHQMLKvlvsOs9K1P4rQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

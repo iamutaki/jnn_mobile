@@ -2,6 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Staging",
+      "request": "launch",
+      "type": "dart",
+      "noDebug": true,
+      "args": [
+        "--flavor",
+        "staging"
+      ],
+    },
+    {
       "name": "Staging (Debug)",
       "request": "launch",
       "type": "dart",

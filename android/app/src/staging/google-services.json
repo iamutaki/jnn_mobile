@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "675707530624",
+    "project_id": "jnn-mobile-staging",
+    "storage_bucket": "jnn-mobile-staging.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675707530624:android:50662a1263568c711e2565",
+        "android_client_info": {
+          "package_name": "dev.iamutaki.jnn_mobile.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcfznCNXbpxqKcUBYcjy0uctOpCVj-5BU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

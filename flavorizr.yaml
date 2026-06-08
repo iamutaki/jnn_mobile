@@ -5,6 +5,8 @@ flavors:
 
     android:
       applicationId: "dev.iamutaki.jnn_mobile.staging"
+      firebase:
+          config: "flavorizr/firebase/staging/google-services.json"
 
     ios:
       bundleId: "dev.iamutaki.jnnMobile.staging"
@@ -15,6 +17,8 @@ flavors:
 
     android:
       applicationId: "dev.iamutaki.jnn_mobile"
+      firebase:
+          config: "flavorizr/firebase/production/google-services.json"
 
     ios:
       bundleId: "dev.iamutaki.jnnMobile"
