@@ -51,7 +51,8 @@ class NotificationService {
     if (Platform.isAndroid) {
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(_channel);
     }
 
@@ -59,14 +60,15 @@ class NotificationService {
     if (Platform.isIOS) {
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin
+          >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
     }
 
     // Listen foreground messages
     FirebaseMessaging.onMessage.listen(_showForegroundNotification);
 
-    debugPrint('📬 NotificationService initialized');
+    debugPrint('NotificationService initialized');
   }
 
   /// Tampilkan local notification saat foreground message diterima.

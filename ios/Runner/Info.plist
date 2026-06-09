@@ -47,6 +47,8 @@
         </array>
       </dict>
     </dict>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Aplikasi membutuhkan akses lokasi untuk menampilkan peta dan memilih koordinat</string>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
     <key>UILaunchStoryboardName</key>

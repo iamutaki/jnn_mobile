@@ -45,4 +45,5 @@ enum MasterDataType {
     required this.description,
   });
 
+  static MasterDataType? fromName(String type) {}
 }

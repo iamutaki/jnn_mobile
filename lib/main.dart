@@ -19,7 +19,7 @@ Future<void> main() async {
 
   // Init Firebase
   await Firebase.initializeApp();
-  debugPrint('🔥 Firebase initialized');
+  debugPrint('Firebase initialized');
 
   // Setup Firebase Messaging
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -32,7 +32,7 @@ Future<void> main() async {
 
   // Get FCM token
   final token = await FirebaseMessaging.instance.getToken();
-  debugPrint('📱 FCM Token: $token');
+  debugPrint('FCM Token: $token');
 
   // Setup flavor
   F.appFlavor = Flavor.values.firstWhere(

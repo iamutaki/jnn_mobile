@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
+
+import '../pages/master_data_personel_form_page.dart';
 
 class MasterDataPersonelPage extends StatefulWidget {
   const MasterDataPersonelPage({super.key});
@@ -10,7 +14,7 @@ class MasterDataPersonelPage extends StatefulWidget {
 }
 
 class _MasterDataPersonelPageState extends State<MasterDataPersonelPage> {
-  final _items = <Map<String, String>>[];
+  final _items = <Map<String, dynamic>>[];
 
   @override
   Widget build(BuildContext context) {
@@ -97,14 +101,25 @@ class _MasterDataPersonelPageState extends State<MasterDataPersonelPage> {
           child: ListTile(
             dense: true,
             visualDensity: VisualDensity.compact,
+            leading: item['foto'] != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.file(
+                      File(item['foto']),
+                      width: 36,
+                      height: 36,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : null,
             title: Text(
               item['nama'] ?? '-',
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             subtitle: Text(
-              item['jabatan'] != null
-                  ? '${item['kode'] ?? ''} · ${item['jabatan']}'
-                  : item['kode'] ?? '',
+              (item['username'] as String?)?.isNotEmpty == true
+                  ? '@${item['username']}'
+                  : item['telepon'] ?? '',
               style: const TextStyle(fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -144,71 +159,16 @@ class _MasterDataPersonelPageState extends State<MasterDataPersonelPage> {
     return result == 'delete';
   }
 
-  Future<void> _showForm({Map<String, String>? item, int? index}) async {
-    final kodeCtrl = TextEditingController(text: item?['kode'] ?? '');
-    final namaCtrl = TextEditingController(text: item?['nama'] ?? '');
-    final jabatanCtrl = TextEditingController(text: item?['jabatan'] ?? '');
-    final teleponCtrl = TextEditingController(text: item?['telepon'] ?? '');
-    final isEditing = item != null;
-
-    final result = await showFDialog<Map<String, String>>(
-      context: context,
-      builder: (context, style, animation) => FDialog(
-        title: Text(isEditing ? 'Edit Personel' : 'Tambah Personel'),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FTextField(
-              control: FTextFieldControl.managed(controller: kodeCtrl),
-              label: const Text('Kode'),
-              hint: 'Kode personel',
-            ),
-            const Gap(8),
-            FTextField(
-              control: FTextFieldControl.managed(controller: namaCtrl),
-              label: const Text('Nama'),
-              hint: 'Nama personel',
-            ),
-            const Gap(8),
-            FTextField(
-              control: FTextFieldControl.managed(controller: jabatanCtrl),
-              label: const Text('Jabatan'),
-              hint: 'Jabatan',
-            ),
-            const Gap(8),
-            FTextField(
-              control: FTextFieldControl.managed(controller: teleponCtrl),
-              label: const Text('No. Telepon'),
-              hint: 'Nomor telepon',
-              keyboardType: TextInputType.phone,
-            ),
-          ],
-        ),
-        actions: [
-          FButton(
-            onPress: () {
-              if (namaCtrl.text.trim().isEmpty) return;
-              Navigator.of(context).pop({
-                'kode': kodeCtrl.text.trim(),
-                'nama': namaCtrl.text.trim(),
-                'jabatan': jabatanCtrl.text.trim(),
-                'telepon': teleponCtrl.text.trim(),
-              });
-            },
-            child: Text(isEditing ? 'Simpan' : 'Tambah'),
-          ),
-        ],
+  void _showForm({Map<String, dynamic>? item, int? index}) async {
+    final result = await Navigator.of(context).push<Map<String, dynamic>>(
+      MaterialPageRoute(
+        builder: (context) => MasterDataPersonelFormPage(item: item),
       ),
     );
 
-    kodeCtrl.dispose();
-    namaCtrl.dispose();
-    jabatanCtrl.dispose();
-    teleponCtrl.dispose();
-
-    if (result != null) {
+    if (result != null && (result['nama']?.toString().isNotEmpty ?? false)) {
       setState(() {
-        if (isEditing && index != null) {
+        if (item != null && index != null) {
           _items[index] = result;
         } else {
           _items.add(result);

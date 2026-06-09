@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'core/router/app_router.dart' show AppRouter;
 import 'core/widgets/version_banner.dart';
 import 'flavors.dart';
+import 'shared/dev_tool/dev_tool.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -23,7 +24,10 @@ class App extends StatelessWidget {
         data: theme,
         child: FToaster(
           child: FTooltipGroup(
-            child: VersionBanner(child: child ?? const SizedBox.shrink()),
+            child: DevToolOverlay(
+              inspectors: const [],
+              child: VersionBanner(child: child ?? const SizedBox.shrink()),
+            ),
           ),
         ),
       ),

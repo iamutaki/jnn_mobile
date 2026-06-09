@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 
+import '../pages/master_data_reseller_form_page.dart';
+
 class MasterDataResellerPage extends StatefulWidget {
   const MasterDataResellerPage({super.key});
 
@@ -10,7 +12,7 @@ class MasterDataResellerPage extends StatefulWidget {
 }
 
 class _MasterDataResellerPageState extends State<MasterDataResellerPage> {
-  final _items = <Map<String, String>>[];
+  final _items = <Map<String, dynamic>>[];
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +104,9 @@ class _MasterDataResellerPageState extends State<MasterDataResellerPage> {
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             subtitle: Text(
-              item['telepon'] != null
-                  ? '${item['kode'] ?? ''} · ${item['telepon']}'
-                  : item['kode'] ?? '',
+              item['kecamatan'] is String && (item['kecamatan'] as String).isNotEmpty
+                  ? '${item['username'] ?? ''} · ${item['kecamatan']}'
+                  : item['username'] ?? '',
               style: const TextStyle(fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -144,71 +146,16 @@ class _MasterDataResellerPageState extends State<MasterDataResellerPage> {
     return result == 'delete';
   }
 
-  Future<void> _showForm({Map<String, String>? item, int? index}) async {
-    final kodeCtrl = TextEditingController(text: item?['kode'] ?? '');
-    final namaCtrl = TextEditingController(text: item?['nama'] ?? '');
-    final teleponCtrl = TextEditingController(text: item?['telepon'] ?? '');
-    final alamatCtrl = TextEditingController(text: item?['alamat'] ?? '');
-    final isEditing = item != null;
-
-    final result = await showFDialog<Map<String, String>>(
-      context: context,
-      builder: (context, style, animation) => FDialog(
-        title: Text(isEditing ? 'Edit Reseller' : 'Tambah Reseller'),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FTextField(
-              control: FTextFieldControl.managed(controller: kodeCtrl),
-              label: const Text('Kode'),
-              hint: 'Kode reseller',
-            ),
-            const Gap(8),
-            FTextField(
-              control: FTextFieldControl.managed(controller: namaCtrl),
-              label: const Text('Nama'),
-              hint: 'Nama reseller',
-            ),
-            const Gap(8),
-            FTextField(
-              control: FTextFieldControl.managed(controller: teleponCtrl),
-              label: const Text('No. Telepon'),
-              hint: 'Nomor telepon',
-              keyboardType: TextInputType.phone,
-            ),
-            const Gap(8),
-            FTextField(
-              control: FTextFieldControl.managed(controller: alamatCtrl),
-              label: const Text('Alamat'),
-              hint: 'Alamat',
-            ),
-          ],
-        ),
-        actions: [
-          FButton(
-            onPress: () {
-              if (namaCtrl.text.trim().isEmpty) return;
-              Navigator.of(context).pop({
-                'kode': kodeCtrl.text.trim(),
-                'nama': namaCtrl.text.trim(),
-                'telepon': teleponCtrl.text.trim(),
-                'alamat': alamatCtrl.text.trim(),
-              });
-            },
-            child: Text(isEditing ? 'Simpan' : 'Tambah'),
-          ),
-        ],
+  void _showForm({Map<String, dynamic>? item, int? index}) async {
+    final result = await Navigator.of(context).push<Map<String, dynamic>>(
+      MaterialPageRoute(
+        builder: (context) => MasterDataResellerFormPage(item: item),
       ),
     );
 
-    kodeCtrl.dispose();
-    namaCtrl.dispose();
-    teleponCtrl.dispose();
-    alamatCtrl.dispose();
-
-    if (result != null) {
+    if (result != null && (result['nama']?.toString().isNotEmpty ?? false)) {
       setState(() {
-        if (isEditing && index != null) {
+        if (item != null && index != null) {
           _items[index] = result;
         } else {
           _items.add(result);
