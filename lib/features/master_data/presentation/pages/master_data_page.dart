@@ -75,7 +75,7 @@ class _MasterDataTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => context.push(_route.path),
+        onTap: () => context.push('/master-data${_route.path}'),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
@@ -101,7 +101,7 @@ class _MasterDataTile extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const Gap(2),
+                    const Gap(5),
                     Text(
                       type.description,
                       style: TextStyle(

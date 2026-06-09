@@ -1,84 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../flavors.dart';
+import '../providers/auth_login_providers.dart';
 
-/// Halaman login utama menggunakan Forui widgets.
-class LoginPage extends StatefulWidget {
+class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final form = useMemoized(() => FormGroup({
+      'username': FormControl<String>(validators: [Validators.required]),
+      'password': FormControl<String>(validators: [Validators.required]),
+    }));
+    final formRebuild = useState(0);
+    final logoLoaded = useState(false);
 
-class _LoginPageState extends State<LoginPage> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  String? _usernameError;
-  String? _passwordError;
-  bool _logoLoaded = false;
+    useEffect(() {
+      ref.listen(authLoginProvider, (previous, next) {
+        if (next.session != null) context.go('/home');
+        if (next.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(next.errorMessage!)),
+          );
+        }
+      });
+      return null;
+    }, []);
 
-  bool _validate() {
-    setState(() {
-      _usernameError = _usernameController.text.trim().isEmpty
-          ? 'Username wajib diisi'
-          : null;
-      _passwordError = _passwordController.text.trim().isEmpty
-          ? 'Password wajib diisi'
-          : null;
-    });
-    return _usernameError == null && _passwordError == null;
-  }
+    Future<void> onLogin() async {
+      form.markAllAsTouched();
+      formRebuild.value++;
+      if (!form.valid) return;
 
-  void _onLogin() {
-    if (!_validate()) return;
-    debugPrint('Login attempt: ${_usernameController.text.trim()}');
-    // TODO: Implement actual authentication
-    context.go('/home');
-  }
+      await ref.read(authLoginProvider.notifier).submit(
+        username: form.control('username').value as String? ?? '',
+        password: form.control('password').value as String? ?? '',
+      );
+    }
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+    final loginState = ref.watch(authLoginProvider);
+    final isLoading = loginState.isSubmitting;
+    formRebuild.value; // trigger rebuild setelah markAllAsTouched
+    final usernameControl = form.control('username');
+    final passwordControl = form.control('password');
+    final usernameError = _controlErrorText(
+      usernameControl,
+      'Username wajib diisi',
+    );
+    final passwordError = _controlErrorText(
+      passwordControl,
+      'Password wajib diisi',
+    );
 
-  @override
-  Widget build(BuildContext context) {
     return FScaffold(
       child: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               const Gap(60),
-
-              // Logo — selebar 2 item, pakai skeletonizer saat loading
-              Skeletonizer(enabled: !_logoLoaded, child: _buildLogo()),
-
+              Skeletonizer(
+                enabled: !logoLoaded.value,
+                child: _buildLogo(logoLoaded),
+              ),
               const Gap(48),
-
-              // Username field
               FTextField(
                 control: FTextFieldControl.managed(
-                  controller: _usernameController,
-                  onChange: (_) {
-                    if (_usernameError != null) {
-                      setState(() => _usernameError = null);
-                    }
-                  },
+                  onChange: (value) => usernameControl.value = value.text,
                 ),
                 label: const Text('Username'),
                 hint: 'Masukkan username',
-                error: _usernameError != null ? Text(_usernameError!) : null,
+                error: usernameError != null ? Text(usernameError) : null,
               ),
-
               const Gap(16),
-
-              // Password field — icon mata: terbuka = sedang terlihat, tertutup = sedang tersembunyi
               FTextField.password(
                 suffixBuilder: (context, style, obscure, variants) => Padding(
                   padding: style.obscureButtonPadding,
@@ -93,22 +93,34 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 control: FTextFieldControl.managed(
-                  controller: _passwordController,
-                  onChange: (_) {
-                    if (_passwordError != null) {
-                      setState(() => _passwordError = null);
-                    }
-                  },
+                  onChange: (value) => passwordControl.value = value.text,
                 ),
                 label: const Text('Password'),
                 hint: 'Masukkan password',
-                error: _passwordError != null ? Text(_passwordError!) : null,
+                error: passwordError != null ? Text(passwordError) : null,
               ),
-
               const Gap(24),
-
-              // Tombol Masuk
-              FButton(onPress: _onLogin, child: const Text('Masuk')),
+              if (loginState.errorMessage != null) ...[
+                Text(
+                  loginState.errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFFB42318),
+                  ),
+                ),
+                const Gap(16),
+              ],
+              FButton(
+                onPress: isLoading ? null : onLogin,
+                child: isLoading
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Masuk'),
+              ),
             ],
           ),
         ),
@@ -116,14 +128,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildLogo() {
+  static Widget _buildLogo(ValueNotifier<bool> logoLoaded) {
     final logo = F.appFlavor == Flavor.staging
         ? 'assets/icons/logo.staging.png'
         : 'assets/icons/logo.png';
 
     return Column(
       children: [
-        // Logo selebar 2 item (~dialami lebar layar)
         FractionallySizedBox(
           widthFactor: 0.5,
           child: ClipRRect(
@@ -132,18 +143,17 @@ class _LoginPageState extends State<LoginPage> {
               logo,
               fit: BoxFit.contain,
               frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                if (frame != null && !_logoLoaded) {
+                if (frame != null && !logoLoaded.value) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) setState(() => _logoLoaded = true);
+                    if (context.mounted) logoLoaded.value = true;
                   });
                 }
                 return child;
               },
               errorBuilder: (context, error, stackTrace) {
-                // Fallback kalau image gagal load
-                if (!_logoLoaded) {
+                if (!logoLoaded.value) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) setState(() => _logoLoaded = true);
+                    if (context.mounted) logoLoaded.value = true;
                   });
                 }
                 return Container(
@@ -170,5 +180,14 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ],
     );
+  }
+
+  static String? _controlErrorText(
+    AbstractControl<dynamic> control,
+    String requiredText,
+  ) {
+    if (!control.invalid || !control.touched) return null;
+    if (control.hasError(ValidationMessage.required)) return requiredText;
+    return 'Input tidak valid';
   }
 }

@@ -16,7 +16,7 @@ enum MasterDataType {
   ),
   voucher(
     label: 'Voucher',
-    icon: FLucideIcons.package,
+    icon: FLucideIcons.ticket,
     color: Color(0xFFE8710A),
     description: 'Kelola data voucher',
   ),

@@ -25,7 +25,7 @@ class App extends StatelessWidget {
         child: FToaster(
           child: FTooltipGroup(
             child: DevToolOverlay(
-              inspectors: const [],
+              inspectors: [NetworkMonitorInspector()],
               child: VersionBanner(child: child ?? const SizedBox.shrink()),
             ),
           ),

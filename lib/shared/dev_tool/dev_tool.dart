@@ -16,3 +16,4 @@ library;
 export 'dev_tool_inspector.dart';
 export 'dev_tool_overlay.dart';
 export 'dev_tool_page.dart';
+export 'network_monitor/presentation/network_monitor_page.dart';

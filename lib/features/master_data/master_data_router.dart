@@ -17,24 +17,27 @@ class MasterDataRouter {
   );
 
   static const kecamatan = RouteDefiner(
-    path: 'kecamatan',
+    path: '/kecamatan',
     name: 'MasterDataRouter.kecamatan',
   );
 
-  static const desa = RouteDefiner(path: 'desa', name: 'MasterDataRouter.desa');
+  static const desa = RouteDefiner(
+    path: '/desa',
+    name: 'MasterDataRouter.desa',
+  );
 
   static const voucher = RouteDefiner(
-    path: 'voucher',
+    path: '/voucher',
     name: 'MasterDataRouter.voucher',
   );
 
   static const personel = RouteDefiner(
-    path: 'personel',
+    path: '/personel',
     name: 'MasterDataRouter.personel',
   );
 
   static const reseller = RouteDefiner(
-    path: 'reseller',
+    path: '/reseller',
     name: 'MasterDataRouter.reseller',
   );
 
