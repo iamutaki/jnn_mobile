@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 
-class MasterDataProdukPage extends StatefulWidget {
-  const MasterDataProdukPage({super.key});
+class MasterDataVoucherPage extends StatefulWidget {
+  const MasterDataVoucherPage({super.key});
 
   @override
-  State<MasterDataProdukPage> createState() => _MasterDataProdukPageState();
+  State<MasterDataVoucherPage> createState() => _MasterDataVoucherPageState();
 }
 
-class _MasterDataProdukPageState extends State<MasterDataProdukPage> {
+class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
   final _items = <Map<String, String>>[];
 
   @override
@@ -223,10 +223,9 @@ class _ProdukFormDialogState extends State<_ProdukFormDialog> {
           onPress: () {
             final nama = _namaCtrl.text.trim();
             if (nama.isEmpty) return;
-            Navigator.of(context).pop({
-              'nama': nama,
-              'harga': _hargaCtrl.text.trim(),
-            });
+            Navigator.of(
+              context,
+            ).pop({'nama': nama, 'harga': _hargaCtrl.text.trim()});
           },
           child: Text(widget.isEditing ? 'Simpan' : 'Tambah'),
         ),

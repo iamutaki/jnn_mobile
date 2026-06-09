@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/router/app_router.dart';
 import '../../../flavors.dart';
 import 'dev_tool_inspector.dart';
 import 'dev_tool_page.dart';
@@ -41,14 +42,33 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
   /// Apakah posisi sudah diinisialisasi.
   bool _initialized = false;
 
-  /// Apakah DevTool page sedang terbuka.
-  bool _isOpen = false;
-
   /// Apakah sedang di-drag (untuk visual feedback).
   bool _isDragging = false;
 
+  /// Apakah DevToolPage sedang terbuka.
+  bool _isDevToolPageOpen = false;
+
   /// Ukuran button.
   static const _size = 48.0;
+
+  /// Push DevToolPage sebagai route di root Navigator.
+  void _openDevToolPage() {
+    final nav = AppRouter.rootNavigatorKey.currentState;
+    if (nav == null) return;
+
+    setState(() => _isDevToolPageOpen = true);
+
+    nav.push(
+      MaterialPageRoute(
+        builder: (_) => DevToolPage(
+          inspectors: widget.inspectors,
+          onClose: () => nav.pop(),
+        ),
+      ),
+    ).then((_) {
+      if (mounted) setState(() => _isDevToolPageOpen = false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +78,8 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
       return widget.child;
     }
 
-    return PopScope(
-      // Saat overlay terbuka, blok route pop agar tidak keluar app.
-      canPop: !_isOpen,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && _isOpen) {
-          setState(() => _isOpen = false);
-        }
-      },
-      child: LayoutBuilder(
-        builder: (context, constraints) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
         // Inisialisasi posisi default: bottom-right.
         if (!_initialized) {
           _offset = Offset(
@@ -88,70 +100,57 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
             // App content.
             widget.child,
 
-            // DevTool page overlay (full-screen).
-            if (_isOpen)
-              Positioned.fill(
-                child: Material(
-                  child: DevToolPage(
-                    inspectors: widget.inspectors,
-                    onClose: () => setState(() => _isOpen = false),
+            // Floating button — sembunyikan saat sudah di halaman DevToolPage.
+            if (!_isDevToolPageOpen) Positioned(
+              left: clamped.dx,
+              top: clamped.dy,
+              child: GestureDetector(
+                onPanStart: (_) => setState(() => _isDragging = true),
+                onPanUpdate: (details) {
+                  setState(() {
+                    _offset = Offset(
+                      (_offset.dx + details.delta.dx)
+                          .clamp(0, constraints.maxWidth - _size),
+                      (_offset.dy + details.delta.dy)
+                          .clamp(0, constraints.maxHeight - _size),
+                    );
+                  });
+                },
+                onPanEnd: (details) {
+                  setState(() => _isDragging = false);
+
+                  // Jika velocity rendah → anggap tap.
+                  final velocity = details.primaryVelocity ?? 0;
+                  if (velocity.abs() < 100) {
+                    _openDevToolPage();
+                  }
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: _size,
+                  height: _size,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE53E3E),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFE53E3E).withValues(alpha: 0.4),
+                        blurRadius: _isDragging ? 16 : 8,
+                        spreadRadius: _isDragging ? 2 : 0,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.bug_report_rounded,
+                    color: Colors.white,
+                    size: 24,
                   ),
                 ),
               ),
-
-            // Floating draggable button.
-            if (!_isOpen)
-              Positioned(
-                left: clamped.dx,
-                top: clamped.dy,
-                child: GestureDetector(
-                  onPanStart: (_) => setState(() => _isDragging = true),
-                  onPanUpdate: (details) {
-                    setState(() {
-                      _offset = Offset(
-                        (_offset.dx + details.delta.dx)
-                            .clamp(0, constraints.maxWidth - _size),
-                        (_offset.dy + details.delta.dy)
-                            .clamp(0, constraints.maxHeight - _size),
-                      );
-                    });
-                  },
-                  onPanEnd: (details) {
-                    setState(() => _isDragging = false);
-
-                    // Jika velocity rendah → anggap tap.
-                    final velocity = details.primaryVelocity ?? 0;
-                    if (velocity.abs() < 100) {
-                      setState(() => _isOpen = true);
-                    }
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: _size,
-                    height: _size,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE53E3E),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFE53E3E).withValues(alpha: 0.4),
-                          blurRadius: _isDragging ? 16 : 8,
-                          spreadRadius: _isDragging ? 2 : 0,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.bug_report_rounded,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
             ),
           ],
         );
       },
-      ),
     );
   }
 }

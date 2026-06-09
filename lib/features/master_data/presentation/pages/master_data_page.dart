@@ -64,7 +64,7 @@ class _MasterDataTile extends StatelessWidget {
     return switch (type) {
       MasterDataType.kecamatan => MasterDataRouter.kecamatan,
       MasterDataType.desa => MasterDataRouter.desa,
-      MasterDataType.produk => MasterDataRouter.produk,
+      MasterDataType.voucher => MasterDataRouter.voucher,
       MasterDataType.personel => MasterDataRouter.personel,
       MasterDataType.reseller => MasterDataRouter.reseller,
     };

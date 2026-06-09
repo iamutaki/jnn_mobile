@@ -14,11 +14,11 @@ enum MasterDataType {
     color: Color(0xFF0EA573),
     description: 'Kelola data desa',
   ),
-  produk(
-    label: 'Produk',
+  voucher(
+    label: 'Voucher',
     icon: FLucideIcons.package,
     color: Color(0xFFE8710A),
-    description: 'Kelola data produk',
+    description: 'Kelola data voucher',
   ),
   personel(
     label: 'Personel',

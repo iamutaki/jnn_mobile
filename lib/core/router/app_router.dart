@@ -8,7 +8,12 @@ import '../../features/master_data/master_data_router.dart';
 class AppRouter {
   AppRouter._();
 
+  /// Root navigator key — digunakan untuk push route di atas GoRouter
+  /// (misal: DevToolPage).
+  static final rootNavigatorKey = GlobalKey<NavigatorState>();
+
   static final GoRouter router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AuthRouter.login.path,
     routes: [
       ...AuthRouter.routes,

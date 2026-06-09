@@ -4,7 +4,7 @@ import '../../core/router/route_definer.dart';
 import '../master_data/presentation/pages/master_data_desa_page.dart';
 import '../master_data/presentation/pages/master_data_kecamatan_page.dart';
 import '../master_data/presentation/pages/master_data_personel_page.dart';
-import '../master_data/presentation/pages/master_data_produk_page.dart';
+import 'presentation/pages/master_data_voucher_page.dart';
 import '../master_data/presentation/pages/master_data_reseller_page.dart';
 import '../master_data/presentation/pages/master_data_page.dart';
 
@@ -17,27 +17,24 @@ class MasterDataRouter {
   );
 
   static const kecamatan = RouteDefiner(
-    path: '/master-data/kecamatan',
+    path: 'kecamatan',
     name: 'MasterDataRouter.kecamatan',
   );
 
-  static const desa = RouteDefiner(
-    path: '/master-data/desa',
-    name: 'MasterDataRouter.desa',
-  );
+  static const desa = RouteDefiner(path: 'desa', name: 'MasterDataRouter.desa');
 
-  static const produk = RouteDefiner(
-    path: '/master-data/produk',
-    name: 'MasterDataRouter.produk',
+  static const voucher = RouteDefiner(
+    path: 'voucher',
+    name: 'MasterDataRouter.voucher',
   );
 
   static const personel = RouteDefiner(
-    path: '/master-data/personel',
+    path: 'personel',
     name: 'MasterDataRouter.personel',
   );
 
   static const reseller = RouteDefiner(
-    path: '/master-data/reseller',
+    path: 'reseller',
     name: 'MasterDataRouter.reseller',
   );
 
@@ -48,27 +45,27 @@ class MasterDataRouter {
       builder: (context, state) => const MasterDataPage(),
       routes: [
         GoRoute(
-          path: 'kecamatan',
+          path: kecamatan.path,
           name: kecamatan.name,
           builder: (context, state) => const MasterDataKecamatanPage(),
         ),
         GoRoute(
-          path: 'desa',
+          path: desa.path,
           name: desa.name,
           builder: (context, state) => const MasterDataDesaPage(),
         ),
         GoRoute(
-          path: 'produk',
-          name: produk.name,
-          builder: (context, state) => const MasterDataProdukPage(),
+          path: voucher.path,
+          name: voucher.name,
+          builder: (context, state) => const MasterDataVoucherPage(),
         ),
         GoRoute(
-          path: 'personel',
+          path: personel.path,
           name: personel.name,
           builder: (context, state) => const MasterDataPersonelPage(),
         ),
         GoRoute(
-          path: 'reseller',
+          path: reseller.path,
           name: reseller.name,
           builder: (context, state) => const MasterDataResellerPage(),
         ),
