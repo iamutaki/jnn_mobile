@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import 'core/router/app_router.dart' show AppRouter;
+import 'core/widgets/auth_state_redirector.dart';
 import 'core/widgets/version_banner.dart';
 import 'flavors.dart';
 import 'shared/dev_tool/dev_tool.dart';
+import 'shared/dev_tool/storage_inspector/secure_storage_inspector.dart';
+import 'shared/dev_tool/storage_inspector/shared_pref_inspector.dart';
+import 'shared/dev_tool/storage_inspector/udid_inspector.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -25,8 +29,15 @@ class App extends StatelessWidget {
         child: FToaster(
           child: FTooltipGroup(
             child: DevToolOverlay(
-              inspectors: [NetworkMonitorInspector()],
-              child: VersionBanner(child: child ?? const SizedBox.shrink()),
+              inspectors: [
+                NetworkMonitorInspector(),
+                SharedPrefInspector(),
+                SecureStorageInspector(),
+                UdidInspector(),
+              ],
+              child: AuthStateRedirector(
+                child: VersionBanner(child: child ?? const SizedBox.shrink()),
+              ),
             ),
           ),
         ),

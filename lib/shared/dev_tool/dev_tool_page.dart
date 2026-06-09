@@ -42,39 +42,46 @@ class _DevToolPageState extends State<DevToolPage> {
   Widget build(BuildContext context) {
     final inspector = _activeInspector;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          inspector?.name ?? 'Dev Tools',
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            inspector != null ? Icons.arrow_back : Icons.close,
+    return PopScope(
+      canPop: _activeInspector == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) setState(() => _activeInspector = null);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            inspector?.name ?? 'Dev Tools',
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          onPressed: _close,
+          leading: IconButton(
+            icon: Icon(
+              inspector != null ? Icons.arrow_back : Icons.close,
+            ),
+            onPressed: _close,
+          ),
+          actions: inspector?.appBarActions,
         ),
-      ),
-      body: inspector != null
-          ? inspector.buildPage(context)
-          : widget.inspectors.isEmpty
-              ? const _EmptyState()
-              : GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 0.75,
-                  ),
-                  itemCount: widget.inspectors.length,
-                  itemBuilder: (context, index) => _InspectorCard(
-                    inspector: widget.inspectors[index],
-                    onTap: () => setState(
-                      () => _activeInspector = widget.inspectors[index],
+        body: inspector != null
+            ? inspector.buildPage(context)
+            : widget.inspectors.isEmpty
+                ? const _EmptyState()
+                : GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: widget.inspectors.length,
+                    itemBuilder: (context, index) => _InspectorCard(
+                      inspector: widget.inspectors[index],
+                      onTap: () => setState(
+                        () => _activeInspector = widget.inspectors[index],
+                      ),
                     ),
                   ),
-                ),
+      ),
     );
   }
 }

@@ -89,3 +89,49 @@ final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
 }
 
 String _$dioHash() => r'00c24523027d3fd4d8aecf050b8098ad061b1f9a';
+
+@ProviderFor(authTokenStorage)
+final authTokenStorageProvider = AuthTokenStorageProvider._();
+
+final class AuthTokenStorageProvider
+    extends
+        $FunctionalProvider<
+          AuthTokenStorage,
+          AuthTokenStorage,
+          AuthTokenStorage
+        >
+    with $Provider<AuthTokenStorage> {
+  AuthTokenStorageProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authTokenStorageProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authTokenStorageHash();
+
+  @$internal
+  @override
+  $ProviderElement<AuthTokenStorage> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AuthTokenStorage create(Ref ref) {
+    return authTokenStorage(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AuthTokenStorage value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AuthTokenStorage>(value),
+    );
+  }
+}
+
+String _$authTokenStorageHash() => r'baa0b0bc3b2ed8aa4e7a4c3c67afbb8646f07f54';

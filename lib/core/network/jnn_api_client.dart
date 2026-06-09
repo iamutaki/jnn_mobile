@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 
 import '../../shared/dev_tool/network_monitor/network_monitor_registry.dart';
 import '../constants/env.dart';
+import 'auth_token_storage.dart';
+import 'interceptors/auth_interceptor.dart';
 import 'interceptors/network_monitor_interceptor.dart';
 
 class JnnApiClient {
@@ -9,11 +11,15 @@ class JnnApiClient {
 
   factory JnnApiClient.create({
     String? baseUrl,
+    AuthTokenStorage? tokenStorage,
     Iterable<Interceptor> interceptors = const <Interceptor>[],
   }) {
+    final resolvedBaseUrl = baseUrl ?? Env.jnnApiHost;
+    final resolvedTokenStorage = tokenStorage ?? AuthTokenStorage();
+
     final dio = Dio(
       BaseOptions(
-        baseUrl: baseUrl ?? Env.jnnApiHost,
+        baseUrl: resolvedBaseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
@@ -27,6 +33,12 @@ class JnnApiClient {
 
     dio.interceptors.add(
       NetworkMonitorInterceptor(repository: NetworkMonitorRegistry.repository),
+    );
+    dio.interceptors.add(
+      AuthInterceptor(
+        tokenStorage: resolvedTokenStorage,
+        baseUrl: resolvedBaseUrl,
+      ),
     );
     dio.interceptors.addAll(interceptors);
 

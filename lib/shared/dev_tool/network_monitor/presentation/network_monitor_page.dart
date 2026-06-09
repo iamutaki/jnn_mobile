@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 
 import '../../dev_tool_inspector.dart';
@@ -20,6 +21,15 @@ class NetworkMonitorInspector extends DevToolInspector {
   String get name => 'Network Monitor';
 
   @override
+  List<Widget> get appBarActions => [
+    IconButton(
+      tooltip: 'Clear',
+      icon: const Icon(FLucideIcons.trash2),
+      onPressed: NetworkMonitorRegistry.clearRecords.call,
+    ),
+  ];
+
+  @override
   Widget buildPage(BuildContext context) => const NetworkMonitorPage();
 }
 
@@ -30,27 +40,6 @@ class NetworkMonitorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
-          ),
-          child: Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'Semua request dari `JNN_API_CLIENT` akan direkam di sini.',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
-                ),
-              ),
-              TextButton(
-                onPressed: NetworkMonitorRegistry.clearRecords.call,
-                child: const Text('Clear'),
-              ),
-            ],
-          ),
-        ),
         Expanded(
           child: StreamBuilder<List<NetworkRequestRecord>>(
             stream: NetworkMonitorRegistry.observeRecords(),

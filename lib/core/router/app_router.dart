@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/auth_router.dart';
 import '../../features/home/home_router.dart';
 import '../../features/master_data/master_data_router.dart';
+import '../network/auth_token_storage.dart';
 
 class AppRouter {
   AppRouter._();
@@ -11,6 +12,8 @@ class AppRouter {
   /// Root navigator key — digunakan untuk push route di atas GoRouter
   /// (misal: DevToolPage).
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
+
+  static final AuthTokenStorage _tokenStorage = AuthTokenStorage();
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -20,10 +23,25 @@ class AppRouter {
       ...HomeRouter.routes,
       ...MasterDataRouter.routes,
     ],
+    redirect: _redirect,
     errorBuilder: (context, state) => Scaffold(
       body: Center(
         child: Text('Halaman tidak ditemukan: ${state.error}'),
       ),
     ),
   );
+
+  static Future<String?> _redirect(
+    BuildContext context,
+    GoRouterState state,
+  ) async {
+    final isAuth = await _tokenStorage.getIsAuth();
+    final isOnLogin = state.matchedLocation == AuthRouter.login.path;
+    final isOnAuth = state.matchedLocation.startsWith('/login');
+
+    if (!isAuth && !isOnAuth) return AuthRouter.login.path;
+    if (isAuth && isOnLogin) return '/home';
+
+    return null;
+  }
 }

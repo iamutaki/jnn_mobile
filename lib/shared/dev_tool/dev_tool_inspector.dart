@@ -40,4 +40,7 @@ abstract class DevToolInspector {
 
   /// Halaman inspector yang ditampilkan saat card di-tap.
   Widget buildPage(BuildContext context);
+
+  /// Aksi tambahan di pojok kanan AppBar saat inspector aktif.
+  List<Widget>? get appBarActions => null;
 }

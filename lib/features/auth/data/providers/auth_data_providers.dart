@@ -14,5 +14,8 @@ AuthRemoteDatasource authRemoteDatasource(Ref ref) {
 
 @riverpod
 AuthRepository authRepository(Ref ref) {
-  return AuthRepositoryImpl(ref.watch(authRemoteDatasourceProvider));
+  return AuthRepositoryImpl(
+    ref.watch(authRemoteDatasourceProvider),
+    ref.watch(authTokenStorageProvider),
+  );
 }

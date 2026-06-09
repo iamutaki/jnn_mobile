@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
+import 'core/services/device_id_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/network/jnn_api_client.dart';
 import 'flavors.dart';
@@ -42,6 +43,9 @@ Future<void> main() async {
   );
 
   JnnApiClient.instance;
+
+  // Init device ID (ambil dari UDID atau fallback UUID)
+  await DeviceIdService().getDeviceId();
 
   runApp(const ProviderScope(child: App()));
 }

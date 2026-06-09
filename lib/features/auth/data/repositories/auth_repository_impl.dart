@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 
+import '../../../../core/network/auth_token_storage.dart';
 import '../../domain/entities/auth_session.dart';
 import '../../domain/failures/auth_failure.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -9,9 +10,10 @@ import '../models/login_request_dto.dart';
 import '../models/login_response_dto.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  AuthRepositoryImpl(this._remoteDatasource);
+  AuthRepositoryImpl(this._remoteDatasource, this._tokenStorage);
 
   final AuthRemoteDatasource _remoteDatasource;
+  final AuthTokenStorage _tokenStorage;
 
   @override
   Future<Either<AuthFailure, AuthSession>> login({
@@ -30,6 +32,12 @@ class AuthRepositoryImpl implements AuthRepository {
         }
         return Either.left(AuthFailure('Login response data is empty.'));
       }
+
+      await _tokenStorage.saveTokens(
+        accessToken: payload.accessToken ?? '',
+        refreshToken: payload.refreshToken ?? '',
+      );
+      await _tokenStorage.setIsAuth(true);
 
       return Either.right(_mapLoginResponse(payload));
     } on DioException catch (error) {
