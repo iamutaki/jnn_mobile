@@ -8,6 +8,7 @@ abstract class BaseResponse<T> with _$BaseResponse<T> {
   const factory BaseResponse({
     bool? success,
     String? message,
+    String? error,
     T? data,
     Map<String, dynamic>? meta,
   }) = _BaseResponse<T>;

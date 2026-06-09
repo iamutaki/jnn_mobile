@@ -12,6 +12,7 @@ _BaseResponse<T> _$BaseResponseFromJson<T>(
 ) => _BaseResponse<T>(
   success: json['success'] as bool?,
   message: json['message'] as String?,
+  error: json['error'] as String?,
   data: _$nullableGenericFromJson(json['data'], fromJsonT),
   meta: json['meta'] as Map<String, dynamic>?,
 );
@@ -22,6 +23,7 @@ Map<String, dynamic> _$BaseResponseToJson<T>(
 ) => <String, dynamic>{
   'success': instance.success,
   'message': instance.message,
+  'error': instance.error,
   'data': _$nullableGenericToJson(instance.data, toJsonT),
   'meta': instance.meta,
 };

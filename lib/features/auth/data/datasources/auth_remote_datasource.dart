@@ -15,7 +15,7 @@ abstract class AuthRemoteDatasource {
     ParseErrorLogger? errorLogger,
   }) = _AuthRemoteDatasource;
 
-  @POST('/auth/login')
+  @POST('/v1/auth/login')
   Future<BaseResponse<LoginResponseDto>> login(
     @Body() LoginRequestDto body,
   );

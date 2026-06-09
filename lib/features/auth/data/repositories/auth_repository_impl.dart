@@ -24,6 +24,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final payload = response.data;
       if (payload == null) {
+        final errorMessage = response.error;
+        if (errorMessage != null && errorMessage.trim().isNotEmpty) {
+          return Either.left(AuthFailure(errorMessage));
+        }
         return Either.left(AuthFailure('Login response data is empty.'));
       }
 
@@ -51,7 +55,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final responseData = error.response?.data;
 
     if (responseData is Map<String, dynamic>) {
-      final message = responseData['message'];
+      final message = responseData['error'];
       if (message is String && message.trim().isNotEmpty) {
         return message;
       }

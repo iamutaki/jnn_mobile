@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BaseResponse<T> {
 
- bool? get success; String? get message; T? get data; Map<String, dynamic>? get meta;
+ bool? get success; String? get message; String? get error; T? get data; Map<String, dynamic>? get meta;
 /// Create a copy of BaseResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $BaseResponseCopyWith<T, BaseResponse<T>> get copyWith => _$BaseResponseCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BaseResponse<T>&&(identical(other.success, success) || other.success == success)&&(identical(other.message, message) || other.message == message)&&const DeepCollectionEquality().equals(other.data, data)&&const DeepCollectionEquality().equals(other.meta, meta));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BaseResponse<T>&&(identical(other.success, success) || other.success == success)&&(identical(other.message, message) || other.message == message)&&(identical(other.error, error) || other.error == error)&&const DeepCollectionEquality().equals(other.data, data)&&const DeepCollectionEquality().equals(other.meta, meta));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,success,message,const DeepCollectionEquality().hash(data),const DeepCollectionEquality().hash(meta));
+int get hashCode => Object.hash(runtimeType,success,message,error,const DeepCollectionEquality().hash(data),const DeepCollectionEquality().hash(meta));
 
 @override
 String toString() {
-  return 'BaseResponse<$T>(success: $success, message: $message, data: $data, meta: $meta)';
+  return 'BaseResponse<$T>(success: $success, message: $message, error: $error, data: $data, meta: $meta)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $BaseResponseCopyWith<T,$Res>  {
   factory $BaseResponseCopyWith(BaseResponse<T> value, $Res Function(BaseResponse<T>) _then) = _$BaseResponseCopyWithImpl;
 @useResult
 $Res call({
- bool? success, String? message, T? data, Map<String, dynamic>? meta
+ bool? success, String? message, String? error, T? data, Map<String, dynamic>? meta
 });
 
 
@@ -65,10 +65,11 @@ class _$BaseResponseCopyWithImpl<T,$Res>
 
 /// Create a copy of BaseResponse
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? success = freezed,Object? message = freezed,Object? data = freezed,Object? meta = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? success = freezed,Object? message = freezed,Object? error = freezed,Object? data = freezed,Object? meta = freezed,}) {
   return _then(_self.copyWith(
 success: freezed == success ? _self.success : success // ignore: cast_nullable_to_non_nullable
 as bool?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,data: freezed == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
 as T?,meta: freezed == meta ? _self.meta : meta // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool? success,  String? message,  T? data,  Map<String, dynamic>? meta)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool? success,  String? message,  String? error,  T? data,  Map<String, dynamic>? meta)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BaseResponse() when $default != null:
-return $default(_that.success,_that.message,_that.data,_that.meta);case _:
+return $default(_that.success,_that.message,_that.error,_that.data,_that.meta);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.success,_that.message,_that.data,_that.meta);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool? success,  String? message,  T? data,  Map<String, dynamic>? meta)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool? success,  String? message,  String? error,  T? data,  Map<String, dynamic>? meta)  $default,) {final _that = this;
 switch (_that) {
 case _BaseResponse():
-return $default(_that.success,_that.message,_that.data,_that.meta);case _:
+return $default(_that.success,_that.message,_that.error,_that.data,_that.meta);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +198,10 @@ return $default(_that.success,_that.message,_that.data,_that.meta);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool? success,  String? message,  T? data,  Map<String, dynamic>? meta)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool? success,  String? message,  String? error,  T? data,  Map<String, dynamic>? meta)?  $default,) {final _that = this;
 switch (_that) {
 case _BaseResponse() when $default != null:
-return $default(_that.success,_that.message,_that.data,_that.meta);case _:
+return $default(_that.success,_that.message,_that.error,_that.data,_that.meta);case _:
   return null;
 
 }
@@ -212,11 +213,12 @@ return $default(_that.success,_that.message,_that.data,_that.meta);case _:
 @JsonSerializable(genericArgumentFactories: true)
 
 class _BaseResponse<T> implements BaseResponse<T> {
-  const _BaseResponse({this.success, this.message, this.data, final  Map<String, dynamic>? meta}): _meta = meta;
+  const _BaseResponse({this.success, this.message, this.error, this.data, final  Map<String, dynamic>? meta}): _meta = meta;
   factory _BaseResponse.fromJson(Map<String, dynamic> json,T Function(Object?) fromJsonT) => _$BaseResponseFromJson(json,fromJsonT);
 
 @override final  bool? success;
 @override final  String? message;
+@override final  String? error;
 @override final  T? data;
  final  Map<String, dynamic>? _meta;
 @override Map<String, dynamic>? get meta {
@@ -241,16 +243,16 @@ Map<String, dynamic> toJson(Object? Function(T) toJsonT) {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BaseResponse<T>&&(identical(other.success, success) || other.success == success)&&(identical(other.message, message) || other.message == message)&&const DeepCollectionEquality().equals(other.data, data)&&const DeepCollectionEquality().equals(other._meta, _meta));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BaseResponse<T>&&(identical(other.success, success) || other.success == success)&&(identical(other.message, message) || other.message == message)&&(identical(other.error, error) || other.error == error)&&const DeepCollectionEquality().equals(other.data, data)&&const DeepCollectionEquality().equals(other._meta, _meta));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,success,message,const DeepCollectionEquality().hash(data),const DeepCollectionEquality().hash(_meta));
+int get hashCode => Object.hash(runtimeType,success,message,error,const DeepCollectionEquality().hash(data),const DeepCollectionEquality().hash(_meta));
 
 @override
 String toString() {
-  return 'BaseResponse<$T>(success: $success, message: $message, data: $data, meta: $meta)';
+  return 'BaseResponse<$T>(success: $success, message: $message, error: $error, data: $data, meta: $meta)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$BaseResponseCopyWith<T,$Res> implements $BaseResponseCopy
   factory _$BaseResponseCopyWith(_BaseResponse<T> value, $Res Function(_BaseResponse<T>) _then) = __$BaseResponseCopyWithImpl;
 @override @useResult
 $Res call({
- bool? success, String? message, T? data, Map<String, dynamic>? meta
+ bool? success, String? message, String? error, T? data, Map<String, dynamic>? meta
 });
 
 
@@ -278,10 +280,11 @@ class __$BaseResponseCopyWithImpl<T,$Res>
 
 /// Create a copy of BaseResponse
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? success = freezed,Object? message = freezed,Object? data = freezed,Object? meta = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? success = freezed,Object? message = freezed,Object? error = freezed,Object? data = freezed,Object? meta = freezed,}) {
   return _then(_BaseResponse<T>(
 success: freezed == success ? _self.success : success // ignore: cast_nullable_to_non_nullable
 as bool?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,data: freezed == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
 as T?,meta: freezed == meta ? _self._meta : meta // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>?,

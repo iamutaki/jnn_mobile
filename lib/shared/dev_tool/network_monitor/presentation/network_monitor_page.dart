@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import '../../dev_tool_inspector.dart';
 import '../data/models/network_request_record.dart';
 import '../network_monitor_registry.dart';
+import 'network_request_detail_page.dart';
 
 class NetworkMonitorInspector extends DevToolInspector {
   @override
@@ -213,109 +214,6 @@ class _NetworkRecordCard extends StatelessWidget {
       return const Color(0xFFB91C1C);
     }
     return const Color(0xFF15803D);
-  }
-}
-
-class NetworkRequestDetailPage extends StatelessWidget {
-  const NetworkRequestDetailPage({super.key, required this.record});
-
-  final NetworkRequestRecord record;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '${record.method} ${record.path}',
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          children: [
-            _DetailsSection(
-              title: 'Summary',
-              content: [
-                'URL: ${record.url}',
-                'Status: ${record.statusCode ?? '-'}',
-                'Durasi: ${record.durationMs ?? '-'} ms',
-                'Mulai: ${record.startedAt.toIso8601String()}',
-                'Selesai: ${record.finishedAt?.toIso8601String() ?? '-'}',
-              ].join('\n'),
-            ),
-            _DetailsSection(
-              title: 'Query Parameters',
-              content: _formatMap(record.queryParameters),
-            ),
-            _DetailsSection(
-              title: 'Request Headers',
-              content: _formatMap(record.requestHeaders),
-            ),
-            _DetailsSection(
-              title: 'Request Body',
-              content: record.requestBody ?? '-',
-            ),
-            _DetailsSection(
-              title: 'Response Headers',
-              content: _formatMap(record.responseHeaders),
-            ),
-            _DetailsSection(
-              title: 'Response Body',
-              content: record.responseBody ?? '-',
-            ),
-            _DetailsSection(
-              title: 'Error',
-              content: record.errorMessage ?? '-',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatMap(Map<String, String> values) {
-    if (values.isEmpty) {
-      return '-';
-    }
-
-    return values.entries
-        .map((entry) => '${entry.key}: ${entry.value}')
-        .join('\n');
-  }
-}
-
-class _DetailsSection extends StatelessWidget {
-  const _DetailsSection({required this.title, required this.content});
-
-  final String title;
-  final String content;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-          ),
-          const Gap(8),
-          SelectableText(
-            content,
-            style: const TextStyle(fontSize: 12, height: 1.5),
-          ),
-        ],
-      ),
-    );
   }
 }
 

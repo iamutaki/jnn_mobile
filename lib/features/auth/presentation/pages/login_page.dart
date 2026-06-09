@@ -15,34 +15,86 @@ class LoginPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final form = useMemoized(() => FormGroup({
-      'username': FormControl<String>(validators: [Validators.required]),
-      'password': FormControl<String>(validators: [Validators.required]),
-    }));
+    final form = useMemoized(
+      () => FormGroup({
+        'username': FormControl<String>(validators: [Validators.required]),
+        'password': FormControl<String>(validators: [Validators.required]),
+      }),
+    );
     final formRebuild = useState(0);
     final logoLoaded = useState(false);
 
-    useEffect(() {
-      ref.listen(authLoginProvider, (previous, next) {
-        if (next.session != null) context.go('/home');
-        if (next.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(next.errorMessage!)),
-          );
-        }
-      });
-      return null;
-    }, []);
+    ref.listen(authLoginProvider, (previous, next) {
+      if (next.session != null) context.go('/home');
+      if (next.errorMessage != null) {
+        showFSheet(
+          context: context,
+          side: FLayout.btt,
+          builder: (context) => Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: context.theme.colors.background,
+              border: Border.symmetric(
+                vertical: BorderSide(color: context.theme.colors.border),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(FLucideIcons.circleX, color: context.theme.colors.destructive),
+                        const Gap(8),
+                        Text(
+                          'Login Gagal',
+                          style: context.theme.typography.xl2.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: context.theme.colors.foreground,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(4),
+                    Text(
+                      next.errorMessage!,
+                      style: context.theme.typography.sm.copyWith(
+                        color: context.theme.colors.mutedForeground,
+                      ),
+                    ),
+                    const Gap(16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: FButton(
+                        size: FButtonSizeVariant.sm,
+                        mainAxisSize: MainAxisSize.min,
+                        child: const Text('Tutup'),
+                        onPress: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    });
 
     Future<void> onLogin() async {
       form.markAllAsTouched();
       formRebuild.value++;
       if (!form.valid) return;
 
-      await ref.read(authLoginProvider.notifier).submit(
-        username: form.control('username').value as String? ?? '',
-        password: form.control('password').value as String? ?? '',
-      );
+      await ref
+          .read(authLoginProvider.notifier)
+          .submit(
+            username: form.control('username').value as String? ?? '',
+            password: form.control('password').value as String? ?? '',
+          );
     }
 
     final loginState = ref.watch(authLoginProvider);
@@ -100,25 +152,10 @@ class LoginPage extends HookConsumerWidget {
                 error: passwordError != null ? Text(passwordError) : null,
               ),
               const Gap(24),
-              if (loginState.errorMessage != null) ...[
-                Text(
-                  loginState.errorMessage!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFFB42318),
-                  ),
-                ),
-                const Gap(16),
-              ],
               FButton(
                 onPress: isLoading ? null : onLogin,
                 child: isLoading
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
+                    ? const FCircularProgress.loader()
                     : const Text('Masuk'),
               ),
             ],
