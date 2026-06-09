@@ -64,9 +64,14 @@ class _SecureStoragePageState extends State<_SecureStoragePage> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
-              FButton(onPress: _load, child: const Text('Refresh')),
+              FButton(
+                size: FButtonSizeVariant.xs,
+                onPress: _load,
+                child: const Text('Refresh'),
+              ),
               const Gap(8),
               FButton(
+                size: FButtonSizeVariant.xs,
                 onPress: _data.isEmpty ? null : _clear,
                 child: const Text('Clear'),
               ),

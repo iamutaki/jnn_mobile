@@ -1,23 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/router/app_router.dart';
 import '../../../flavors.dart';
 import 'dev_tool_inspector.dart';
 import 'dev_tool_page.dart';
 
-/// Overlay yang menampilkan floating draggable button untuk mengakses DevTool.
-///
-/// Hanya aktif pada **non-release build** atau **non-production flavor**.
-/// Di release + production, widget ini hanya menampilkan [child] tanpa overlay.
-///
-/// Digunakan di [App] builder, membungkus seluruh widget tree:
-/// ```dart
-/// DevToolOverlay(
-///   inspectors: [...],
-///   child: VersionBanner(child: child),
-/// )
-/// ```
 class DevToolOverlay extends StatefulWidget {
   const DevToolOverlay({
     super.key,
@@ -25,10 +14,7 @@ class DevToolOverlay extends StatefulWidget {
     required this.child,
   });
 
-  /// Daftar inspector yang tersedia di dashboard.
   final List<DevToolInspector> inspectors;
-
-  /// Widget child yang dibungkus overlay.
   final Widget child;
 
   @override
@@ -36,22 +22,40 @@ class DevToolOverlay extends StatefulWidget {
 }
 
 class _DevToolOverlayState extends State<DevToolOverlay> {
-  /// Posisi floating button.
   Offset _offset = Offset.zero;
-
-  /// Apakah posisi sudah diinisialisasi.
   bool _initialized = false;
-
-  /// Apakah sedang di-drag (untuk visual feedback).
   bool _isDragging = false;
-
-  /// Apakah DevToolPage sedang terbuka.
   bool _isDevToolPageOpen = false;
 
-  /// Ukuran button.
   static const _size = 48.0;
 
-  /// Push DevToolPage sebagai route di root Navigator.
+  static const _prefKeyX = 'devToolPositionX';
+  static const _prefKeyY = 'devToolPositionY';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPosition();
+  }
+
+  Future<void> _loadPosition() async {
+    final prefs = await SharedPreferences.getInstance();
+    final x = prefs.getDouble(_prefKeyX);
+    final y = prefs.getDouble(_prefKeyY);
+    if (x != null && y != null && mounted) {
+      setState(() {
+        _offset = Offset(x, y);
+        _initialized = true;
+      });
+    }
+  }
+
+  Future<void> _savePosition() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_prefKeyX, _offset.dx);
+    await prefs.setDouble(_prefKeyY, _offset.dy);
+  }
+
   void _openDevToolPage() {
     final nav = AppRouter.rootNavigatorKey.currentState;
     if (nav == null) return;
@@ -72,15 +76,12 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    // Tampilkan di non-release build ATAU non-production flavor.
-    // Hanya sembunyikan di release + production.
     if (kReleaseMode && F.appFlavor == Flavor.production) {
       return widget.child;
     }
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Inisialisasi posisi default: bottom-right.
         if (!_initialized) {
           _offset = Offset(
             constraints.maxWidth - _size - 16,
@@ -89,7 +90,6 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
           _initialized = true;
         }
 
-        // Clamp agar button tetap di dalam layar.
         final clamped = Offset(
           _offset.dx.clamp(0, constraints.maxWidth - _size),
           _offset.dy.clamp(0, constraints.maxHeight - _size),
@@ -97,10 +97,7 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
 
         return Stack(
           children: [
-            // App content.
             widget.child,
-
-            // Floating button — sembunyikan saat sudah di halaman DevToolPage.
             if (!_isDevToolPageOpen) Positioned(
               left: clamped.dx,
               top: clamped.dy,
@@ -118,8 +115,8 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
                 },
                 onPanEnd: (details) {
                   setState(() => _isDragging = false);
+                  _savePosition();
 
-                  // Jika velocity rendah → anggap tap.
                   final velocity = details.primaryVelocity ?? 0;
                   if (velocity.abs() < 100) {
                     _openDevToolPage();

@@ -12,7 +12,7 @@ class NetworkMonitorInspector extends DevToolInspector {
   Color get color => const Color(0xFF1A73E8);
 
   @override
-  String get description => 'Rekam dan inspect request API dari JNN_API_CLIENT';
+  String get description => 'Rekam dan inspect request API';
 
   @override
   IconData get icon => Icons.wifi_tethering_rounded;
@@ -246,7 +246,7 @@ class _EmptyNetworkMonitorState extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(24),
         child: Text(
-          'Belum ada request yang direkam.\nGunakan `JnnApiClient.instance` agar request tampil di monitor ini.',
+          'Belum ada request yang direkam.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 13, color: Color(0xFF6B7280), height: 1.5),
         ),

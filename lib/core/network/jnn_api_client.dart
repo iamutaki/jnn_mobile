@@ -15,7 +15,7 @@ class JnnApiClient {
     Iterable<Interceptor> interceptors = const <Interceptor>[],
   }) {
     final resolvedBaseUrl = baseUrl ?? Env.jnnApiHost;
-    final resolvedTokenStorage = tokenStorage ?? AuthTokenStorage();
+    final resolvedTokenStorage = tokenStorage ?? AuthTokenStorage.instance;
 
     final dio = Dio(
       BaseOptions(

@@ -13,4 +13,4 @@ JnnApiClient jnnApiClient(Ref ref) => JnnApiClient.instance;
 Dio dio(Ref ref) => ref.watch(jnnApiClientProvider).dio;
 
 @riverpod
-AuthTokenStorage authTokenStorage(Ref ref) => AuthTokenStorage();
+AuthTokenStorage authTokenStorage(Ref ref) => AuthTokenStorage.instance;

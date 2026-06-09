@@ -8,6 +8,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../flavors.dart';
+import '../../../profile/presentation/providers/profile_providers.dart';
 import '../providers/auth_login_providers.dart';
 
 class LoginPage extends HookConsumerWidget {
@@ -25,7 +26,10 @@ class LoginPage extends HookConsumerWidget {
     final logoLoaded = useState(false);
 
     ref.listen(authLoginProvider, (previous, next) {
-      if (next.session != null) context.go('/home');
+      if (next.session != null) {
+        ref.read(profileProvider.future);
+        context.go('/home');
+      }
       if (next.errorMessage != null) {
         showFSheet(
           context: context,
@@ -47,7 +51,10 @@ class LoginPage extends HookConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(FLucideIcons.circleX, color: context.theme.colors.destructive),
+                        Icon(
+                          FLucideIcons.circleX,
+                          color: context.theme.colors.destructive,
+                        ),
                         const Gap(8),
                         Text(
                           'Login Gagal',
@@ -173,7 +180,7 @@ class LoginPage extends HookConsumerWidget {
     return Column(
       children: [
         FractionallySizedBox(
-          widthFactor: 0.5,
+          widthFactor: 0.30,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: Image.asset(

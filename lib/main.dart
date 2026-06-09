@@ -5,9 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
-import 'core/services/device_id_service.dart';
-import 'core/services/notification_service.dart';
+import 'core/network/auth_token_storage.dart';
 import 'core/network/jnn_api_client.dart';
+import 'core/services/device_id_service.dart';
+import 'core/services/device_registration_service.dart';
+import 'core/services/notification_service.dart';
+import 'features/device/data/datasources/device_remote_datasource.dart';
+import 'features/device/data/repositories/device_repository_impl.dart';
 import 'flavors.dart';
 
 // Handler untuk background message (harus top-level function)
@@ -46,6 +50,18 @@ Future<void> main() async {
 
   // Init device ID (ambil dari UDID atau fallback UUID)
   await DeviceIdService().getDeviceId();
+
+  // Device registration: register UDID + FCM token saat auth/login/token rotate
+  final deviceRepository = DeviceRepositoryImpl(
+    DeviceRemoteDatasource(JnnApiClient.instance.dio),
+  );
+  final registrationService = DeviceRegistrationService(
+    repository: deviceRepository,
+    tokenStorage: AuthTokenStorage.instance,
+    deviceIdService: DeviceIdService(),
+    initialFcmToken: token ?? '',
+  );
+  registrationService.start();
 
   runApp(const ProviderScope(child: App()));
 }

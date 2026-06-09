@@ -10,6 +10,15 @@ class AuthTokenStorage {
   }) : _storage = storage ?? const FlutterSecureStorage(),
        _prefs = prefs;
 
+  static AuthTokenStorage? _instance;
+
+  static AuthTokenStorage get instance =>
+      _instance ??= AuthTokenStorage._default();
+
+  AuthTokenStorage._default()
+    : _storage = const FlutterSecureStorage(),
+      _prefs = null;
+
   final FlutterSecureStorage _storage;
   final SharedPreferences? _prefs;
   SharedPreferences? _resolvedPrefs;

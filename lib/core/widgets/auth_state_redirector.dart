@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../network/auth_token_storage.dart';
+import '../router/app_router.dart';
 
 class AuthStateRedirector extends StatefulWidget {
   const AuthStateRedirector({required this.child, super.key});
@@ -15,15 +15,15 @@ class AuthStateRedirector extends StatefulWidget {
 }
 
 class _AuthStateRedirectorState extends State<AuthStateRedirector> {
-  final _storage = AuthTokenStorage();
+  final _storage = AuthTokenStorage.instance;
   StreamSubscription<bool>? _sub;
 
   @override
   void initState() {
     super.initState();
     _sub = _storage.authStateChanges.listen((isAuth) {
-      if (!isAuth && mounted) {
-        context.go('/login');
+      if (!isAuth) {
+        AppRouter.router.go('/login');
       }
     });
   }

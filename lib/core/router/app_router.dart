@@ -13,7 +13,7 @@ class AppRouter {
   /// (misal: DevToolPage).
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
 
-  static final AuthTokenStorage _tokenStorage = AuthTokenStorage();
+  static final AuthTokenStorage _tokenStorage = AuthTokenStorage.instance;
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,

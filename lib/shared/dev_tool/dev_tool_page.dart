@@ -4,10 +4,6 @@ import 'package:gap/gap.dart';
 
 import 'dev_tool_inspector.dart';
 
-/// Dashboard DevTool yang menampilkan daftar inspector dalam grid.
-///
-/// Setiap inspector ditampilkan sebagai card dengan icon, nama, dan deskripsi.
-/// Tap pada card akan membuka halaman inspector yang bersangkutan.
 class DevToolPage extends StatefulWidget {
   const DevToolPage({
     super.key,
@@ -15,11 +11,7 @@ class DevToolPage extends StatefulWidget {
     this.onClose,
   });
 
-  /// Daftar inspector yang ditampilkan di grid.
   final List<DevToolInspector> inspectors;
-
-  /// Callback saat tombol close ditekan.
-  /// Jika null, menggunakan Navigator.pop.
   final VoidCallback? onClose;
 
   @override
@@ -27,7 +19,6 @@ class DevToolPage extends StatefulWidget {
 }
 
 class _DevToolPageState extends State<DevToolPage> {
-  /// Inspector yang sedang dibuka (null = dashboard).
   DevToolInspector? _activeInspector;
 
   void _close() {
@@ -43,50 +34,74 @@ class _DevToolPageState extends State<DevToolPage> {
     final inspector = _activeInspector;
 
     return PopScope(
-      canPop: _activeInspector == null,
+      canPop: inspector == null,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) setState(() => _activeInspector = null);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            inspector?.name ?? 'Dev Tools',
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              inspector != null ? Icons.arrow_back : Icons.close,
-            ),
-            onPressed: _close,
-          ),
-          actions: inspector?.appBarActions,
-        ),
-        body: inspector != null
-            ? inspector.buildPage(context)
-            : widget.inspectors.isEmpty
-                ? const _EmptyState()
-                : GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemCount: widget.inspectors.length,
-                    itemBuilder: (context, index) => _InspectorCard(
-                      inspector: widget.inspectors[index],
-                      onTap: () => setState(
-                        () => _activeInspector = widget.inspectors[index],
+      child: FScaffold(
+        childPad: false,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _close,
+                      child: Icon(
+                        inspector != null
+                            ? FLucideIcons.arrowLeft
+                            : FLucideIcons.x,
+                        size: 24,
                       ),
                     ),
-                  ),
+                    const Gap(12),
+                    Expanded(
+                      child: Text(
+                        inspector?.name ?? 'Dev Tools',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    if (inspector != null) ...inspector.appBarActions ?? [],
+                  ],
+                ),
+              ),
+              const Divider(height: 24),
+              Expanded(
+                child: inspector != null
+                    ? Material(
+                        type: MaterialType.transparency,
+                        child: inspector.buildPage(context),
+                      )
+                    : widget.inspectors.isEmpty
+                        ? const _EmptyState()
+                        : ListView.separated(
+                            padding: EdgeInsets.zero,
+                            itemCount: widget.inspectors.length,
+                            separatorBuilder: (_, _) =>
+                                const Divider(height: 1, indent: 64),
+                            itemBuilder: (context, index) => _InspectorCard(
+                              inspector: widget.inspectors[index],
+                              onTap: () => setState(
+                                () => _activeInspector =
+                                    widget.inspectors[index],
+                              ),
+                            ),
+                          ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-/// Card untuk satu inspector di grid — mirip pola _MenuCard di HomePage.
 class _InspectorCard extends StatelessWidget {
   const _InspectorCard({
     required this.inspector,
@@ -102,47 +117,46 @@ class _InspectorCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
             children: [
-              // Icon rounded square.
               Container(
-                width: 48,
-                height: 48,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: inspector.color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(inspector.icon, color: inspector.color, size: 22),
+                child: Icon(inspector.icon, color: inspector.color, size: 20),
               ),
-              const Gap(8),
-              // Nama inspector.
-              Text(
-                inspector.name,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
-                ),
-              ),
-              const Gap(2),
-              // Deskripsi singkat.
+              const Gap(12),
               Expanded(
-                child: Text(
-                  inspector.description,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFF8C8C8C),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      inspector.name,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Gap(5),
+                    Text(
+                      inspector.description,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+              Icon(
+                FLucideIcons.chevronRight,
+                size: 16,
+                color: Colors.grey.shade400,
               ),
             ],
           ),
@@ -152,7 +166,6 @@ class _InspectorCard extends StatelessWidget {
   }
 }
 
-/// Empty state saat belum ada inspector terdaftar.
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 

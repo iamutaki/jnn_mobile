@@ -69,6 +69,7 @@ class _UdidPage extends StatelessWidget {
               ),
               const Gap(16),
               FButton(
+                size: FButtonSizeVariant.xs,
                 onPress: () {
                   Clipboard.setData(ClipboardData(text: udid));
                   showFToast(

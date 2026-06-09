@@ -57,6 +57,10 @@ class _HomePageState extends State<HomePage> {
 
   bool _isExpanded = false;
 
+  Future<void> _onRefresh() async {
+    await Future.delayed(const Duration(seconds: 1));
+  }
+
   /// Menu yang ditampilkan: default 6, expanded semua.
   List<_MenuItem> get _visibleMenus {
     if (_isExpanded) return _menus.toList();
@@ -71,40 +75,44 @@ class _HomePageState extends State<HomePage> {
     return FScaffold(
       childPad: false,
       child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Gap(12),
+        child: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Gap(12),
 
-              // ── Header: Logo + Nama App ──
-              _buildHeader(),
-              const Gap(20),
+                // ── Header: Logo + Nama App ──
+                _buildHeader(),
+                const Gap(20),
 
-              // ── Menu Section (dengan background) ──
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(16),
+                // ── Menu Section (dengan background) ──
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      // Grid menu
+                      _buildMenuGrid(),
+                      const Gap(8),
+
+                      // Tombol Lihat Semua / Sembunyikan
+                      if (_hasMore) _buildToggleButton(),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    // Grid menu
-                    _buildMenuGrid(),
-                    const Gap(8),
+                const Gap(24),
 
-                    // Tombol Lihat Semua / Sembunyikan
-                    if (_hasMore) _buildToggleButton(),
-                  ],
-                ),
-              ),
-              const Gap(24),
-
-              // ── Info Section ──
-              _buildInfoSection(),
-            ],
+                // ── Info Section ──
+                _buildInfoSection(),
+              ],
+            ),
           ),
         ),
       ),
@@ -154,7 +162,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const Gap(2),
               const Text(
-                '@iamutaki',
+                '@username',
                 style: TextStyle(fontSize: 13, color: Color(0xFF8C8C8C)),
               ),
             ],

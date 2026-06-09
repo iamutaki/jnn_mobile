@@ -134,4 +134,4 @@ final class AuthTokenStorageProvider
   }
 }
 
-String _$authTokenStorageHash() => r'baa0b0bc3b2ed8aa4e7a4c3c67afbb8646f07f54';
+String _$authTokenStorageHash() => r'e130a4f875fd7c9d293071d8a77c099ae6cad05b';
