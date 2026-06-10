@@ -10,6 +10,10 @@ abstract class UserDto with _$UserDto {
     required String name,
     required String username,
     String? avatar,
+    String? phone,
+    String? email,
+    String? address,
+    @Default(<String>[]) List<String> roles,
   }) = _UserDto;
 
   factory UserDto.fromJson(Map<String, dynamic> json) =>

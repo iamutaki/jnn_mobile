@@ -79,7 +79,7 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    if (kReleaseMode && F.appFlavor == Flavor.production) {
+    if (F.appFlavor == Flavor.production) {
       return widget.child;
     }
 

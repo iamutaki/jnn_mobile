@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserDto {
 
- String get id; String get name; String get username; String? get avatar;
+ String get id; String get name; String get username; String? get avatar; String? get phone; String? get email; String? get address; List<String> get roles;
 /// Create a copy of UserDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserDtoCopyWith<UserDto> get copyWith => _$UserDtoCopyWithImpl<UserDto>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.username, username) || other.username == username)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.username, username) || other.username == username)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other.roles, roles));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,username,avatar);
+int get hashCode => Object.hash(runtimeType,id,name,username,avatar,phone,email,address,const DeepCollectionEquality().hash(roles));
 
 @override
 String toString() {
-  return 'UserDto(id: $id, name: $name, username: $username, avatar: $avatar)';
+  return 'UserDto(id: $id, name: $name, username: $username, avatar: $avatar, phone: $phone, email: $email, address: $address, roles: $roles)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserDtoCopyWith<$Res>  {
   factory $UserDtoCopyWith(UserDto value, $Res Function(UserDto) _then) = _$UserDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String username, String? avatar
+ String id, String name, String username, String? avatar, String? phone, String? email, String? address, List<String> roles
 });
 
 
@@ -65,13 +65,17 @@ class _$UserDtoCopyWithImpl<$Res>
 
 /// Create a copy of UserDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? username = null,Object? avatar = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? username = null,Object? avatar = freezed,Object? phone = freezed,Object? email = freezed,Object? address = freezed,Object? roles = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,roles: null == roles ? _self.roles : roles // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -156,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String username,  String? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String username,  String? avatar,  String? phone,  String? email,  String? address,  List<String> roles)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserDto() when $default != null:
-return $default(_that.id,_that.name,_that.username,_that.avatar);case _:
+return $default(_that.id,_that.name,_that.username,_that.avatar,_that.phone,_that.email,_that.address,_that.roles);case _:
   return orElse();
 
 }
@@ -177,10 +181,10 @@ return $default(_that.id,_that.name,_that.username,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String username,  String? avatar)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String username,  String? avatar,  String? phone,  String? email,  String? address,  List<String> roles)  $default,) {final _that = this;
 switch (_that) {
 case _UserDto():
-return $default(_that.id,_that.name,_that.username,_that.avatar);case _:
+return $default(_that.id,_that.name,_that.username,_that.avatar,_that.phone,_that.email,_that.address,_that.roles);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +201,10 @@ return $default(_that.id,_that.name,_that.username,_that.avatar);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String username,  String? avatar)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String username,  String? avatar,  String? phone,  String? email,  String? address,  List<String> roles)?  $default,) {final _that = this;
 switch (_that) {
 case _UserDto() when $default != null:
-return $default(_that.id,_that.name,_that.username,_that.avatar);case _:
+return $default(_that.id,_that.name,_that.username,_that.avatar,_that.phone,_that.email,_that.address,_that.roles);case _:
   return null;
 
 }
@@ -212,13 +216,23 @@ return $default(_that.id,_that.name,_that.username,_that.avatar);case _:
 @JsonSerializable()
 
 class _UserDto implements UserDto {
-  const _UserDto({this.id = '', required this.name, required this.username, this.avatar});
+  const _UserDto({this.id = '', required this.name, required this.username, this.avatar, this.phone, this.email, this.address, final  List<String> roles = const <String>[]}): _roles = roles;
   factory _UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
 
 @override@JsonKey() final  String id;
 @override final  String name;
 @override final  String username;
 @override final  String? avatar;
+@override final  String? phone;
+@override final  String? email;
+@override final  String? address;
+ final  List<String> _roles;
+@override@JsonKey() List<String> get roles {
+  if (_roles is EqualUnmodifiableListView) return _roles;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_roles);
+}
+
 
 /// Create a copy of UserDto
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.username, username) || other.username == username)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.username, username) || other.username == username)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other._roles, _roles));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,username,avatar);
+int get hashCode => Object.hash(runtimeType,id,name,username,avatar,phone,email,address,const DeepCollectionEquality().hash(_roles));
 
 @override
 String toString() {
-  return 'UserDto(id: $id, name: $name, username: $username, avatar: $avatar)';
+  return 'UserDto(id: $id, name: $name, username: $username, avatar: $avatar, phone: $phone, email: $email, address: $address, roles: $roles)';
 }
 
 
@@ -253,7 +267,7 @@ abstract mixin class _$UserDtoCopyWith<$Res> implements $UserDtoCopyWith<$Res> {
   factory _$UserDtoCopyWith(_UserDto value, $Res Function(_UserDto) _then) = __$UserDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String username, String? avatar
+ String id, String name, String username, String? avatar, String? phone, String? email, String? address, List<String> roles
 });
 
 
@@ -270,13 +284,17 @@ class __$UserDtoCopyWithImpl<$Res>
 
 /// Create a copy of UserDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? username = null,Object? avatar = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? username = null,Object? avatar = freezed,Object? phone = freezed,Object? email = freezed,Object? address = freezed,Object? roles = null,}) {
   return _then(_UserDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,roles: null == roles ? _self._roles : roles // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
