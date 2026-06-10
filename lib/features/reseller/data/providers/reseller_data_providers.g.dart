@@ -26,7 +26,7 @@ final class ResellerRemoteDatasourceProvider
         argument: null,
         retry: null,
         name: r'resellerRemoteDatasourceProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +55,7 @@ final class ResellerRemoteDatasourceProvider
 }
 
 String _$resellerRemoteDatasourceHash() =>
-    r'48dbbba5783b4871399f6a3c4569293be23a3ac5';
+    r'427115c11a9ff8279e1a905dbc91ee8358d944c8';
 
 @ProviderFor(resellerRepository)
 final resellerRepositoryProvider = ResellerRepositoryProvider._();
@@ -74,7 +74,7 @@ final class ResellerRepositoryProvider
         argument: null,
         retry: null,
         name: r'resellerRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -103,4 +103,4 @@ final class ResellerRepositoryProvider
 }
 
 String _$resellerRepositoryHash() =>
-    r'20d2ca6f0ebf75ca4d5179aba0a7a108a2c5db8a';
+    r'97317d8b003ede88ca0d6ebacf192c7b63fe5cc1';

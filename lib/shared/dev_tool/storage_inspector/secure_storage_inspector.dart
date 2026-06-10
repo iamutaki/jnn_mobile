@@ -17,7 +17,7 @@ class SecureStorageInspector extends DevToolInspector {
   IconData get icon => FLucideIcons.lock;
 
   @override
-  String get name => 'SecureStorage';
+  String get name => 'Secure Storage';
 
   @override
   Widget buildPage(BuildContext context) => const _SecureStoragePage();

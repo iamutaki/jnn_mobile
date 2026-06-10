@@ -17,7 +17,7 @@ class SharedPrefInspector extends DevToolInspector {
   IconData get icon => FLucideIcons.database;
 
   @override
-  String get name => 'SharedPref';
+  String get name => 'Shared Pref';
 
   @override
   Widget buildPage(BuildContext context) => const _SharedPrefPage();

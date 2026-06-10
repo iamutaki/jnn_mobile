@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ResellerDto {
 
- String get id; String get name; String get username; String? get phone; String? get avatar;@JsonKey(name: 'venuePhoto') String? get venuePhoto;@JsonKey(name: 'subDistrictId') String? get subDistrictId; SubDistrictDto? get subDistrict;@JsonKey(fromJson: _intFromJson) int get commissionRate;@JsonKey(fromJson: _intFromJson) int get commissionAmount;@JsonKey(fromJson: _doubleFromJson) double? get lat;@JsonKey(fromJson: _doubleFromJson) double? get lng;
+ UserDto get user;@JsonKey(name: 'venuePhoto') String? get venuePhoto; SubDistrictDto? get subDistrict;@JsonKey(fromJson: _intFromJson) int get commissionRate;@JsonKey(fromJson: _intFromJson) int get commissionAmount;@JsonKey(fromJson: _doubleFromJson) double? get lat;@JsonKey(fromJson: _doubleFromJson) double? get lng; String? get phone;
 /// Create a copy of ResellerDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ResellerDtoCopyWith<ResellerDto> get copyWith => _$ResellerDtoCopyWithImpl<Rese
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ResellerDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.username, username) || other.username == username)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.venuePhoto, venuePhoto) || other.venuePhoto == venuePhoto)&&(identical(other.subDistrictId, subDistrictId) || other.subDistrictId == subDistrictId)&&(identical(other.subDistrict, subDistrict) || other.subDistrict == subDistrict)&&(identical(other.commissionRate, commissionRate) || other.commissionRate == commissionRate)&&(identical(other.commissionAmount, commissionAmount) || other.commissionAmount == commissionAmount)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ResellerDto&&(identical(other.user, user) || other.user == user)&&(identical(other.venuePhoto, venuePhoto) || other.venuePhoto == venuePhoto)&&(identical(other.subDistrict, subDistrict) || other.subDistrict == subDistrict)&&(identical(other.commissionRate, commissionRate) || other.commissionRate == commissionRate)&&(identical(other.commissionAmount, commissionAmount) || other.commissionAmount == commissionAmount)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng)&&(identical(other.phone, phone) || other.phone == phone));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,username,phone,avatar,venuePhoto,subDistrictId,subDistrict,commissionRate,commissionAmount,lat,lng);
+int get hashCode => Object.hash(runtimeType,user,venuePhoto,subDistrict,commissionRate,commissionAmount,lat,lng,phone);
 
 @override
 String toString() {
-  return 'ResellerDto(id: $id, name: $name, username: $username, phone: $phone, avatar: $avatar, venuePhoto: $venuePhoto, subDistrictId: $subDistrictId, subDistrict: $subDistrict, commissionRate: $commissionRate, commissionAmount: $commissionAmount, lat: $lat, lng: $lng)';
+  return 'ResellerDto(user: $user, venuePhoto: $venuePhoto, subDistrict: $subDistrict, commissionRate: $commissionRate, commissionAmount: $commissionAmount, lat: $lat, lng: $lng, phone: $phone)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $ResellerDtoCopyWith<$Res>  {
   factory $ResellerDtoCopyWith(ResellerDto value, $Res Function(ResellerDto) _then) = _$ResellerDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String username, String? phone, String? avatar,@JsonKey(name: 'venuePhoto') String? venuePhoto,@JsonKey(name: 'subDistrictId') String? subDistrictId, SubDistrictDto? subDistrict,@JsonKey(fromJson: _intFromJson) int commissionRate,@JsonKey(fromJson: _intFromJson) int commissionAmount,@JsonKey(fromJson: _doubleFromJson) double? lat,@JsonKey(fromJson: _doubleFromJson) double? lng
+ UserDto user,@JsonKey(name: 'venuePhoto') String? venuePhoto, SubDistrictDto? subDistrict,@JsonKey(fromJson: _intFromJson) int commissionRate,@JsonKey(fromJson: _intFromJson) int commissionAmount,@JsonKey(fromJson: _doubleFromJson) double? lat,@JsonKey(fromJson: _doubleFromJson) double? lng, String? phone
 });
 
 
-$SubDistrictDtoCopyWith<$Res>? get subDistrict;
+$UserDtoCopyWith<$Res> get user;$SubDistrictDtoCopyWith<$Res>? get subDistrict;
 
 }
 /// @nodoc
@@ -65,24 +65,29 @@ class _$ResellerDtoCopyWithImpl<$Res>
 
 /// Create a copy of ResellerDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? username = null,Object? phone = freezed,Object? avatar = freezed,Object? venuePhoto = freezed,Object? subDistrictId = freezed,Object? subDistrict = freezed,Object? commissionRate = null,Object? commissionAmount = null,Object? lat = freezed,Object? lng = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? user = null,Object? venuePhoto = freezed,Object? subDistrict = freezed,Object? commissionRate = null,Object? commissionAmount = null,Object? lat = freezed,Object? lng = freezed,Object? phone = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
-as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
-as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as String?,venuePhoto: freezed == venuePhoto ? _self.venuePhoto : venuePhoto // ignore: cast_nullable_to_non_nullable
-as String?,subDistrictId: freezed == subDistrictId ? _self.subDistrictId : subDistrictId // ignore: cast_nullable_to_non_nullable
+user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserDto,venuePhoto: freezed == venuePhoto ? _self.venuePhoto : venuePhoto // ignore: cast_nullable_to_non_nullable
 as String?,subDistrict: freezed == subDistrict ? _self.subDistrict : subDistrict // ignore: cast_nullable_to_non_nullable
 as SubDistrictDto?,commissionRate: null == commissionRate ? _self.commissionRate : commissionRate // ignore: cast_nullable_to_non_nullable
 as int,commissionAmount: null == commissionAmount ? _self.commissionAmount : commissionAmount // ignore: cast_nullable_to_non_nullable
 as int,lat: freezed == lat ? _self.lat : lat // ignore: cast_nullable_to_non_nullable
 as double?,lng: freezed == lng ? _self.lng : lng // ignore: cast_nullable_to_non_nullable
-as double?,
+as double?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of ResellerDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserDtoCopyWith<$Res> get user {
+  
+  return $UserDtoCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}/// Create a copy of ResellerDto
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -176,10 +181,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String username,  String? phone,  String? avatar, @JsonKey(name: 'venuePhoto')  String? venuePhoto, @JsonKey(name: 'subDistrictId')  String? subDistrictId,  SubDistrictDto? subDistrict, @JsonKey(fromJson: _intFromJson)  int commissionRate, @JsonKey(fromJson: _intFromJson)  int commissionAmount, @JsonKey(fromJson: _doubleFromJson)  double? lat, @JsonKey(fromJson: _doubleFromJson)  double? lng)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( UserDto user, @JsonKey(name: 'venuePhoto')  String? venuePhoto,  SubDistrictDto? subDistrict, @JsonKey(fromJson: _intFromJson)  int commissionRate, @JsonKey(fromJson: _intFromJson)  int commissionAmount, @JsonKey(fromJson: _doubleFromJson)  double? lat, @JsonKey(fromJson: _doubleFromJson)  double? lng,  String? phone)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ResellerDto() when $default != null:
-return $default(_that.id,_that.name,_that.username,_that.phone,_that.avatar,_that.venuePhoto,_that.subDistrictId,_that.subDistrict,_that.commissionRate,_that.commissionAmount,_that.lat,_that.lng);case _:
+return $default(_that.user,_that.venuePhoto,_that.subDistrict,_that.commissionRate,_that.commissionAmount,_that.lat,_that.lng,_that.phone);case _:
   return orElse();
 
 }
@@ -197,10 +202,10 @@ return $default(_that.id,_that.name,_that.username,_that.phone,_that.avatar,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String username,  String? phone,  String? avatar, @JsonKey(name: 'venuePhoto')  String? venuePhoto, @JsonKey(name: 'subDistrictId')  String? subDistrictId,  SubDistrictDto? subDistrict, @JsonKey(fromJson: _intFromJson)  int commissionRate, @JsonKey(fromJson: _intFromJson)  int commissionAmount, @JsonKey(fromJson: _doubleFromJson)  double? lat, @JsonKey(fromJson: _doubleFromJson)  double? lng)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( UserDto user, @JsonKey(name: 'venuePhoto')  String? venuePhoto,  SubDistrictDto? subDistrict, @JsonKey(fromJson: _intFromJson)  int commissionRate, @JsonKey(fromJson: _intFromJson)  int commissionAmount, @JsonKey(fromJson: _doubleFromJson)  double? lat, @JsonKey(fromJson: _doubleFromJson)  double? lng,  String? phone)  $default,) {final _that = this;
 switch (_that) {
 case _ResellerDto():
-return $default(_that.id,_that.name,_that.username,_that.phone,_that.avatar,_that.venuePhoto,_that.subDistrictId,_that.subDistrict,_that.commissionRate,_that.commissionAmount,_that.lat,_that.lng);case _:
+return $default(_that.user,_that.venuePhoto,_that.subDistrict,_that.commissionRate,_that.commissionAmount,_that.lat,_that.lng,_that.phone);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +222,10 @@ return $default(_that.id,_that.name,_that.username,_that.phone,_that.avatar,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String username,  String? phone,  String? avatar, @JsonKey(name: 'venuePhoto')  String? venuePhoto, @JsonKey(name: 'subDistrictId')  String? subDistrictId,  SubDistrictDto? subDistrict, @JsonKey(fromJson: _intFromJson)  int commissionRate, @JsonKey(fromJson: _intFromJson)  int commissionAmount, @JsonKey(fromJson: _doubleFromJson)  double? lat, @JsonKey(fromJson: _doubleFromJson)  double? lng)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( UserDto user, @JsonKey(name: 'venuePhoto')  String? venuePhoto,  SubDistrictDto? subDistrict, @JsonKey(fromJson: _intFromJson)  int commissionRate, @JsonKey(fromJson: _intFromJson)  int commissionAmount, @JsonKey(fromJson: _doubleFromJson)  double? lat, @JsonKey(fromJson: _doubleFromJson)  double? lng,  String? phone)?  $default,) {final _that = this;
 switch (_that) {
 case _ResellerDto() when $default != null:
-return $default(_that.id,_that.name,_that.username,_that.phone,_that.avatar,_that.venuePhoto,_that.subDistrictId,_that.subDistrict,_that.commissionRate,_that.commissionAmount,_that.lat,_that.lng);case _:
+return $default(_that.user,_that.venuePhoto,_that.subDistrict,_that.commissionRate,_that.commissionAmount,_that.lat,_that.lng,_that.phone);case _:
   return null;
 
 }
@@ -232,21 +237,17 @@ return $default(_that.id,_that.name,_that.username,_that.phone,_that.avatar,_tha
 @JsonSerializable()
 
 class _ResellerDto implements ResellerDto {
-  const _ResellerDto({this.id = '', required this.name, required this.username, this.phone, this.avatar, @JsonKey(name: 'venuePhoto') this.venuePhoto, @JsonKey(name: 'subDistrictId') this.subDistrictId, this.subDistrict, @JsonKey(fromJson: _intFromJson) this.commissionRate = 0, @JsonKey(fromJson: _intFromJson) this.commissionAmount = 0, @JsonKey(fromJson: _doubleFromJson) this.lat, @JsonKey(fromJson: _doubleFromJson) this.lng});
+  const _ResellerDto({required this.user, @JsonKey(name: 'venuePhoto') this.venuePhoto, this.subDistrict, @JsonKey(fromJson: _intFromJson) this.commissionRate = 0, @JsonKey(fromJson: _intFromJson) this.commissionAmount = 0, @JsonKey(fromJson: _doubleFromJson) this.lat, @JsonKey(fromJson: _doubleFromJson) this.lng, this.phone});
   factory _ResellerDto.fromJson(Map<String, dynamic> json) => _$ResellerDtoFromJson(json);
 
-@override@JsonKey() final  String id;
-@override final  String name;
-@override final  String username;
-@override final  String? phone;
-@override final  String? avatar;
+@override final  UserDto user;
 @override@JsonKey(name: 'venuePhoto') final  String? venuePhoto;
-@override@JsonKey(name: 'subDistrictId') final  String? subDistrictId;
 @override final  SubDistrictDto? subDistrict;
 @override@JsonKey(fromJson: _intFromJson) final  int commissionRate;
 @override@JsonKey(fromJson: _intFromJson) final  int commissionAmount;
 @override@JsonKey(fromJson: _doubleFromJson) final  double? lat;
 @override@JsonKey(fromJson: _doubleFromJson) final  double? lng;
+@override final  String? phone;
 
 /// Create a copy of ResellerDto
 /// with the given fields replaced by the non-null parameter values.
@@ -261,16 +262,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ResellerDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.username, username) || other.username == username)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.venuePhoto, venuePhoto) || other.venuePhoto == venuePhoto)&&(identical(other.subDistrictId, subDistrictId) || other.subDistrictId == subDistrictId)&&(identical(other.subDistrict, subDistrict) || other.subDistrict == subDistrict)&&(identical(other.commissionRate, commissionRate) || other.commissionRate == commissionRate)&&(identical(other.commissionAmount, commissionAmount) || other.commissionAmount == commissionAmount)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ResellerDto&&(identical(other.user, user) || other.user == user)&&(identical(other.venuePhoto, venuePhoto) || other.venuePhoto == venuePhoto)&&(identical(other.subDistrict, subDistrict) || other.subDistrict == subDistrict)&&(identical(other.commissionRate, commissionRate) || other.commissionRate == commissionRate)&&(identical(other.commissionAmount, commissionAmount) || other.commissionAmount == commissionAmount)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng)&&(identical(other.phone, phone) || other.phone == phone));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,username,phone,avatar,venuePhoto,subDistrictId,subDistrict,commissionRate,commissionAmount,lat,lng);
+int get hashCode => Object.hash(runtimeType,user,venuePhoto,subDistrict,commissionRate,commissionAmount,lat,lng,phone);
 
 @override
 String toString() {
-  return 'ResellerDto(id: $id, name: $name, username: $username, phone: $phone, avatar: $avatar, venuePhoto: $venuePhoto, subDistrictId: $subDistrictId, subDistrict: $subDistrict, commissionRate: $commissionRate, commissionAmount: $commissionAmount, lat: $lat, lng: $lng)';
+  return 'ResellerDto(user: $user, venuePhoto: $venuePhoto, subDistrict: $subDistrict, commissionRate: $commissionRate, commissionAmount: $commissionAmount, lat: $lat, lng: $lng, phone: $phone)';
 }
 
 
@@ -281,11 +282,11 @@ abstract mixin class _$ResellerDtoCopyWith<$Res> implements $ResellerDtoCopyWith
   factory _$ResellerDtoCopyWith(_ResellerDto value, $Res Function(_ResellerDto) _then) = __$ResellerDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String username, String? phone, String? avatar,@JsonKey(name: 'venuePhoto') String? venuePhoto,@JsonKey(name: 'subDistrictId') String? subDistrictId, SubDistrictDto? subDistrict,@JsonKey(fromJson: _intFromJson) int commissionRate,@JsonKey(fromJson: _intFromJson) int commissionAmount,@JsonKey(fromJson: _doubleFromJson) double? lat,@JsonKey(fromJson: _doubleFromJson) double? lng
+ UserDto user,@JsonKey(name: 'venuePhoto') String? venuePhoto, SubDistrictDto? subDistrict,@JsonKey(fromJson: _intFromJson) int commissionRate,@JsonKey(fromJson: _intFromJson) int commissionAmount,@JsonKey(fromJson: _doubleFromJson) double? lat,@JsonKey(fromJson: _doubleFromJson) double? lng, String? phone
 });
 
 
-@override $SubDistrictDtoCopyWith<$Res>? get subDistrict;
+@override $UserDtoCopyWith<$Res> get user;@override $SubDistrictDtoCopyWith<$Res>? get subDistrict;
 
 }
 /// @nodoc
@@ -298,25 +299,30 @@ class __$ResellerDtoCopyWithImpl<$Res>
 
 /// Create a copy of ResellerDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? username = null,Object? phone = freezed,Object? avatar = freezed,Object? venuePhoto = freezed,Object? subDistrictId = freezed,Object? subDistrict = freezed,Object? commissionRate = null,Object? commissionAmount = null,Object? lat = freezed,Object? lng = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? user = null,Object? venuePhoto = freezed,Object? subDistrict = freezed,Object? commissionRate = null,Object? commissionAmount = null,Object? lat = freezed,Object? lng = freezed,Object? phone = freezed,}) {
   return _then(_ResellerDto(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
-as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
-as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
-as String?,venuePhoto: freezed == venuePhoto ? _self.venuePhoto : venuePhoto // ignore: cast_nullable_to_non_nullable
-as String?,subDistrictId: freezed == subDistrictId ? _self.subDistrictId : subDistrictId // ignore: cast_nullable_to_non_nullable
+user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserDto,venuePhoto: freezed == venuePhoto ? _self.venuePhoto : venuePhoto // ignore: cast_nullable_to_non_nullable
 as String?,subDistrict: freezed == subDistrict ? _self.subDistrict : subDistrict // ignore: cast_nullable_to_non_nullable
 as SubDistrictDto?,commissionRate: null == commissionRate ? _self.commissionRate : commissionRate // ignore: cast_nullable_to_non_nullable
 as int,commissionAmount: null == commissionAmount ? _self.commissionAmount : commissionAmount // ignore: cast_nullable_to_non_nullable
 as int,lat: freezed == lat ? _self.lat : lat // ignore: cast_nullable_to_non_nullable
 as double?,lng: freezed == lng ? _self.lng : lng // ignore: cast_nullable_to_non_nullable
-as double?,
+as double?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
 /// Create a copy of ResellerDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserDtoCopyWith<$Res> get user {
+  
+  return $UserDtoCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}/// Create a copy of ResellerDto
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

@@ -73,7 +73,10 @@ class _SplashPageState extends ConsumerState<SplashPage> {
               ),
             ),
             const Gap(32),
-            if (_isLoading) const FCircularProgress.loader(),
+            SizedBox(
+              height: 20,
+              child: _isLoading ? const FCircularProgress.loader() : const SizedBox.shrink(),
+            ),
           ],
         ),
       ),

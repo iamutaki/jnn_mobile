@@ -32,5 +32,6 @@ abstract interface class ResellerRepository {
     double? lat,
     double? lng,
   );
+  Future<Either<ResellerFailure, ResellerDto>> getReseller(String id);
   Future<Either<ResellerFailure, Unit>> deleteReseller(String id);
 }

@@ -7,12 +7,12 @@ import '../repositories/reseller_repository_impl.dart';
 
 part 'reseller_data_providers.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 ResellerRemoteDatasource resellerRemoteDatasource(Ref ref) {
   return ResellerRemoteDatasource(ref.watch(dioProvider));
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 ResellerRepository resellerRepository(Ref ref) {
   return ResellerRepositoryImpl(
     ref.watch(resellerRemoteDatasourceProvider),

@@ -7,13 +7,8 @@ part of 'reseller_dto.dart';
 // **************************************************************************
 
 _ResellerDto _$ResellerDtoFromJson(Map<String, dynamic> json) => _ResellerDto(
-  id: json['id'] as String? ?? '',
-  name: json['name'] as String,
-  username: json['username'] as String,
-  phone: json['phone'] as String?,
-  avatar: json['avatar'] as String?,
+  user: UserDto.fromJson(json['user'] as Map<String, dynamic>),
   venuePhoto: json['venuePhoto'] as String?,
-  subDistrictId: json['subDistrictId'] as String?,
   subDistrict: json['subDistrict'] == null
       ? null
       : SubDistrictDto.fromJson(json['subDistrict'] as Map<String, dynamic>),
@@ -25,20 +20,17 @@ _ResellerDto _$ResellerDtoFromJson(Map<String, dynamic> json) => _ResellerDto(
       : _intFromJson(json['commissionAmount']),
   lat: _doubleFromJson(json['lat']),
   lng: _doubleFromJson(json['lng']),
+  phone: json['phone'] as String?,
 );
 
 Map<String, dynamic> _$ResellerDtoToJson(_ResellerDto instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'username': instance.username,
-      'phone': instance.phone,
-      'avatar': instance.avatar,
+      'user': instance.user,
       'venuePhoto': instance.venuePhoto,
-      'subDistrictId': instance.subDistrictId,
       'subDistrict': instance.subDistrict,
       'commissionRate': instance.commissionRate,
       'commissionAmount': instance.commissionAmount,
       'lat': instance.lat,
       'lng': instance.lng,
+      'phone': instance.phone,
     };

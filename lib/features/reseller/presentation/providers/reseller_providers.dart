@@ -113,6 +113,15 @@ class ResellerListNotifier extends _$ResellerListNotifier {
     }
   }
 
+  Future<ResellerDto> getResellerById(String id) async {
+    final repo = ref.read(resellerRepositoryProvider);
+    final result = await repo.getReseller(id);
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (reseller) => reseller,
+    );
+  }
+
   Future<void> delete(String id) async {
     final repo = ref.read(resellerRepositoryProvider);
     final result = await repo.deleteReseller(id);
@@ -121,7 +130,7 @@ class ResellerListNotifier extends _$ResellerListNotifier {
       (failure) => throw Exception(failure.message),
       (_) {
         final current = state.asData?.value ?? [];
-        state = AsyncData(current.where((r) => r.id != id).toList());
+        state = AsyncData(current.where((r) => r.user.id != id).toList());
       },
     );
   }

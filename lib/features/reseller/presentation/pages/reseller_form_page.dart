@@ -6,9 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/network/network_providers.dart';
 import '../../../../shared/utils/image_processor.dart';
+import '../../../../shared/pages/contact_picker_page.dart';
 import '../../../../shared/pages/coordinate_picker_page.dart';
 import '../../../district/presentation/providers/district_providers.dart';
 import '../../../sub_district/data/models/sub_district_dto.dart';
@@ -42,13 +44,14 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
   late final TextEditingController _komisiPersenCtrl;
   late final TextEditingController _komisiNominalCtrl;
 
-  String? _selectedDistrictId;
-  String? _selectedSubDistrictId;
+  String _selectedDistrictId = '';
+  String _selectedSubDistrictId = '';
   String _latitude = '';
   String _longitude = '';
   MapLibreMapController? _mapController;
 
   bool _isSubmitting = false;
+  bool _isLoadingDetail = false;
 
   bool get _isEditing => widget.item != null;
 
@@ -57,10 +60,10 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
     super.initState();
     final item = widget.item;
     if (item != null) {
-      _existingAvatarUrl = item.avatar;
+      _existingAvatarUrl = item.user.avatar;
       _existingVenuePhotoUrl = item.venuePhoto;
-      _namaCtrl = TextEditingController(text: item.name);
-      _usernameCtrl = TextEditingController(text: item.username);
+      _namaCtrl = TextEditingController(text: item.user.name);
+      _usernameCtrl = TextEditingController(text: item.user.username);
       _passwordCtrl = TextEditingController();
       _phoneCtrl = TextEditingController(text: item.phone ?? '');
       _komisiPersenCtrl = TextEditingController(
@@ -69,10 +72,12 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
       _komisiNominalCtrl = TextEditingController(
         text: item.commissionAmount > 0 ? item.commissionAmount.toString() : '',
       );
-      _selectedSubDistrictId = item.subDistrictId;
-      _selectedDistrictId = item.subDistrict?.district?.id;
+      _selectedSubDistrictId = item.subDistrict?.id ?? '';
+      _selectedDistrictId = item.subDistrict?.district?.id ?? '';
       if (item.lat != null) _latitude = item.lat.toString();
       if (item.lng != null) _longitude = item.lng.toString();
+      _isLoadingDetail = true;
+      _fetchDetail(item.user.id);
     } else {
       _namaCtrl = TextEditingController();
       _usernameCtrl = TextEditingController();
@@ -80,6 +85,43 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
       _phoneCtrl = TextEditingController();
       _komisiPersenCtrl = TextEditingController();
       _komisiNominalCtrl = TextEditingController();
+    }
+  }
+
+  Future<void> _fetchDetail(String id) async {
+    try {
+      final detail =
+          await ref.read(resellerListProvider.notifier).getResellerById(id);
+      if (!mounted) return;
+      setState(() {
+        _isLoadingDetail = false;
+        _existingAvatarUrl = detail.user.avatar;
+        _existingVenuePhotoUrl = detail.venuePhoto;
+        _namaCtrl.text = detail.user.name;
+        _usernameCtrl.text = detail.user.username;
+        _phoneCtrl.text = detail.phone ?? '';
+        _komisiPersenCtrl.text =
+            detail.commissionRate > 0 ? detail.commissionRate.toString() : '';
+        _komisiNominalCtrl.text =
+            detail.commissionAmount > 0 ? detail.commissionAmount.toString() : '';
+        _selectedSubDistrictId = detail.subDistrict?.id ?? '';
+        _selectedDistrictId = detail.subDistrict?.district?.id ?? '';
+        if (detail.lat != null) _latitude = detail.lat.toString();
+        if (detail.lng != null) _longitude = detail.lng.toString();
+      });
+      if (detail.lat != null && detail.lng != null) {
+        _mapController?.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: LatLng(detail.lat!, detail.lng!),
+              zoom: 15,
+            ),
+          ),
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoadingDetail = false);
     }
   }
 
@@ -128,7 +170,9 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
-                  child: Column(
+                  child: Skeletonizer(
+                    enabled: _isEditing && _isLoadingDetail,
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // ── Foto ──
@@ -199,9 +243,36 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
                           controller: _phoneCtrl,
                         ),
                         label: const Text('No. Telepon'),
-                        hint: 'Nomor telepon',
+                        hint: '6281234567890',
                         keyboardType: TextInputType.phone,
                         readOnly: _isSubmitting,
+                        prefixBuilder: (context, style, variants) => Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 4),
+                          child: Text(
+                            '+',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                        suffixBuilder: _isSubmitting
+                            ? null
+                            : (context, style, variants) => IconButton(
+                                  onPressed: _onPickContact,
+                                  icon: Icon(
+                                    FLucideIcons.contact,
+                                    size: 18,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                  tooltip: 'Pilih dari kontak',
+                                  constraints: const BoxConstraints(
+                                    minWidth: 36,
+                                    minHeight: 36,
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                ),
                       ),
                       const Gap(16),
 
@@ -220,11 +291,10 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
                                 label: const Text('Kecamatan'),
                                 hint: 'Pilih kecamatan',
                                 control: FSelectControl.managed(
-                                  initial: _selectedDistrictId ?? '',
+                                  initial: _selectedDistrictId,
                                   onChange: (value) => setState(() {
-                                    _selectedDistrictId =
-                                        (value?.isEmpty ?? true) ? null : value;
-                                    _selectedSubDistrictId = null;
+                                    _selectedDistrictId = value ?? '';
+                                    _selectedSubDistrictId = '';
                                   }),
                                 ),
                               ),
@@ -396,7 +466,8 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
                   ),
                 ),
               ),
-            ],
+            ),
+          ],
           ),
         ),
       ),
@@ -422,7 +493,7 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
   Widget _buildSubDistrictDropdown(
     AsyncValue<List<SubDistrictDto>> subDistrictsAsync,
   ) {
-    if (_selectedDistrictId == null) {
+    if (_selectedDistrictId.isEmpty) {
       return FSelect<String>(
         items: {'Pilih desa': ''},
         label: const Text('Desa'),
@@ -447,9 +518,9 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
           label: const Text('Desa'),
           hint: 'Pilih desa',
           control: FSelectControl.managed(
-            initial: _selectedSubDistrictId ?? '',
+            initial: _selectedSubDistrictId,
             onChange: (value) => setState(() {
-              _selectedSubDistrictId = (value?.isEmpty ?? true) ? null : value;
+              _selectedSubDistrictId = value ?? '';
             }),
           ),
         );
@@ -560,6 +631,13 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
     );
   }
 
+  Future<void> _onPickContact() async {
+    final phone = await showContactPhonePicker(context);
+    if (phone != null) {
+      _phoneCtrl.text = phone;
+    }
+  }
+
   Future<void> _onPickKoordinat() async {
     final result = await Navigator.of(context).push<Map<String, String>>(
       MaterialPageRoute(
@@ -647,7 +725,7 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
 
       if (_isEditing) {
         await notifier.edit(
-          id: widget.item!.id,
+          id: widget.item!.user.id,
           name: nama,
           username: username,
           password: _passwordCtrl.text.trim().isEmpty

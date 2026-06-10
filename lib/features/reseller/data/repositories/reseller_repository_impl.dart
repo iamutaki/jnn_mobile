@@ -103,6 +103,18 @@ class ResellerRepositoryImpl implements ResellerRepository {
   }
 
   @override
+  Future<Either<ResellerFailure, ResellerDto>> getReseller(String id) async {
+    try {
+      final response = await _remoteDatasource.getReseller(id);
+      return Either.right(response.data!);
+    } on DioException catch (error) {
+      return Either.left(ResellerFailure(_mapDioError(error)));
+    } catch (error) {
+      return Either.left(ResellerFailure(error.toString()));
+    }
+  }
+
+  @override
   Future<Either<ResellerFailure, Unit>> deleteReseller(String id) async {
     try {
       await _remoteDatasource.deleteReseller(id);

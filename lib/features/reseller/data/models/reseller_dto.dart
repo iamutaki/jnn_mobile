@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../sub_district/data/models/sub_district_dto.dart';
+import '../../../user/data/models/user_dto.dart';
 
 part 'reseller_dto.freezed.dart';
 part 'reseller_dto.g.dart';
@@ -22,18 +23,14 @@ double _doubleFromJson(Object? json) {
 @freezed
 abstract class ResellerDto with _$ResellerDto {
   const factory ResellerDto({
-    @Default('') String id,
-    required String name,
-    required String username,
-    String? phone,
-    String? avatar,
+    required UserDto user,
     @JsonKey(name: 'venuePhoto') String? venuePhoto,
-    @JsonKey(name: 'subDistrictId') String? subDistrictId,
     SubDistrictDto? subDistrict,
     @JsonKey(fromJson: _intFromJson) @Default(0) int commissionRate,
     @JsonKey(fromJson: _intFromJson) @Default(0) int commissionAmount,
     @JsonKey(fromJson: _doubleFromJson) double? lat,
     @JsonKey(fromJson: _doubleFromJson) double? lng,
+    String? phone,
   }) = _ResellerDto;
 
   factory ResellerDto.fromJson(Map<String, dynamic> json) =>

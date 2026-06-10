@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../shared/widgets/data_error_widget.dart';
+import '../../../../features/user/data/models/user_dto.dart';
 import '../../data/models/reseller_dto.dart';
 import '../providers/reseller_providers.dart';
 import 'reseller_form_page.dart';
@@ -18,11 +19,11 @@ class ResellerPage extends ConsumerStatefulWidget {
 
 class _ResellerPageState extends ConsumerState<ResellerPage> {
   static const _skeletonItems = [
-    ResellerDto(id: '1', name: 'Reseller dummy', username: 'dummy1'),
-    ResellerDto(id: '2', name: 'Reseller dummy', username: 'dummy2'),
-    ResellerDto(id: '3', name: 'Reseller dummy', username: 'dummy3'),
-    ResellerDto(id: '4', name: 'Reseller dummy', username: 'dummy4'),
-    ResellerDto(id: '5', name: 'Reseller dummy', username: 'dummy5'),
+    ResellerDto(user: UserDto(id: '1', name: 'Reseller dummy', username: 'dummy1')),
+    ResellerDto(user: UserDto(id: '2', name: 'Reseller dummy', username: 'dummy2')),
+    ResellerDto(user: UserDto(id: '3', name: 'Reseller dummy', username: 'dummy3')),
+    ResellerDto(user: UserDto(id: '4', name: 'Reseller dummy', username: 'dummy4')),
+    ResellerDto(user: UserDto(id: '5', name: 'Reseller dummy', username: 'dummy5')),
   ];
 
   @override
@@ -133,7 +134,7 @@ class _ResellerPageState extends ConsumerState<ResellerPage> {
           final subtitle = _buildSubtitle(item);
 
           return Dismissible(
-            key: ValueKey(item.id),
+            key: ValueKey(item.user.id),
             direction: DismissDirection.endToStart,
             background: Container(
               alignment: Alignment.centerRight,
@@ -141,7 +142,7 @@ class _ResellerPageState extends ConsumerState<ResellerPage> {
               color: Colors.red.shade400,
               child: const Icon(FLucideIcons.trash2, color: Colors.white),
             ),
-            confirmDismiss: (_) => _confirmAndDelete(context, item.id),
+            confirmDismiss: (_) => _confirmAndDelete(context, item.user.id),
             child: Material(
               type: MaterialType.transparency,
               child: ListTile(
@@ -149,16 +150,16 @@ class _ResellerPageState extends ConsumerState<ResellerPage> {
                 visualDensity: VisualDensity.compact,
                 leading: CircleAvatar(
                   radius: 20,
-                  backgroundImage: item.avatar != null && item.avatar!.isNotEmpty
-                      ? NetworkImage(item.avatar!)
+                  backgroundImage: item.user.avatar != null && item.user.avatar!.isNotEmpty
+                      ? NetworkImage(item.user.avatar!)
                       : null,
                   backgroundColor: Colors.grey.shade200,
-                  child: item.avatar == null || item.avatar!.isEmpty
+                  child: item.user.avatar == null || item.user.avatar!.isEmpty
                       ? const Icon(FLucideIcons.store, size: 18, color: Colors.grey)
                       : null,
                 ),
                 title: Text(
-                  item.name,
+                  item.user.name,
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text(
@@ -183,7 +184,7 @@ class _ResellerPageState extends ConsumerState<ResellerPage> {
 
   String _buildSubtitle(ResellerDto item) {
     final parts = <String>[];
-    if (item.username.isNotEmpty) parts.add(item.username);
+    if (item.user.username.isNotEmpty) parts.add(item.user.username);
     if (item.subDistrict != null) {
       final subDistrictName = item.subDistrict!.name;
       if (subDistrictName.isNotEmpty) parts.add(subDistrictName);

@@ -27,6 +27,9 @@ abstract class ResellerRemoteDatasource {
     @Body() ResellerRequest body,
   );
 
+  @GET('/v1/reseller/{id}')
+  Future<BaseResponse<ResellerDto>> getReseller(@Path('id') String id);
+
   @DELETE('/v1/reseller/{id}')
   Future<HttpResponse<void>> deleteReseller(@Path('id') String id);
 }
