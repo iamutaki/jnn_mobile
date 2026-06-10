@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/route_definer.dart';
-import '../master_data/presentation/pages/master_data_desa_page.dart';
+import '../sub_district/presentation/pages/sub_district_page.dart';
 import '../district/presentation/pages/district_page.dart';
 import '../master_data/presentation/pages/master_data_personel_page.dart';
 import 'presentation/pages/master_data_voucher_page.dart';
@@ -55,7 +55,7 @@ class MasterDataRouter {
         GoRoute(
           path: desa.path,
           name: desa.name,
-          builder: (context, state) => const MasterDataDesaPage(),
+          builder: (context, state) => const SubDistrictPage(),
         ),
         GoRoute(
           path: voucher.path,

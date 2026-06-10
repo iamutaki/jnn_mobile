@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'district_remote_datasource.dart';
+part of 'sub_district_remote_datasource.dart';
 
 // dart format off
 
@@ -10,8 +10,8 @@ part of 'district_remote_datasource.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main,avoid_redundant_argument_values
 
-class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
-  _DistrictRemoteDatasource(this._dio, {this.baseUrl, this.errorLogger});
+class _SubDistrictRemoteDatasource implements SubDistrictRemoteDatasource {
+  _SubDistrictRemoteDatasource(this._dio, {this.baseUrl, this.errorLogger});
 
   final Dio _dio;
 
@@ -20,30 +20,30 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<BaseResponse<List<DistrictDto>>> getDistricts() async {
+  Future<BaseResponse<List<SubDistrictDto>>> getSubDistricts() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<BaseResponse<List<DistrictDto>>>(
+    final _options = _setStreamType<BaseResponse<List<SubDistrictDto>>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/district',
+            '/v1/sub-district',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<List<DistrictDto>> _value;
+    late BaseResponse<List<SubDistrictDto>> _value;
     try {
-      _value = BaseResponse<List<DistrictDto>>.fromJson(
+      _value = BaseResponse<List<SubDistrictDto>>.fromJson(
         _result.data!,
         (json) => json is List<dynamic>
             ? json
-                  .map<DistrictDto>(
-                    (i) => DistrictDto.fromJson(i as Map<String, dynamic>),
+                  .map<SubDistrictDto>(
+                    (i) => SubDistrictDto.fromJson(i as Map<String, dynamic>),
                   )
                   .toList()
             : List.empty(),
@@ -56,7 +56,7 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
   }
 
   @override
-  Future<HttpResponse<void>> createDistrict(DistrictRequest body) async {
+  Future<HttpResponse<void>> createSubDistrict(SubDistrictRequest body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -65,7 +65,7 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/district',
+            '/v1/sub-district',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -77,9 +77,9 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
   }
 
   @override
-  Future<HttpResponse<void>> updateDistrict(
+  Future<HttpResponse<void>> updateSubDistrict(
     String id,
-    DistrictRequest body,
+    SubDistrictRequest body,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -89,7 +89,7 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/district/${id}',
+            '/v1/sub-district/${id}',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -101,7 +101,7 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
   }
 
   @override
-  Future<HttpResponse<void>> deleteDistrict(String id) async {
+  Future<HttpResponse<void>> deleteSubDistrict(String id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -110,7 +110,7 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/district/${id}',
+            '/v1/sub-district/${id}',
             queryParameters: queryParameters,
             data: _data,
           )

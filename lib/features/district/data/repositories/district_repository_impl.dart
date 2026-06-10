@@ -5,6 +5,7 @@ import '../../domain/failures/district_failure.dart';
 import '../../domain/repositories/district_repository.dart';
 import '../datasources/district_remote_datasource.dart';
 import '../models/district_dto.dart';
+import '../models/district_request.dart';
 
 class DistrictRepositoryImpl implements DistrictRepository {
   DistrictRepositoryImpl(this._remoteDatasource);
@@ -28,7 +29,7 @@ class DistrictRepositoryImpl implements DistrictRepository {
     String name,
   ) async {
     try {
-      await _remoteDatasource.createDistrict({'name': name});
+      await _remoteDatasource.createDistrict(DistrictRequest(name: name));
       return Either.right(unit);
     } on DioException catch (error) {
       return Either.left(DistrictFailure(_mapDioError(error)));
@@ -43,7 +44,7 @@ class DistrictRepositoryImpl implements DistrictRepository {
     String name,
   ) async {
     try {
-      await _remoteDatasource.updateDistrict(id, {'name': name});
+      await _remoteDatasource.updateDistrict(id, DistrictRequest(name: name));
       return Either.right(unit);
     } on DioException catch (error) {
       return Either.left(DistrictFailure(_mapDioError(error)));
