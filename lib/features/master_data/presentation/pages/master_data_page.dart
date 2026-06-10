@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../district/district_router.dart';
+import '../../../reseller/reseller_router.dart';
 import '../../../sub_district/sub_district_router.dart';
 import '../../../voucher/voucher_router.dart';
 import '../../data/models/master_data_type.dart';
@@ -68,7 +69,7 @@ class _MasterDataTile extends StatelessWidget {
       MasterDataType.subDistrict => SubDistrictRouter.subDistrict.path,
       MasterDataType.voucher => VoucherRouter.voucher.path,
       MasterDataType.personel => '/master-data${MasterDataRouter.personel.path}',
-      MasterDataType.reseller => '/master-data${MasterDataRouter.reseller.path}',
+      MasterDataType.reseller => ResellerRouter.reseller.path,
     };
   }
 

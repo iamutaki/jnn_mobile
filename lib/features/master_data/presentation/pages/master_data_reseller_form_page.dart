@@ -32,10 +32,12 @@ class MasterDataResellerFormPage extends StatefulWidget {
   const MasterDataResellerFormPage({super.key, this.item});
 
   @override
-  State<MasterDataResellerFormPage> createState() => _MasterDataResellerFormPageState();
+  State<MasterDataResellerFormPage> createState() =>
+      _MasterDataResellerFormPageState();
 }
 
-class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage> {
+class _MasterDataResellerFormPageState
+    extends State<MasterDataResellerFormPage> {
   File? _fotoOrang;
   File? _fotoTempat;
   late final TextEditingController _namaCtrl;
@@ -59,11 +61,19 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
     if (item?['foto_orang'] != null) _fotoOrang = File(item!['foto_orang']);
     if (item?['foto_tempat'] != null) _fotoTempat = File(item!['foto_tempat']);
     _namaCtrl = TextEditingController(text: item?['nama'] as String? ?? '');
-    _usernameCtrl = TextEditingController(text: item?['username'] as String? ?? '');
-    _passwordCtrl = TextEditingController(text: item?['password'] as String? ?? '');
+    _usernameCtrl = TextEditingController(
+      text: item?['username'] as String? ?? '',
+    );
+    _passwordCtrl = TextEditingController(
+      text: item?['password'] as String? ?? '',
+    );
     _phoneCtrl = TextEditingController(text: item?['phone'] as String? ?? '');
-    _komisiPersenCtrl = TextEditingController(text: item?['komisi_persen'] as String? ?? '');
-    _komisiNominalCtrl = TextEditingController(text: item?['komisi_nominal'] as String? ?? '');
+    _komisiPersenCtrl = TextEditingController(
+      text: item?['komisi_persen'] as String? ?? '',
+    );
+    _komisiNominalCtrl = TextEditingController(
+      text: item?['komisi_nominal'] as String? ?? '',
+    );
     _selectedKecamatan = item?['kecamatan'] as String? ?? '';
     _selectedDesa = item?['desa'] as String? ?? '';
     _latitude = item?['latitude'] as String? ?? '';
@@ -128,19 +138,25 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                       ),
                       const Gap(16),
                       FTextField(
-                        control: FTextFieldControl.managed(controller: _namaCtrl),
+                        control: FTextFieldControl.managed(
+                          controller: _namaCtrl,
+                        ),
                         label: const Text('Nama'),
                         hint: 'Nama reseller',
                       ),
                       const Gap(8),
                       FTextField(
-                        control: FTextFieldControl.managed(controller: _usernameCtrl),
+                        control: FTextFieldControl.managed(
+                          controller: _usernameCtrl,
+                        ),
                         label: const Text('Username'),
                         hint: 'Username',
                       ),
                       const Gap(8),
                       FTextField.password(
-                        control: FTextFieldControl.managed(controller: _passwordCtrl),
+                        control: FTextFieldControl.managed(
+                          controller: _passwordCtrl,
+                        ),
                         label: const Text('Password'),
                         hint: 'Password',
                       ),
@@ -151,7 +167,8 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                         hint: 'Pilih kecamatan',
                         control: FSelectControl.managed(
                           initial: _selectedKecamatan,
-                          onChange: (value) => setState(() => _selectedKecamatan = value ?? ''),
+                          onChange: (value) =>
+                              setState(() => _selectedKecamatan = value ?? ''),
                         ),
                       ),
                       const Gap(8),
@@ -161,7 +178,8 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                         hint: 'Pilih desa',
                         control: FSelectControl.managed(
                           initial: _selectedDesa,
-                          onChange: (value) => setState(() => _selectedDesa = value ?? ''),
+                          onChange: (value) =>
+                              setState(() => _selectedDesa = value ?? ''),
                         ),
                       ),
                       const Gap(16),
@@ -173,14 +191,18 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                       ),
                       const Gap(4),
                       FTextField(
-                        control: FTextFieldControl.managed(controller: _komisiPersenCtrl),
+                        control: FTextFieldControl.managed(
+                          controller: _komisiPersenCtrl,
+                        ),
                         label: const Text('Komisi Persentase (%)'),
                         hint: 'Contoh: 10',
                         keyboardType: TextInputType.number,
                       ),
                       const Gap(8),
                       FTextField(
-                        control: FTextFieldControl.managed(controller: _komisiNominalCtrl),
+                        control: FTextFieldControl.managed(
+                          controller: _komisiNominalCtrl,
+                        ),
                         label: const Text('Komisi Nominal (Rp)'),
                         hint: 'Contoh: 50000',
                         keyboardType: TextInputType.number,
@@ -202,15 +224,25 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                             child: Stack(
                               children: [
                                 MapLibreMap(
-                                  styleString: MapLibreStyles.openfreemapLiberty,
+                                  styleString:
+                                      MapLibreStyles.openfreemapLiberty,
                                   initialCameraPosition: CameraPosition(
-                                    target: _latitude.isNotEmpty && _longitude.isNotEmpty
+                                    target:
+                                        _latitude.isNotEmpty &&
+                                            _longitude.isNotEmpty
                                         ? LatLng(
                                             double.parse(_latitude),
                                             double.parse(_longitude),
                                           )
-                                        : const LatLng(_defaultLatitude, _defaultLongitude),
-                                    zoom: _latitude.isNotEmpty && _longitude.isNotEmpty ? 15.0 : _defaultZoom,
+                                        : const LatLng(
+                                            _defaultLatitude,
+                                            _defaultLongitude,
+                                          ),
+                                    zoom:
+                                        _latitude.isNotEmpty &&
+                                            _longitude.isNotEmpty
+                                        ? 15.0
+                                        : _defaultZoom,
                                   ),
                                   onMapCreated: (c) => _mapController = c,
                                   scrollGesturesEnabled: false,
@@ -239,7 +271,8 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                                   child: Row(
                                     children: [
                                       Icon(
-                                        _latitude.isNotEmpty && _longitude.isNotEmpty
+                                        _latitude.isNotEmpty &&
+                                                _longitude.isNotEmpty
                                             ? FLucideIcons.mapPin
                                             : FLucideIcons.map,
                                         size: 16,
@@ -248,7 +281,8 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                                       const Gap(6),
                                       Expanded(
                                         child: Text(
-                                          _latitude.isNotEmpty && _longitude.isNotEmpty
+                                          _latitude.isNotEmpty &&
+                                                  _longitude.isNotEmpty
                                               ? '$_latitude, $_longitude'
                                               : 'Ketuk untuk pilih koordinat',
                                           style: const TextStyle(
@@ -264,7 +298,11 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                                 ),
                                 const IgnorePointer(
                                   child: Center(
-                                    child: Icon(Icons.location_on, size: 36, color: Colors.red),
+                                    child: Icon(
+                                      Icons.location_on,
+                                      size: 36,
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -274,7 +312,9 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                       ),
                       const Gap(16),
                       FTextField(
-                        control: FTextFieldControl.managed(controller: _phoneCtrl),
+                        control: FTextFieldControl.managed(
+                          controller: _phoneCtrl,
+                        ),
                         label: const Text('No. Telepon'),
                         hint: 'Nomor telepon',
                         keyboardType: TextInputType.phone,
@@ -326,9 +366,11 @@ class _MasterDataResellerFormPageState extends State<MasterDataResellerFormPage>
                   )
                 : const Icon(FLucideIcons.camera, size: 24, color: Colors.grey),
           ),
-          const Gap(12),
+          const Gap(15),
           Text(
-            file != null ? 'Ketuk untuk ganti $label' : 'Ketuk untuk tambah $label',
+            file != null
+                ? 'Ketuk untuk ganti $label'
+                : 'Ketuk untuk tambah $label',
             style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
         ],

@@ -34,7 +34,7 @@ final class VoucherListNotifierProvider
 }
 
 String _$voucherListNotifierHash() =>
-    r'bf444d08aff32cf2356bfc9da8b9b8fdd48b604c';
+    r'cc88f33b25dcc706e3e4e4008728d46475479fd4';
 
 abstract class _$VoucherListNotifier extends $AsyncNotifier<List<VoucherDto>> {
   FutureOr<List<VoucherDto>> build();

@@ -5,6 +5,7 @@ import '../../features/auth/auth_router.dart';
 import '../../features/home/home_router.dart';
 import '../../features/district/district_router.dart';
 import '../../features/master_data/master_data_router.dart';
+import '../../features/reseller/reseller_router.dart';
 import '../../features/sub_district/sub_district_router.dart';
 import '../../features/voucher/voucher_router.dart';
 import '../../shared/splash/splash_router.dart';
@@ -29,6 +30,7 @@ class AppRouter {
       ...DistrictRouter.routes,
       ...SubDistrictRouter.routes,
       ...MasterDataRouter.routes,
+      ...ResellerRouter.routes,
       ...VoucherRouter.routes,
     ],
     redirect: _redirect,
