@@ -30,7 +30,7 @@ class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
                     ),
                     const Gap(12),
                     Text(
-                      'Produk',
+                      'Voucher',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -53,7 +53,7 @@ class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
             onPress: () => _showForm(),
             prefix: const Icon(FLucideIcons.plus, size: 18),
             variant: FButtonVariant.primary,
-            child: const Text('Tambah Produk'),
+            child: const Text('Tambah Voucher'),
           ),
         ),
       ),
@@ -68,7 +68,7 @@ class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
           Icon(FLucideIcons.package, size: 48, color: Colors.grey.shade300),
           const Gap(8),
           Text(
-            'Belum ada data produk',
+            'Belum ada data voucher',
             style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
           ),
         ],
@@ -84,7 +84,7 @@ class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
       itemBuilder: (context, index) {
         final item = _items[index];
         return Dismissible(
-          key: ValueKey('produk_$index'),
+          key: ValueKey('voucher_$index'),
           direction: DismissDirection.endToStart,
           background: Container(
             alignment: Alignment.centerRight,
@@ -124,7 +124,7 @@ class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
       context: context,
       builder: (context, style, animation) => FDialog(
         title: const Text('Hapus Data'),
-        body: const Text('Yakin ingin menghapus produk ini?'),
+        body: const Text('Yakin ingin menghapus voucher ini?'),
         actions: [
           FButton(
             onPress: () => Navigator.of(context).pop('cancel'),
@@ -145,7 +145,7 @@ class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
   Future<void> _showForm({Map<String, String>? item, int? index}) async {
     final result = await showFDialog<Map<String, String>>(
       context: context,
-      builder: (context, style, animation) => _ProdukFormDialog(
+      builder: (context, style, animation) => _voucherFormDialog(
         initialNama: item?['nama'] ?? '',
         initialHarga: item?['harga'] ?? '',
         isEditing: item != null,
@@ -164,22 +164,22 @@ class _MasterDataVoucherPageState extends State<MasterDataVoucherPage> {
   }
 }
 
-class _ProdukFormDialog extends StatefulWidget {
+class _voucherFormDialog extends StatefulWidget {
   final String initialNama;
   final String initialHarga;
   final bool isEditing;
 
-  const _ProdukFormDialog({
+  const _voucherFormDialog({
     required this.initialNama,
     required this.initialHarga,
     required this.isEditing,
   });
 
   @override
-  State<_ProdukFormDialog> createState() => _ProdukFormDialogState();
+  State<_voucherFormDialog> createState() => _voucherFormDialogState();
 }
 
-class _ProdukFormDialogState extends State<_ProdukFormDialog> {
+class _voucherFormDialogState extends State<_voucherFormDialog> {
   late final TextEditingController _namaCtrl;
   late final TextEditingController _hargaCtrl;
 
@@ -200,20 +200,20 @@ class _ProdukFormDialogState extends State<_ProdukFormDialog> {
   @override
   Widget build(BuildContext context) {
     return FDialog(
-      title: Text(widget.isEditing ? 'Edit Produk' : 'Tambah Produk'),
+      title: Text(widget.isEditing ? 'Edit voucher' : 'Tambah voucher'),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           FTextField(
             control: FTextFieldControl.managed(controller: _namaCtrl),
-            label: const Text('Nama Produk'),
-            hint: 'Nama produk',
+            label: const Text('Nama voucher'),
+            hint: 'Nama voucher',
           ),
           const Gap(8),
           FTextField(
             control: FTextFieldControl.managed(controller: _hargaCtrl),
             label: const Text('Harga'),
-            hint: 'Harga produk',
+            hint: 'Harga voucher',
             keyboardType: TextInputType.number,
           ),
         ],
