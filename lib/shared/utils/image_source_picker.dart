@@ -8,41 +8,30 @@ import 'package:image_picker/image_picker.dart';
 enum ImageSourceOption { gallery, camera, file }
 
 Future<File?> showImageSourcePicker(BuildContext context) async {
-  final source = await showFSheet<ImageSourceOption>(
+  final source = await showDialog<ImageSourceOption>(
     context: context,
-    side: FLayout.btt,
-    builder: (context) => Material(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Pilih Sumber Gambar',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              dense: true,
-              leading: const Icon(FLucideIcons.image),
-              title: const Text('Galeri'),
-              onTap: () => Navigator.of(context).pop(ImageSourceOption.gallery),
-            ),
-            ListTile(
-              dense: true,
-              leading: const Icon(FLucideIcons.camera),
-              title: const Text('Kamera'),
-              onTap: () => Navigator.of(context).pop(ImageSourceOption.camera),
-            ),
-            ListTile(
-              dense: true,
-              leading: const Icon(FLucideIcons.file),
-              title: const Text('File'),
-              onTap: () => Navigator.of(context).pop(ImageSourceOption.file),
-            ),
-          ],
+    builder: (context) => SimpleDialog(
+      title: const Text('Pilih Sumber Gambar'),
+      children: [
+        ListTile(
+          dense: true,
+          leading: const Icon(FLucideIcons.image),
+          title: const Text('Galeri'),
+          onTap: () => Navigator.of(context).pop(ImageSourceOption.gallery),
         ),
-      ),
+        ListTile(
+          dense: true,
+          leading: const Icon(FLucideIcons.camera),
+          title: const Text('Kamera'),
+          onTap: () => Navigator.of(context).pop(ImageSourceOption.camera),
+        ),
+        ListTile(
+          dense: true,
+          leading: const Icon(FLucideIcons.file),
+          title: const Text('File'),
+          onTap: () => Navigator.of(context).pop(ImageSourceOption.file),
+        ),
+      ],
     ),
   );
 

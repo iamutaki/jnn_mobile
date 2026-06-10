@@ -64,8 +64,13 @@ class NetworkRequestDetailPage extends StatelessWidget {
       buffer.write(" \\\n  --header '${entry.key}: ${entry.value}'");
     }
 
-    if (record.requestBody != null && record.requestBody!.isNotEmpty) {
-      buffer.write(" \\\n  --data '${record.requestBody!}'");
+    final body = record.requestBody;
+    if (body != null && body.isNotEmpty) {
+      if (body.startsWith('[FormData]')) {
+        buffer.write(" \\\n  --form '...'  # multipart/form-data");
+      } else {
+        buffer.write(" \\\n  --data '${body.replaceAll("'", "\\'")}'");
+      }
     }
 
     buffer.write(" \\\n  '${record.url}'");
@@ -100,7 +105,7 @@ class NetworkRequestDetailPage extends StatelessWidget {
           const Gap(8),
           _Block(title: 'Request Headers', content: _formatMap(record.requestHeaders)),
           const Gap(8),
-          _Block(title: 'Request Body', content: record.requestBody ?? '-'),
+          _buildRequestBody(),
         ],
       ),
     );
@@ -119,6 +124,18 @@ class NetworkRequestDetailPage extends StatelessWidget {
     );
   }
 
+  Widget _buildRequestBody() {
+    final body = record.requestBody;
+    if (body == null) return _Block(title: 'Request Body', content: '-');
+
+    final isFormData = body.startsWith('[FormData]');
+    return _Block(
+      title: 'Request Body',
+      content: isFormData ? body.substring('[FormData]\n'.length) : body,
+      labelBadge: isFormData ? 'multipart/form-data' : null,
+    );
+  }
+
   String _formatMap(Map<String, String> values) {
     if (values.isEmpty) return '-';
     return values.entries
@@ -132,11 +149,13 @@ class _Block extends StatelessWidget {
     required this.title,
     required this.content,
     this.isError = false,
+    this.labelBadge,
   });
 
   final String title;
   final String content;
   final bool isError;
+  final String? labelBadge;
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +179,24 @@ class _Block extends StatelessWidget {
         children: [
           Row(
             children: [
+              if (labelBadge != null) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  margin: const EdgeInsets.only(right: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: Text(
+                    labelBadge!,
+                    style: theme.typography.xs.copyWith(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colors.primary,
+                    ),
+                  ),
+                ),
+              ],
               Expanded(
                 child: Text(
                   title,

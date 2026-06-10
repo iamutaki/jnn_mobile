@@ -94,26 +94,46 @@ class NetworkMonitorInterceptor extends Interceptor {
   }
 
   String? _stringify(dynamic data) {
+    try {
+      return _tryStringify(data);
+    } catch (_) {
+      return data?.toString();
+    }
+  }
+
+  String? _tryStringify(dynamic data) {
     if (data == null) {
       return null;
     }
 
     if (data is FormData) {
-      return jsonEncode(<String, Object?>{
-        'fields': data.fields,
-        'files': data.files.map((file) => file.key).toList(),
-      });
+      final fields = Map<String, String>.fromEntries(data.fields);
+      final files = data.files.map((f) => f.key).toList();
+      final result = StringBuffer('[FormData]\n');
+      if (fields.isNotEmpty) {
+        result.writeln('Fields:');
+        for (final e in fields.entries) {
+          result.writeln('  ${e.key}: ${e.value}');
+        }
+      }
+      if (files.isNotEmpty) {
+        result.writeln('Files:');
+        for (final f in files) {
+          result.writeln('  - $f');
+        }
+      }
+      return result.toString().trimRight();
     }
 
     if (data is String) {
       return data;
     }
 
-    try {
+    if (data is Map || data is List || data is num || data is bool) {
       return const JsonEncoder.withIndent('  ').convert(data);
-    } catch (_) {
-      return data.toString();
     }
+
+    return data.toString();
   }
 
   String _stringifyValue(dynamic value) {

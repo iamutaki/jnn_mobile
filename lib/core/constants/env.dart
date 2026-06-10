@@ -11,6 +11,9 @@ abstract class EnvProduction {
 
   @EnviedField(varName: 'JNN_API_HOST')
   static const String jnnApiHost = _EnvProduction.jnnApiHost;
+
+  @EnviedField(varName: 'IMGBB_API_KEY', obfuscate: true)
+  static String get imgbbApiKey => _EnvProduction.imgbbApiKey;
 }
 
 @Envied(path: '.env.staging')
@@ -20,6 +23,9 @@ abstract class EnvStaging {
 
   @EnviedField(varName: 'JNN_API_HOST')
   static const String jnnApiHost = _EnvStaging.jnnApiHost;
+
+  @EnviedField(varName: 'IMGBB_API_KEY', obfuscate: true)
+  static String get imgbbApiKey => _EnvStaging.imgbbApiKey;
 }
 
 abstract class Env {
@@ -32,4 +38,9 @@ abstract class Env {
       F.appFlavor == Flavor.staging
           ? EnvStaging.jnnApiHost
           : EnvProduction.jnnApiHost;
+
+  static String get imgbbApiKey =>
+      F.appFlavor == Flavor.staging
+          ? EnvStaging.imgbbApiKey
+          : EnvProduction.imgbbApiKey;
 }

@@ -135,3 +135,84 @@ final class AuthTokenStorageProvider
 }
 
 String _$authTokenStorageHash() => r'e130a4f875fd7c9d293071d8a77c099ae6cad05b';
+
+@ProviderFor(imgbbApiClient)
+final imgbbApiClientProvider = ImgbbApiClientProvider._();
+
+final class ImgbbApiClientProvider
+    extends $FunctionalProvider<ImgbbApiClient, ImgbbApiClient, ImgbbApiClient>
+    with $Provider<ImgbbApiClient> {
+  ImgbbApiClientProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'imgbbApiClientProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$imgbbApiClientHash();
+
+  @$internal
+  @override
+  $ProviderElement<ImgbbApiClient> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  ImgbbApiClient create(Ref ref) {
+    return imgbbApiClient(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ImgbbApiClient value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ImgbbApiClient>(value),
+    );
+  }
+}
+
+String _$imgbbApiClientHash() => r'2ec5116f6668a93d5948807b362bbf9f76b7ec20';
+
+@ProviderFor(imgbbDio)
+final imgbbDioProvider = ImgbbDioProvider._();
+
+final class ImgbbDioProvider extends $FunctionalProvider<Dio, Dio, Dio>
+    with $Provider<Dio> {
+  ImgbbDioProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'imgbbDioProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$imgbbDioHash();
+
+  @$internal
+  @override
+  $ProviderElement<Dio> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Dio create(Ref ref) {
+    return imgbbDio(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Dio value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Dio>(value),
+    );
+  }
+}
+
+String _$imgbbDioHash() => r'6de571ce1fa9c8512e99f7e60e5efea75ded83d2';

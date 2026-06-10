@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../shared/widgets/data_error_widget.dart';
 import '../../../district/data/models/district_dto.dart';
 import '../../../district/presentation/providers/district_providers.dart';
 import '../../data/models/sub_district_dto.dart';
+import '../../sub_district_router.dart';
 import '../providers/sub_district_providers.dart';
 
 class SubDistrictPage extends ConsumerStatefulWidget {
@@ -231,6 +233,7 @@ class _SubDistrictPageState extends ConsumerState<SubDistrictPage> {
         initialName: item?.name ?? '',
         isEditing: item != null,
         districts: districts,
+        subDistrictId: item?.id,
         onSubmit: item != null
             ? (districtId, name) => notifier.edit(item.id, districtId, name)
             : (districtId, name) => notifier.create(districtId, name),
@@ -246,6 +249,7 @@ class _DesaFormDialog extends StatefulWidget {
   final String initialName;
   final bool isEditing;
   final List<DistrictDto> districts;
+  final String? subDistrictId;
   final Future<void> Function(String districtId, String name) onSubmit;
 
   const _DesaFormDialog({
@@ -253,6 +257,7 @@ class _DesaFormDialog extends StatefulWidget {
     required this.initialName,
     required this.isEditing,
     required this.districts,
+    required this.subDistrictId,
     required this.onSubmit,
   });
 
@@ -278,6 +283,12 @@ class _DesaFormDialogState extends State<_DesaFormDialog> {
   void dispose() {
     _nameCtrl.dispose();
     super.dispose();
+  }
+
+  void _openVoucher() {
+    final id = widget.subDistrictId;
+    if (id == null) return;
+    context.push(SubDistrictRouter.voucherPath(id));
   }
 
   bool _validate() {
@@ -366,6 +377,18 @@ class _DesaFormDialogState extends State<_DesaFormDialog> {
             error: _nameError != null ? Text(_nameError!) : null,
             readOnly: _isSubmitting,
           ),
+          if (widget.isEditing) ...[
+            const Gap(12),
+            SizedBox(
+              width: double.infinity,
+              child: FButton(
+                onPress: () => _openVoucher(),
+                variant: FButtonVariant.secondary,
+                prefix: const Icon(FLucideIcons.ticket, size: 16),
+                child: const Text('Kelola Voucher'),
+              ),
+            ),
+          ],
         ],
       ),
       actions: [

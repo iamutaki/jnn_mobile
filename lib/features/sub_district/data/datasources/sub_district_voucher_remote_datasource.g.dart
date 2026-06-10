@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'profile_remote_datasource.dart';
+part of 'sub_district_voucher_remote_datasource.dart';
 
 // dart format off
 
@@ -10,8 +10,13 @@ part of 'profile_remote_datasource.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main,avoid_redundant_argument_values
 
-class _ProfileRemoteDatasource implements ProfileRemoteDatasource {
-  _ProfileRemoteDatasource(this._dio, {this.baseUrl, this.errorLogger});
+class _SubDistrictVoucherRemoteDatasource
+    implements SubDistrictVoucherRemoteDatasource {
+  _SubDistrictVoucherRemoteDatasource(
+    this._dio, {
+    this.baseUrl,
+    this.errorLogger,
+  });
 
   final Dio _dio;
 
@@ -20,27 +25,35 @@ class _ProfileRemoteDatasource implements ProfileRemoteDatasource {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<BaseResponse<ProfileDto>> getProfile() async {
+  Future<BaseResponse<List<VoucherDto>>> getSubDistrictVouchers(
+    String subDistrictId,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<BaseResponse<ProfileDto>>(
+    final _options = _setStreamType<BaseResponse<List<VoucherDto>>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/profile',
+            '/v1/sub-district/${subDistrictId}/voucher',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<ProfileDto> _value;
+    late BaseResponse<List<VoucherDto>> _value;
     try {
-      _value = BaseResponse<ProfileDto>.fromJson(
+      _value = BaseResponse<List<VoucherDto>>.fromJson(
         _result.data!,
-        (json) => ProfileDto.fromJson(json as Map<String, dynamic>),
+        (json) => json is List<dynamic>
+            ? json
+                  .map<VoucherDto>(
+                    (i) => VoucherDto.fromJson(i as Map<String, dynamic>),
+                  )
+                  .toList()
+            : List.empty(),
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -50,35 +63,27 @@ class _ProfileRemoteDatasource implements ProfileRemoteDatasource {
   }
 
   @override
-  Future<BaseResponse<ProfileDto>> updateAvatar(Map<String, dynamic> body) async {
+  Future<HttpResponse<void>> replaceSubDistrictVouchers(
+    String subDistrictId,
+    SubDistrictVoucherRequest body,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _options = _setStreamType<BaseResponse<ProfileDto>>(
-      Options(method: 'PATCH', headers: _headers, extra: _extra)
+    final _data = body;
+    final _options = _setStreamType<HttpResponse<void>>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/profile/avatar',
+            '/v1/sub-district/${subDistrictId}/voucher',
             queryParameters: queryParameters,
-            data: body,
+            data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    if (_result.data == null) {
-      return BaseResponse<ProfileDto>(success: true);
-    }
-    late BaseResponse<ProfileDto> _value;
-    try {
-      _value = BaseResponse<ProfileDto>.fromJson(
-        _result.data!,
-        (json) => ProfileDto.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    final _result = await _dio.fetch<void>(_options);
+    final httpResponse = HttpResponse(null, _result);
+    return httpResponse;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

@@ -16,4 +16,7 @@ abstract class ProfileRemoteDatasource {
 
   @GET('/v1/profile')
   Future<BaseResponse<ProfileDto>> getProfile();
+
+  @PATCH('/v1/profile/avatar')
+  Future<BaseResponse<ProfileDto>> updateAvatar(@Body() Map<String, dynamic> body);
 }

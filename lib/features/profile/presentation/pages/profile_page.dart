@@ -1,12 +1,22 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/network/auth_token_storage.dart';
+import '../../../../core/network/imgbb_api_client.dart';
 import '../../../../core/services/device_id_service.dart';
+import '../../../../shared/utils/image_compressor.dart';
+import '../../../../shared/utils/image_source_picker.dart';
 import '../../../device/domain/providers/device_domain_providers.dart';
 import '../../../device/domain/usecases/revoke_device_use_case.dart';
+import '../../data/models/profile_dto.dart';
+import '../../data/providers/profile_data_providers.dart';
 import '../providers/profile_providers.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -15,6 +25,7 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(profileProvider);
+    final profile = profileAsync.asData?.value;
 
     return FScaffold(
       childPad: false,
@@ -31,65 +42,43 @@ class ProfilePage extends ConsumerWidget {
                 ),
               ),
               const Gap(24),
-              profileAsync.when(
-                loading: () => const Center(
-                  child: FCircularProgress.loader(),
-                ),
-                error: (error, _) => Center(
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: const Color(0xFFE8E8E8),
-                        child: Icon(
-                          FLucideIcons.user,
-                          size: 48,
-                          color: const Color(0xFF8C8C8C),
-                        ),
+              Center(
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () => _onAvatarTap(context, ref),
+                      child: SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: ClipOval(child: _buildAvatar(profile)),
                       ),
-                      const Gap(12),
-                      const Text(
-                        'Gagal memuat profil',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF8C8C8C)),
+                    ),
+                    const Gap(12),
+                    Skeletonizer(
+                      enabled: profileAsync.isLoading,
+                      child: Column(
+                        children: [
+                          Text(
+                            profile?.name ?? 'Nama Pengguna',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Gap(4),
+                          Text(
+                            profile != null
+                                ? '@${profile.username}'
+                                : '@username',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF8C8C8C),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                data: (profile) => Center(
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: profile.avatar != null
-                            ? NetworkImage(profile.avatar!)
-                            : null,
-                        backgroundColor: const Color(0xFFE8E8E8),
-                        child: profile.avatar == null
-                            ? Icon(
-                                FLucideIcons.user,
-                                size: 48,
-                                color: const Color(0xFF8C8C8C),
-                              )
-                            : null,
-                      ),
-                      const Gap(12),
-                      Text(
-                        profile.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Gap(4),
-                      Text(
-                        '@${profile.username}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF8C8C8C),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               const Gap(32),
@@ -111,6 +100,110 @@ class ProfilePage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildAvatar(ProfileDto? profile) {
+    final avatarUrl = profile?.avatar;
+    final isValidUrl =
+        avatarUrl != null &&
+        (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'));
+
+    if (isValidUrl) {
+      return CachedNetworkImage(
+        imageUrl: avatarUrl,
+        fit: BoxFit.cover,
+        width: 80,
+        height: 80,
+        errorWidget: (_, _, _) => const _AvatarFallback(),
+      );
+    }
+
+    return const _AvatarFallback();
+  }
+
+  Future<void> _onAvatarTap(BuildContext context, WidgetRef ref) async {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    final file = await showImageSourcePicker(context);
+    if (file == null) return;
+
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: file.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Foto',
+          toolbarColor: primaryColor,
+          statusBarLight: true,
+          initAspectRatio: CropAspectRatioPreset.square,
+          lockAspectRatio: true,
+        ),
+        IOSUiSettings(
+          title: 'Crop Foto',
+          aspectRatioLockEnabled: true,
+          resetAspectRatioEnabled: false,
+        ),
+      ],
+    );
+    if (croppedFile == null) return;
+
+    final compressed = compressImage(
+      file: File(croppedFile.path),
+      quality: 80,
+      maxWidth: 620,
+    );
+
+    if (!context.mounted) return;
+
+    showFDialog(
+      context: context,
+      builder: (context, _, _) =>
+          const Center(child: FCircularProgress.loader()),
+    );
+
+    try {
+      final uploadResponse = await ImgbbApiClient.instance.uploadImage(
+        file: compressed,
+      );
+
+      final imageUrl = uploadResponse.data.image?.url;
+      if (imageUrl == null || imageUrl.isEmpty) {
+        throw Exception('Image URL not found in response');
+      }
+
+      final repository = ref.read(profileRepositoryProvider);
+      final result = await repository.updateAvatar(imageUrl);
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+
+      result.fold(
+        (failure) {
+          showFToast(
+            context: context,
+            variant: FToastVariant.destructive,
+            title: Text(failure.message),
+          );
+        },
+        (_) {
+          ref.invalidate(profileProvider);
+          showFToast(
+            context: context,
+            variant: FToastVariant.primary,
+            title: const Text('Avatar berhasil diperbarui'),
+          );
+        },
+      );
+    } catch (e, st) {
+      debugPrint('[ProfilePage] Avatar upload error: $e\n$st');
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+      showFToast(
+        context: context,
+        variant: FToastVariant.destructive,
+        title: Text('Gagal mengunggah avatar: $e'),
+      );
+    }
   }
 
   Future<void> _onLogout(BuildContext context, WidgetRef ref) async {
@@ -144,5 +237,18 @@ class ProfilePage extends ConsumerWidget {
     } catch (_) {}
 
     await AuthTokenStorage.instance.clearTokens();
+  }
+}
+
+class _AvatarFallback extends StatelessWidget {
+  const _AvatarFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFFE8E8E8),
+      alignment: Alignment.center,
+      child: const Icon(FLucideIcons.user, size: 48, color: Color(0xFF8C8C8C)),
+    );
   }
 }

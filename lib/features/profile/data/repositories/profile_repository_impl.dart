@@ -29,6 +29,25 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
   }
 
+  @override
+  Future<Either<ProfileFailure, ProfileDto>> updateAvatar(String avatarUrl) async {
+    try {
+      final response = await _remoteDatasource.updateAvatar({
+        'avatar': avatarUrl,
+      });
+
+      if (response.data == null) {
+        return getProfile();
+      }
+
+      return Either.right(response.data!);
+    } on DioException catch (error) {
+      return Either.left(ProfileFailure(_mapDioError(error)));
+    } catch (error) {
+      return Either.left(ProfileFailure(error.toString()));
+    }
+  }
+
   String _mapDioError(DioException error) {
     final responseData = error.response?.data;
 
