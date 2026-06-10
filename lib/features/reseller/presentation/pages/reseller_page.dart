@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
@@ -151,7 +152,7 @@ class _ResellerPageState extends ConsumerState<ResellerPage> {
                 leading: CircleAvatar(
                   radius: 20,
                   backgroundImage: item.user.avatar != null && item.user.avatar!.isNotEmpty
-                      ? NetworkImage(item.user.avatar!)
+                      ? CachedNetworkImageProvider(item.user.avatar!)
                       : null,
                   backgroundColor: Colors.grey.shade200,
                   child: item.user.avatar == null || item.user.avatar!.isEmpty

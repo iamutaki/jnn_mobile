@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -290,8 +291,8 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
                                 items: items,
                                 label: const Text('Kecamatan'),
                                 hint: 'Pilih kecamatan',
-                                control: FSelectControl.managed(
-                                  initial: _selectedDistrictId,
+                                control: FSelectControl.lifted(
+                                  value: _selectedDistrictId,
                                   onChange: (value) => setState(() {
                                     _selectedDistrictId = value ?? '';
                                     _selectedSubDistrictId = '';
@@ -577,10 +578,10 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
                     : existingUrl != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          existingUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: existingUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(
+                          errorWidget: (_, _, _) => const Icon(
                             FLucideIcons.imageOff,
                             size: 24,
                             color: Colors.grey,
