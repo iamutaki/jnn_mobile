@@ -66,7 +66,7 @@ fi
 echo "Version: $CURRENT -> ${NEW_VERSION}+${NEW_BUILD}"
 
 # Build and release the APK for Android using Flutter (staging flavor)
-flutter build apk --release --flavor staging --split-per-abi
+flutter build apk --release --obfuscate --split-per-abi --split-debug-info=./debug-info --flavor staging -t lib/main.dart
 
 # Verify APKs exist before copying
 SRC=build/app/outputs/flutter-apk

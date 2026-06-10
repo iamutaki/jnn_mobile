@@ -6,7 +6,8 @@ import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../core/network/imgbb_api_client.dart';
+import '../../../../core/data/providers/image_upload_providers.dart';
+import '../../../../core/domain/entities/upload_image_request.dart';
 import '../../../../shared/utils/image_processor.dart';
 import '../../data/models/user_dto.dart';
 import '../providers/user_providers.dart';
@@ -263,14 +264,22 @@ class _UserFormPageState extends ConsumerState<UserFormPage> {
     setState(() => _isSaving = true);
 
     try {
-      // ── Upload avatar to ImgBB if changed ──
+      // ── Upload avatar if changed ──
       String? avatarUrl = widget.item?.avatar;
 
       if (_foto != null) {
-        final uploadResponse = await ImgbbApiClient.instance.uploadImage(
-          file: _foto!,
+        final repository = ref.read(imageUploadRepositoryProvider);
+        final result = await repository.uploadImage(
+          UploadImageRequest(
+            file: _foto!,
+            folder: '/users/avatars',
+            tags: const ['user', 'avatar'],
+          ),
         );
-        avatarUrl = uploadResponse.data.image?.url;
+        result.fold(
+          (failure) => throw Exception(failure.message),
+          (uploaded) => avatarUrl = uploaded.url,
+        );
       }
 
       final phone = _teleponCtrl.text.trim();

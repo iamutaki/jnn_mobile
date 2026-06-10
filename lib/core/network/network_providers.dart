@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'auth_token_storage.dart';
+import 'imagekit_api_client.dart';
 import 'imgbb_api_client.dart';
 import 'jnn_api_client.dart';
 
@@ -21,3 +22,9 @@ ImgbbApiClient imgbbApiClient(Ref ref) => ImgbbApiClient.instance;
 
 @Riverpod(keepAlive: true)
 Dio imgbbDio(Ref ref) => ref.watch(imgbbApiClientProvider).dio;
+
+@Riverpod(keepAlive: true)
+ImagekitApiClient imagekitApiClient(Ref ref) => ImagekitApiClient.instance;
+
+@Riverpod(keepAlive: true)
+Dio imagekitDio(Ref ref) => ref.watch(imagekitApiClientProvider).dio;

@@ -10,7 +10,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/network/auth_token_storage.dart';
-import '../../../../core/network/imgbb_api_client.dart';
+import '../../../../core/data/providers/image_upload_providers.dart';
+import '../../../../core/domain/entities/upload_image_request.dart';
 import '../../../../core/services/device_id_service.dart';
 import '../../../../shared/utils/image_compressor.dart';
 import '../../../../shared/utils/image_source_picker.dart';
@@ -162,12 +163,20 @@ class ProfilePage extends ConsumerWidget {
     );
 
     try {
-      final uploadResponse = await ImgbbApiClient.instance.uploadImage(
-        file: compressed,
+      final uploadRepository = ref.read(imageUploadRepositoryProvider);
+      final uploadResult = await uploadRepository.uploadImage(
+        UploadImageRequest(
+          file: compressed,
+          folder: '/profile/avatars',
+          tags: const ['profile', 'avatar'],
+        ),
       );
 
-      final imageUrl = uploadResponse.data.image?.url;
-      if (imageUrl == null || imageUrl.isEmpty) {
+      final imageUrl = uploadResult.getOrElse((failure) {
+        throw Exception(failure.message);
+      }).url;
+
+      if (imageUrl.isEmpty) {
         throw Exception('Image URL not found in response');
       }
 

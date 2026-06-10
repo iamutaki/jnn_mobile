@@ -9,7 +9,8 @@ import 'package:gap/gap.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../core/network/network_providers.dart';
+import '../../../../core/data/providers/image_upload_providers.dart';
+import '../../../../core/domain/entities/upload_image_request.dart';
 import '../../../../shared/utils/image_processor.dart';
 import '../../../../shared/pages/contact_picker_page.dart';
 import '../../../../shared/pages/coordinate_picker_page.dart';
@@ -680,36 +681,40 @@ class _ResellerFormPageState extends ConsumerState<ResellerFormPage> {
     setState(() => _isSubmitting = true);
 
     try {
-      // ── Upload images to ImgBB in parallel ──
+      // ── Upload images in parallel ──
       String? avatarUrl = _existingAvatarUrl;
       String? venuePhotoUrl = _existingVenuePhotoUrl;
 
       if (_avatarFile != null || _venuePhotoFile != null) {
-        final imgbbClient = ref.read(imgbbApiClientProvider);
-        final futures = <Future<dynamic>>[];
+        final repository = ref.read(imageUploadRepositoryProvider);
 
-        if (_avatarFile != null) {
-          futures.add(imgbbClient.uploadImage(file: _avatarFile!));
-        } else {
-          futures.add(Future.value(null));
+        final avatarResult = _avatarFile != null
+            ? await repository.uploadImage(UploadImageRequest(
+                file: _avatarFile!,
+                folder: '/resellers/avatars',
+                tags: const ['reseller', 'avatar'],
+              ))
+            : null;
+        final venueResult = _venuePhotoFile != null
+            ? await repository.uploadImage(UploadImageRequest(
+                file: _venuePhotoFile!,
+                folder: '/resellers/venues',
+                tags: const ['reseller', 'venue'],
+              ))
+            : null;
+
+        if (avatarResult != null) {
+          avatarResult.fold(
+            (failure) => throw Exception(failure.message),
+            (uploaded) => avatarUrl = uploaded.url,
+          );
         }
 
-        if (_venuePhotoFile != null) {
-          futures.add(imgbbClient.uploadImage(file: _venuePhotoFile!));
-        } else {
-          futures.add(Future.value(null));
-        }
-
-        final results = await Future.wait(futures);
-
-        // results[0] = avatar upload response
-        if (results[0] != null) {
-          avatarUrl = (results[0] as dynamic).data.url as String;
-        }
-
-        // results[1] = venue photo upload response
-        if (results[1] != null) {
-          venuePhotoUrl = (results[1] as dynamic).data.url as String;
+        if (venueResult != null) {
+          venueResult.fold(
+            (failure) => throw Exception(failure.message),
+            (uploaded) => venuePhotoUrl = uploaded.url,
+          );
         }
       }
 

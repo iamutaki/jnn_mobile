@@ -216,3 +216,90 @@ final class ImgbbDioProvider extends $FunctionalProvider<Dio, Dio, Dio>
 }
 
 String _$imgbbDioHash() => r'9af4fdb1c8480b988a06e04cf06f9c6f4b0cc2e8';
+
+@ProviderFor(imagekitApiClient)
+final imagekitApiClientProvider = ImagekitApiClientProvider._();
+
+final class ImagekitApiClientProvider
+    extends
+        $FunctionalProvider<
+          ImagekitApiClient,
+          ImagekitApiClient,
+          ImagekitApiClient
+        >
+    with $Provider<ImagekitApiClient> {
+  ImagekitApiClientProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'imagekitApiClientProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$imagekitApiClientHash();
+
+  @$internal
+  @override
+  $ProviderElement<ImagekitApiClient> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ImagekitApiClient create(Ref ref) {
+    return imagekitApiClient(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ImagekitApiClient value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ImagekitApiClient>(value),
+    );
+  }
+}
+
+String _$imagekitApiClientHash() => r'33a90ac63b92e241eb742411df447aea4812257b';
+
+@ProviderFor(imagekitDio)
+final imagekitDioProvider = ImagekitDioProvider._();
+
+final class ImagekitDioProvider extends $FunctionalProvider<Dio, Dio, Dio>
+    with $Provider<Dio> {
+  ImagekitDioProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'imagekitDioProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$imagekitDioHash();
+
+  @$internal
+  @override
+  $ProviderElement<Dio> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Dio create(Ref ref) {
+    return imagekitDio(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Dio value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Dio>(value),
+    );
+  }
+}
+
+String _$imagekitDioHash() => r'a73ba66c37b2f5b965782811d45cb55b56bd39a5';

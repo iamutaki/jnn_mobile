@@ -14,6 +14,12 @@ abstract class EnvProduction {
 
   @EnviedField(varName: 'IMGBB_API_KEY')
   static const String imgbbApiKey = _EnvProduction.imgbbApiKey;
+
+  @EnviedField(varName: 'IMAGEKIT_PRIVATE_KEY')
+  static const String imagekitPrivateKey = _EnvProduction.imagekitPrivateKey;
+
+  @EnviedField(varName: 'IMAGE_UPLOAD_FOLDER')
+  static const String imageUploadFolder = _EnvProduction.imageUploadFolder;
 }
 
 @Envied(path: '.env.staging')
@@ -26,6 +32,12 @@ abstract class EnvStaging {
 
   @EnviedField(varName: 'IMGBB_API_KEY')
   static const String imgbbApiKey = _EnvStaging.imgbbApiKey;
+
+  @EnviedField(varName: 'IMAGEKIT_PRIVATE_KEY')
+  static const String imagekitPrivateKey = _EnvStaging.imagekitPrivateKey;
+
+  @EnviedField(varName: 'IMAGE_UPLOAD_FOLDER')
+  static const String imageUploadFolder = _EnvStaging.imageUploadFolder;
 }
 
 abstract class Env {
@@ -43,4 +55,14 @@ abstract class Env {
       F.appFlavor == Flavor.staging
           ? EnvStaging.imgbbApiKey
           : EnvProduction.imgbbApiKey;
+
+  static String get imagekitPrivateKey =>
+      F.appFlavor == Flavor.staging
+          ? EnvStaging.imagekitPrivateKey
+          : EnvProduction.imagekitPrivateKey;
+
+  static String get imageUploadFolder =>
+      F.appFlavor == Flavor.staging
+          ? EnvStaging.imageUploadFolder
+          : EnvProduction.imageUploadFolder;
 }
