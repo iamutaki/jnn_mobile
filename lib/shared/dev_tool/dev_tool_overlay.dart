@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/router/app_router.dart';
@@ -62,16 +63,18 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
 
     setState(() => _isDevToolPageOpen = true);
 
-    nav.push(
-      MaterialPageRoute(
-        builder: (_) => DevToolPage(
-          inspectors: widget.inspectors,
-          onClose: () => nav.pop(),
-        ),
-      ),
-    ).then((_) {
-      if (mounted) setState(() => _isDevToolPageOpen = false);
-    });
+    nav
+        .push(
+          MaterialPageRoute(
+            builder: (_) => DevToolPage(
+              inspectors: widget.inspectors,
+              onClose: () => nav.pop(),
+            ),
+          ),
+        )
+        .then((_) {
+          if (mounted) setState(() => _isDevToolPageOpen = false);
+        });
   }
 
   @override
@@ -98,53 +101,58 @@ class _DevToolOverlayState extends State<DevToolOverlay> {
         return Stack(
           children: [
             widget.child,
-            if (!_isDevToolPageOpen) Positioned(
-              left: clamped.dx,
-              top: clamped.dy,
-              child: GestureDetector(
-                onPanStart: (_) => setState(() => _isDragging = true),
-                onPanUpdate: (details) {
-                  setState(() {
-                    _offset = Offset(
-                      (_offset.dx + details.delta.dx)
-                          .clamp(0, constraints.maxWidth - _size),
-                      (_offset.dy + details.delta.dy)
-                          .clamp(0, constraints.maxHeight - _size),
-                    );
-                  });
-                },
-                onPanEnd: (details) {
-                  setState(() => _isDragging = false);
-                  _savePosition();
+            if (!_isDevToolPageOpen)
+              Positioned(
+                left: clamped.dx,
+                top: clamped.dy,
+                child: GestureDetector(
+                  onPanStart: (_) => setState(() => _isDragging = true),
+                  onPanUpdate: (details) {
+                    setState(() {
+                      _offset = Offset(
+                        (_offset.dx + details.delta.dx).clamp(
+                          0,
+                          constraints.maxWidth - _size,
+                        ),
+                        (_offset.dy + details.delta.dy).clamp(
+                          0,
+                          constraints.maxHeight - _size,
+                        ),
+                      );
+                    });
+                  },
+                  onPanEnd: (details) {
+                    setState(() => _isDragging = false);
+                    _savePosition();
 
-                  final velocity = details.primaryVelocity ?? 0;
-                  if (velocity.abs() < 100) {
-                    _openDevToolPage();
-                  }
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: _size,
-                  height: _size,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE53E3E),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFE53E3E).withValues(alpha: 0.4),
-                        blurRadius: _isDragging ? 16 : 8,
-                        spreadRadius: _isDragging ? 2 : 0,
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.bug_report_rounded,
-                    color: Colors.white,
-                    size: 24,
+                    final velocity = details.primaryVelocity ?? 0;
+                    if (velocity.abs() < 100) {
+                      _openDevToolPage();
+                    }
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: _size,
+                    height: _size,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE53E3E),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFE53E3E).withValues(alpha: 0.4),
+                          blurRadius: _isDragging ? 16 : 8,
+                          spreadRadius: _isDragging ? 2 : 0,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      FLucideIcons.bugPlay,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         );
       },

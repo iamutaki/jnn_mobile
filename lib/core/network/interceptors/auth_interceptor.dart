@@ -108,14 +108,19 @@ class AuthInterceptor extends Interceptor {
         data: {'refreshToken': refreshToken},
       );
 
-      final data = response.data;
-      if (data == null) {
+      final raw = response.data;
+      if (raw == null) {
         _shouldClearTokensOnError = true;
         throw const AuthRefreshException();
       }
 
-      final newAccessToken = data['accessToken'] as String?;
-      final newRefreshToken = data['refreshToken'] as String?;
+      // Backend wraps the payload in BaseResponse: { success, data: { ... } }
+      final nested = raw['data'];
+      final payload =
+          nested is Map<String, dynamic> ? nested : raw;
+
+      final newAccessToken = payload['accessToken'] as String?;
+      final newRefreshToken = payload['refreshToken'] as String?;
 
       if (newAccessToken == null) {
         _shouldClearTokensOnError = true;

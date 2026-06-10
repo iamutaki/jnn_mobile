@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/router/route_definer.dart';
 import '../master_data/presentation/pages/master_data_desa_page.dart';
-import '../master_data/presentation/pages/master_data_kecamatan_page.dart';
+import '../district/presentation/pages/district_page.dart';
 import '../master_data/presentation/pages/master_data_personel_page.dart';
 import 'presentation/pages/master_data_voucher_page.dart';
 import '../master_data/presentation/pages/master_data_reseller_page.dart';
@@ -50,7 +50,7 @@ class MasterDataRouter {
         GoRoute(
           path: kecamatan.path,
           name: kecamatan.name,
-          builder: (context, state) => const MasterDataKecamatanPage(),
+          builder: (context, state) => const DistrictPage(),
         ),
         GoRoute(
           path: desa.path,

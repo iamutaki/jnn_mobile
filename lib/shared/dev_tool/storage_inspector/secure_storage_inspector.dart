@@ -14,7 +14,7 @@ class SecureStorageInspector extends DevToolInspector {
   String get description => 'Lihat isi FlutterSecureStorage';
 
   @override
-  IconData get icon => Icons.lock_rounded;
+  IconData get icon => FLucideIcons.lock;
 
   @override
   String get name => 'SecureStorage';

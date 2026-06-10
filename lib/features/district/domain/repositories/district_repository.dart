@@ -5,8 +5,8 @@ import '../../data/models/district_dto.dart';
 
 abstract interface class DistrictRepository {
   Future<Either<DistrictFailure, List<DistrictDto>>> getDistricts();
-  Future<Either<DistrictFailure, DistrictDto>> createDistrict(String name);
-  Future<Either<DistrictFailure, DistrictDto>> updateDistrict(
+  Future<Either<DistrictFailure, Unit>> createDistrict(String name);
+  Future<Either<DistrictFailure, Unit>> updateDistrict(
     String id,
     String name,
   );

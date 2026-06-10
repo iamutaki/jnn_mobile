@@ -18,16 +18,14 @@ abstract class DistrictRemoteDatasource {
   Future<BaseResponse<List<DistrictDto>>> getDistricts();
 
   @POST('/v1/district')
-  Future<BaseResponse<DistrictDto>> createDistrict(
-    @Body() Map<String, dynamic> body,
-  );
+  Future<HttpResponse<void>> createDistrict(@Body() Map<String, dynamic> body);
 
   @PATCH('/v1/district/{id}')
-  Future<BaseResponse<DistrictDto>> updateDistrict(
+  Future<HttpResponse<void>> updateDistrict(
     @Path('id') String id,
     @Body() Map<String, dynamic> body,
   );
 
   @DELETE('/v1/district/{id}')
-  Future<BaseResponse<Object?>> deleteDistrict(@Path('id') String id);
+  Future<HttpResponse<void>> deleteDistrict(@Path('id') String id);
 }

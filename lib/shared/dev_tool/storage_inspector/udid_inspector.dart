@@ -14,7 +14,7 @@ class UdidInspector extends DevToolInspector {
   String get description => 'Lihat device ID (UDID)';
 
   @override
-  IconData get icon => Icons.phone_android_rounded;
+  IconData get icon => FLucideIcons.smartphone;
 
   @override
   String get name => 'UDID';

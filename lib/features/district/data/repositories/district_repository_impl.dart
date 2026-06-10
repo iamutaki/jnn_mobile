@@ -24,14 +24,12 @@ class DistrictRepositoryImpl implements DistrictRepository {
   }
 
   @override
-  Future<Either<DistrictFailure, DistrictDto>> createDistrict(
+  Future<Either<DistrictFailure, Unit>> createDistrict(
     String name,
   ) async {
     try {
-      final response = await _remoteDatasource.createDistrict({
-        'name': name,
-      });
-      return Either.right(response.data!);
+      await _remoteDatasource.createDistrict({'name': name});
+      return Either.right(unit);
     } on DioException catch (error) {
       return Either.left(DistrictFailure(_mapDioError(error)));
     } catch (error) {
@@ -40,15 +38,13 @@ class DistrictRepositoryImpl implements DistrictRepository {
   }
 
   @override
-  Future<Either<DistrictFailure, DistrictDto>> updateDistrict(
+  Future<Either<DistrictFailure, Unit>> updateDistrict(
     String id,
     String name,
   ) async {
     try {
-      final response = await _remoteDatasource.updateDistrict(id, {
-        'name': name,
-      });
-      return Either.right(response.data!);
+      await _remoteDatasource.updateDistrict(id, {'name': name});
+      return Either.right(unit);
     } on DioException catch (error) {
       return Either.left(DistrictFailure(_mapDioError(error)));
     } catch (error) {

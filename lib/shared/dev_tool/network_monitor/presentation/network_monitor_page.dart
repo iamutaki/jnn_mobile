@@ -15,7 +15,7 @@ class NetworkMonitorInspector extends DevToolInspector {
   String get description => 'Rekam dan inspect request API';
 
   @override
-  IconData get icon => Icons.wifi_tethering_rounded;
+  IconData get icon => FLucideIcons.wifi;
 
   @override
   String get name => 'Network Monitor';

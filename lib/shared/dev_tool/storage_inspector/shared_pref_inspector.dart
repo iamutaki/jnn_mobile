@@ -14,7 +14,7 @@ class SharedPrefInspector extends DevToolInspector {
   String get description => 'Lihat isi SharedPreferences';
 
   @override
-  IconData get icon => Icons.storage_rounded;
+  IconData get icon => FLucideIcons.database;
 
   @override
   String get name => 'SharedPref';

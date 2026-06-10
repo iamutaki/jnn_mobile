@@ -34,7 +34,7 @@ final class DistrictListNotifierProvider
 }
 
 String _$districtListNotifierHash() =>
-    r'22a1021dc53025fff898095910e92fb821b7d2cf';
+    r'c8be3228323de39d30b71f8923dc07e93ce1ebb3';
 
 abstract class _$DistrictListNotifier
     extends $AsyncNotifier<List<DistrictDto>> {

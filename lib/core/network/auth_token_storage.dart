@@ -4,11 +4,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthTokenStorage {
-  AuthTokenStorage({
-    FlutterSecureStorage? storage,
-    SharedPreferences? prefs,
-  }) : _storage = storage ?? const FlutterSecureStorage(),
-       _prefs = prefs;
+  AuthTokenStorage({FlutterSecureStorage? storage, SharedPreferences? prefs})
+    : _storage = storage ?? const FlutterSecureStorage(),
+      _prefs = prefs;
 
   static AuthTokenStorage? _instance;
 
@@ -43,8 +41,7 @@ class AuthTokenStorage {
     ]);
   }
 
-  Future<String?> getAccessToken() async =>
-      _storage.read(key: _accessTokenKey);
+  Future<String?> getAccessToken() async => _storage.read(key: _accessTokenKey);
 
   Future<String?> getRefreshToken() async =>
       _storage.read(key: _refreshTokenKey);

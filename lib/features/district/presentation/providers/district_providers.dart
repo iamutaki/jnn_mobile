@@ -21,6 +21,16 @@ class DistrictListNotifier extends _$DistrictListNotifier {
     );
   }
 
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    try {
+      final list = await _fetch();
+      state = AsyncData(list);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
+  }
+
   Future<void> create(String name) async {
     final repo = ref.read(districtRepositoryProvider);
     final result = await repo.createDistrict(name);
@@ -28,7 +38,14 @@ class DistrictListNotifier extends _$DistrictListNotifier {
       (failure) => throw Exception(failure.message),
       (_) {},
     );
-    ref.invalidateSelf();
+    // Set loading lalu fetch ulang.
+    state = const AsyncLoading();
+    try {
+      final list = await _fetch();
+      state = AsyncData(list);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 
   Future<void> edit(String id, String name) async {
@@ -38,7 +55,13 @@ class DistrictListNotifier extends _$DistrictListNotifier {
       (failure) => throw Exception(failure.message),
       (_) {},
     );
-    ref.invalidateSelf();
+    state = const AsyncLoading();
+    try {
+      final list = await _fetch();
+      state = AsyncData(list);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 
   Future<void> delete(String id) async {
@@ -48,6 +71,12 @@ class DistrictListNotifier extends _$DistrictListNotifier {
       (failure) => throw Exception(failure.message),
       (_) {},
     );
-    ref.invalidateSelf();
+    state = const AsyncLoading();
+    try {
+      final list = await _fetch();
+      state = AsyncData(list);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
   }
 }

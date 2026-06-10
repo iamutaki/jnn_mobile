@@ -56,15 +56,13 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
   }
 
   @override
-  Future<BaseResponse<DistrictDto>> createDistrict(
-    Map<String, dynamic> body,
-  ) async {
+  Future<HttpResponse<void>> createDistrict(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body);
-    final _options = _setStreamType<BaseResponse<DistrictDto>>(
+    final _options = _setStreamType<HttpResponse<void>>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -74,22 +72,13 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<DistrictDto> _value;
-    try {
-      _value = BaseResponse<DistrictDto>.fromJson(
-        _result.data!,
-        (json) => DistrictDto.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    final _result = await _dio.fetch<void>(_options);
+    final httpResponse = HttpResponse(null, _result);
+    return httpResponse;
   }
 
   @override
-  Future<BaseResponse<DistrictDto>> updateDistrict(
+  Future<HttpResponse<void>> updateDistrict(
     String id,
     Map<String, dynamic> body,
   ) async {
@@ -98,7 +87,7 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body);
-    final _options = _setStreamType<BaseResponse<DistrictDto>>(
+    final _options = _setStreamType<HttpResponse<void>>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -108,27 +97,18 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<DistrictDto> _value;
-    try {
-      _value = BaseResponse<DistrictDto>.fromJson(
-        _result.data!,
-        (json) => DistrictDto.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    final _result = await _dio.fetch<void>(_options);
+    final httpResponse = HttpResponse(null, _result);
+    return httpResponse;
   }
 
   @override
-  Future<BaseResponse<Object?>> deleteDistrict(String id) async {
+  Future<HttpResponse<void>> deleteDistrict(String id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<BaseResponse<Object?>>(
+    final _options = _setStreamType<HttpResponse<void>>(
       Options(method: 'DELETE', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -138,18 +118,9 @@ class _DistrictRemoteDatasource implements DistrictRemoteDatasource {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<Object?> _value;
-    try {
-      _value = BaseResponse<Object?>.fromJson(
-        _result.data!,
-        (json) => json as Object?,
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    final _result = await _dio.fetch<void>(_options);
+    final httpResponse = HttpResponse(null, _result);
+    return httpResponse;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
