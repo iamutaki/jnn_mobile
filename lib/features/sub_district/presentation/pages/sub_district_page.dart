@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../../shared/widgets/data_error_widget.dart';
 import '../../../district/data/models/district_dto.dart';
 import '../../../district/presentation/providers/district_providers.dart';
 import '../../data/models/sub_district_dto.dart';
@@ -120,24 +121,8 @@ class _SubDistrictPageState extends ConsumerState<SubDistrictPage> {
   }
 
   Widget _buildError(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(FLucideIcons.alertCircle, size: 48, color: Colors.grey.shade400),
-          const Gap(8),
-          Text(
-            'Gagal memuat data',
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-          ),
-          const Gap(12),
-          FButton(
-            variant: FButtonVariant.outline,
-            onPress: () => ref.read(subDistrictListProvider.notifier).refresh(),
-            child: const Text('Coba Lagi'),
-          ),
-        ],
-      ),
+    return DataErrorWidget(
+      onRetry: () => ref.read(subDistrictListProvider.notifier).refresh(),
     );
   }
 

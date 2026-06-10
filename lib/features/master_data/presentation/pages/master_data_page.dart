@@ -3,7 +3,9 @@ import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/route_definer.dart';
+import '../../../district/district_router.dart';
+import '../../../sub_district/sub_district_router.dart';
+import '../../../voucher/voucher_router.dart';
 import '../../data/models/master_data_type.dart';
 import '../../master_data_router.dart';
 
@@ -60,13 +62,13 @@ class _MasterDataTile extends StatelessWidget {
 
   const _MasterDataTile({required this.type});
 
-  RouteDefiner get _route {
+  String get _fullPath {
     return switch (type) {
-      MasterDataType.kecamatan => MasterDataRouter.kecamatan,
-      MasterDataType.desa => MasterDataRouter.desa,
-      MasterDataType.voucher => MasterDataRouter.voucher,
-      MasterDataType.personel => MasterDataRouter.personel,
-      MasterDataType.reseller => MasterDataRouter.reseller,
+      MasterDataType.district => DistrictRouter.district.path,
+      MasterDataType.subDistrict => SubDistrictRouter.subDistrict.path,
+      MasterDataType.voucher => VoucherRouter.voucher.path,
+      MasterDataType.personel => '/master-data${MasterDataRouter.personel.path}',
+      MasterDataType.reseller => '/master-data${MasterDataRouter.reseller.path}',
     };
   }
 
@@ -75,7 +77,7 @@ class _MasterDataTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => context.push('/master-data${_route.path}'),
+        onTap: () => context.push(_fullPath),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(

@@ -3,7 +3,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/auth_router.dart';
 import '../../features/home/home_router.dart';
+import '../../features/district/district_router.dart';
 import '../../features/master_data/master_data_router.dart';
+import '../../features/sub_district/sub_district_router.dart';
+import '../../features/voucher/voucher_router.dart';
 import '../network/auth_token_storage.dart';
 
 class AppRouter {
@@ -21,7 +24,10 @@ class AppRouter {
     routes: [
       ...AuthRouter.routes,
       ...HomeRouter.routes,
+      ...DistrictRouter.routes,
+      ...SubDistrictRouter.routes,
       ...MasterDataRouter.routes,
+      ...VoucherRouter.routes,
     ],
     redirect: _redirect,
     errorBuilder: (context, state) => Scaffold(

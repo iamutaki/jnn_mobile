@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 enum MasterDataType {
-  kecamatan(
+  district(
     label: 'Kecamatan',
     icon: FLucideIcons.map,
     color: Color(0xFF0891B2),
     description: 'Kelola data kecamatan',
   ),
-  desa(
+  subDistrict(
     label: 'Desa',
     icon: FLucideIcons.house,
     color: Color(0xFF0EA573),

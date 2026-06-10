@@ -113,7 +113,9 @@ class _MasterDataPersonelFormPageState
                       ),
                       const Gap(8),
                       FTextField.password(
-                        control: FTextFieldControl.managed(controller: _passwordCtrl),
+                        control: FTextFieldControl.managed(
+                          controller: _passwordCtrl,
+                        ),
                         label: const Text('Password'),
                         hint: 'Password',
                       ),
@@ -122,14 +124,18 @@ class _MasterDataPersonelFormPageState
                         label: const Text('Tipe Personel'),
                         control: FMultiValueControl.lifted(
                           value: _selectedTipe,
-                          onChange: (value) => setState(() => _selectedTipe = value),
+                          onChange: (value) =>
+                              setState(() => _selectedTipe = value),
                         ),
-                        children: _tipeOptions.map(
-                          (tipe) => FSelectTile(
-                            title: Text(tipe),
-                            value: tipe,
-                          ),
-                        ).toList(),
+                        children: _tipeOptions
+                            .map(
+                              (tipe) => FSelectTile(
+                                title: Text(tipe),
+                                suffix: Icon(FLucideIcons.user),
+                                value: tipe,
+                              ),
+                            )
+                            .toList(),
                       ),
                       const Gap(8),
                       FTextField(

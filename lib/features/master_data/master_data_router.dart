@@ -1,10 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/route_definer.dart';
-import '../sub_district/presentation/pages/sub_district_page.dart';
-import '../district/presentation/pages/district_page.dart';
 import '../master_data/presentation/pages/master_data_personel_page.dart';
-import 'presentation/pages/master_data_voucher_page.dart';
 import '../master_data/presentation/pages/master_data_reseller_page.dart';
 import '../master_data/presentation/pages/master_data_page.dart';
 
@@ -14,21 +11,6 @@ class MasterDataRouter {
   static const masterData = RouteDefiner(
     path: '/master-data',
     name: 'MasterDataRouter.masterData',
-  );
-
-  static const kecamatan = RouteDefiner(
-    path: '/kecamatan',
-    name: 'MasterDataRouter.kecamatan',
-  );
-
-  static const desa = RouteDefiner(
-    path: '/desa',
-    name: 'MasterDataRouter.desa',
-  );
-
-  static const voucher = RouteDefiner(
-    path: '/voucher',
-    name: 'MasterDataRouter.voucher',
   );
 
   static const personel = RouteDefiner(
@@ -47,21 +29,6 @@ class MasterDataRouter {
       name: masterData.name,
       builder: (context, state) => const MasterDataPage(),
       routes: [
-        GoRoute(
-          path: kecamatan.path,
-          name: kecamatan.name,
-          builder: (context, state) => const DistrictPage(),
-        ),
-        GoRoute(
-          path: desa.path,
-          name: desa.name,
-          builder: (context, state) => const SubDistrictPage(),
-        ),
-        GoRoute(
-          path: voucher.path,
-          name: voucher.name,
-          builder: (context, state) => const MasterDataVoucherPage(),
-        ),
         GoRoute(
           path: personel.path,
           name: personel.name,
