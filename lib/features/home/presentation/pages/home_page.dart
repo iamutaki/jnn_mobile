@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../flavors.dart';
 import '../../../master_data/master_data_router.dart';
+import '../../../profile/presentation/providers/profile_providers.dart';
 
 /// Menu item model untuk grid menu.
 class _MenuItem {
@@ -23,14 +25,14 @@ class _MenuItem {
 const _defaultVisibleCount = 8;
 
 /// Halaman utama (Home tab) dengan konsep banking app.
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   /// Semua menu yang tersedia (9+ items).
   static const _menus = [
     _MenuItem(
@@ -56,6 +58,12 @@ class _HomePageState extends State<HomePage> {
   ];
 
   bool _isExpanded = false;
+
+  String _formatUsername() {
+    final profile = ref.watch(profileProvider);
+    if (profile != null) return '@${profile.username}';
+    return '@username';
+  }
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -161,9 +169,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const Gap(2),
-              const Text(
-                '@username',
-                style: TextStyle(fontSize: 13, color: Color(0xFF8C8C8C)),
+              Text(
+                _formatUsername(),
+                style: const TextStyle(fontSize: 13, color: Color(0xFF8C8C8C)),
               ),
             ],
           ),

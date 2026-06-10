@@ -131,7 +131,7 @@ class _MasterDataPersonelFormPageState
                             .map(
                               (tipe) => FSelectTile(
                                 title: Text(tipe),
-                                suffix: Icon(FLucideIcons.user),
+                                suffix: Icon(FLucideIcons.keySquare),
                                 value: tipe,
                               ),
                             )

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -24,8 +25,7 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(profileProvider);
-    final profile = profileAsync.asData?.value;
+    final profile = ref.watch(profileProvider);
 
     return FScaffold(
       childPad: false,
@@ -55,7 +55,7 @@ class ProfilePage extends ConsumerWidget {
                     ),
                     const Gap(12),
                     Skeletonizer(
-                      enabled: profileAsync.isLoading,
+                      enabled: profile == null,
                       child: Column(
                         children: [
                           Text(
@@ -185,8 +185,8 @@ class ProfilePage extends ConsumerWidget {
             title: Text(failure.message),
           );
         },
-        (_) {
-          ref.invalidate(profileProvider);
+        (profile) {
+          ref.read(profileProvider.notifier).refresh();
           showFToast(
             context: context,
             variant: FToastVariant.primary,
@@ -236,7 +236,11 @@ class ProfilePage extends ConsumerWidget {
       );
     } catch (_) {}
 
+    ref.read(profileProvider.notifier).clear();
     await AuthTokenStorage.instance.clearTokens();
+
+    if (!context.mounted) return;
+    context.go('/login');
   }
 }
 

@@ -66,16 +66,13 @@ class SubDistrictListNotifier extends _$SubDistrictListNotifier {
   Future<void> delete(String id) async {
     final repo = ref.read(subDistrictRepositoryProvider);
     final result = await repo.deleteSubDistrict(id);
+
     result.fold(
       (failure) => throw Exception(failure.message),
-      (_) {},
+      (_) {
+        final current = state.asData?.value ?? [];
+        state = AsyncData(current.where((d) => d.id != id).toList());
+      },
     );
-    state = const AsyncLoading();
-    try {
-      final list = await _fetch();
-      state = AsyncData(list);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
   }
 }

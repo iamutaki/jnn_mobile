@@ -8,7 +8,6 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../flavors.dart';
-import '../../../profile/presentation/providers/profile_providers.dart';
 import '../providers/auth_login_providers.dart';
 
 class LoginPage extends HookConsumerWidget {
@@ -27,8 +26,7 @@ class LoginPage extends HookConsumerWidget {
 
     ref.listen(authLoginProvider, (previous, next) {
       if (next.session != null) {
-        ref.read(profileProvider.future);
-        context.go('/home');
+        context.go('/splash');
       }
       if (next.errorMessage != null) {
         showFSheet(

@@ -163,9 +163,8 @@ class _SubDistrictPageState extends ConsumerState<SubDistrictPage> {
               color: Colors.red.shade400,
               child: const Icon(FLucideIcons.trash2, color: Colors.white),
             ),
-            confirmDismiss: (_) => _confirmDelete(context),
-            onDismissed: (_) =>
-                ref.read(subDistrictListProvider.notifier).delete(item.id),
+            confirmDismiss: (_) =>
+                _confirmAndDelete(context, item.id),
             child: Material(
               type: MaterialType.transparency,
               child: ListTile(
@@ -198,8 +197,8 @@ class _SubDistrictPageState extends ConsumerState<SubDistrictPage> {
     );
   }
 
-  Future<bool> _confirmDelete(BuildContext context) async {
-    final result = await showFDialog<String>(
+  Future<bool> _confirmAndDelete(BuildContext context, String id) async {
+    final confirmed = await showFDialog<String>(
       context: context,
       builder: (context, style, animation) => FDialog(
         title: const Text('Hapus Data'),
@@ -218,7 +217,24 @@ class _SubDistrictPageState extends ConsumerState<SubDistrictPage> {
         ],
       ),
     );
-    return result == 'delete';
+
+    if (confirmed != 'delete') return false;
+
+    try {
+      await ref.read(subDistrictListProvider.notifier).delete(id);
+      return true;
+    } catch (e) {
+      if (!context.mounted) return false;
+      showFToast(
+        context: context,
+        variant: FToastVariant.destructive,
+        icon: const Icon(FLucideIcons.alertCircle, size: 16),
+        title: Text(
+          e.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+      return false;
+    }
   }
 
   Future<void> _showForm({SubDistrictDto? item}) async {

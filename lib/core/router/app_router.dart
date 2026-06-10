@@ -7,6 +7,7 @@ import '../../features/district/district_router.dart';
 import '../../features/master_data/master_data_router.dart';
 import '../../features/sub_district/sub_district_router.dart';
 import '../../features/voucher/voucher_router.dart';
+import '../../shared/splash/splash_router.dart';
 import '../network/auth_token_storage.dart';
 
 class AppRouter {
@@ -23,6 +24,7 @@ class AppRouter {
     initialLocation: AuthRouter.login.path,
     routes: [
       ...AuthRouter.routes,
+      ...SplashRouter.routes,
       ...HomeRouter.routes,
       ...DistrictRouter.routes,
       ...SubDistrictRouter.routes,
@@ -46,7 +48,7 @@ class AppRouter {
     final isOnAuth = state.matchedLocation.startsWith('/login');
 
     if (!isAuth && !isOnAuth) return AuthRouter.login.path;
-    if (isAuth && isOnLogin) return '/home';
+    if (isAuth && isOnLogin) return SplashRouter.splash.path;
 
     return null;
   }

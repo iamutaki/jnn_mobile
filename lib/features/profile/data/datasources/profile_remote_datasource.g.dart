@@ -50,35 +50,23 @@ class _ProfileRemoteDatasource implements ProfileRemoteDatasource {
   }
 
   @override
-  Future<BaseResponse<ProfileDto>> updateAvatar(Map<String, dynamic> body) async {
+  Future<void> updateAvatar(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _options = _setStreamType<BaseResponse<ProfileDto>>(
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _options = _setStreamType<void>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/v1/profile/avatar',
             queryParameters: queryParameters,
-            data: body,
+            data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    if (_result.data == null) {
-      return BaseResponse<ProfileDto>(success: true);
-    }
-    late BaseResponse<ProfileDto> _value;
-    try {
-      _value = BaseResponse<ProfileDto>.fromJson(
-        _result.data!,
-        (json) => ProfileDto.fromJson(json as Map<String, dynamic>),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

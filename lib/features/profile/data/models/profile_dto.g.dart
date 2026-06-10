@@ -10,8 +10,8 @@ _ProfileDto _$ProfileDtoFromJson(Map<String, dynamic> json) => _ProfileDto(
   id: json['id'] as String,
   username: json['username'] as String,
   name: json['name'] as String,
-  phone: json['phone'] as String,
-  email: json['email'] as String,
+  phone: json['phone'] as String?,
+  email: json['email'] as String?,
   address: json['address'] as String?,
   avatar: json['avatar'] as String?,
 );

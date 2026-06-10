@@ -7,12 +7,12 @@ import '../repositories/profile_repository_impl.dart';
 
 part 'profile_data_providers.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 ProfileRemoteDatasource profileRemoteDatasource(Ref ref) {
   return ProfileRemoteDatasource(ref.watch(dioProvider));
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 ProfileRepository profileRepository(Ref ref) {
   return ProfileRepositoryImpl(
     ref.watch(profileRemoteDatasourceProvider),

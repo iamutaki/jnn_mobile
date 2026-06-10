@@ -26,7 +26,7 @@ final class ProfileGetProfileUseCaseProvider
         argument: null,
         retry: null,
         name: r'profileGetProfileUseCaseProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,4 +55,4 @@ final class ProfileGetProfileUseCaseProvider
 }
 
 String _$profileGetProfileUseCaseHash() =>
-    r'0baa6033dce44f9aab920ca6b1ce2486c128e4d6';
+    r'0ee62cd1a35a896f12ad313c3622571811b067e2';

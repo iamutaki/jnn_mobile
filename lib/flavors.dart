@@ -10,7 +10,7 @@ class F {
   static String get title {
     switch (appFlavor) {
       case Flavor.staging:
-        return 'JNN Mobile (Test)';
+        return 'JNN Mobile (Staging)';
       case Flavor.production:
         return 'JNN Mobile';
     }

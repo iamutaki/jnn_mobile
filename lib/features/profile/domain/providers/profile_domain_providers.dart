@@ -5,7 +5,7 @@ import '../usecases/get_profile_use_case.dart';
 
 part 'profile_domain_providers.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 GetProfileUseCase profileGetProfileUseCase(Ref ref) {
   return GetProfileUseCase(ref.watch(profileRepositoryProvider));
 }

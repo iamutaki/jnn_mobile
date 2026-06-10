@@ -133,6 +133,14 @@ class NetworkMonitorInterceptor extends Interceptor {
       return const JsonEncoder.withIndent('  ').convert(data);
     }
 
+    // Object DTO yang punya toJson() — serialize ke JSON
+    try {
+      final json = (data as dynamic).toJson();
+      return const JsonEncoder.withIndent('  ').convert(json);
+    } catch (_) {
+      // Object tidak punya toJson() — fallback ke toString()
+    }
+
     return data.toString();
   }
 

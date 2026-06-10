@@ -8,12 +8,27 @@ part of 'profile_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Session holder untuk profile user.
+///
+/// - [keepAlive: true] → state bertahan selama app hidup
+/// - Tidak auto-fetch — harus panggil [loadProfile()] secara eksplisit
+/// - Menggunakan shared [Future] agar semua caller menunggu fetch yang sama
 
 @ProviderFor(ProfileNotifier)
 final profileProvider = ProfileNotifierProvider._();
 
+/// Session holder untuk profile user.
+///
+/// - [keepAlive: true] → state bertahan selama app hidup
+/// - Tidak auto-fetch — harus panggil [loadProfile()] secara eksplisit
+/// - Menggunakan shared [Future] agar semua caller menunggu fetch yang sama
 final class ProfileNotifierProvider
-    extends $AsyncNotifierProvider<ProfileNotifier, ProfileDto> {
+    extends $NotifierProvider<ProfileNotifier, ProfileDto?> {
+  /// Session holder untuk profile user.
+  ///
+  /// - [keepAlive: true] → state bertahan selama app hidup
+  /// - Tidak auto-fetch — harus panggil [loadProfile()] secara eksplisit
+  /// - Menggunakan shared [Future] agar semua caller menunggu fetch yang sama
   ProfileNotifierProvider._()
     : super(
         from: null,
@@ -31,21 +46,35 @@ final class ProfileNotifierProvider
   @$internal
   @override
   ProfileNotifier create() => ProfileNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProfileDto? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProfileDto?>(value),
+    );
+  }
 }
 
-String _$profileNotifierHash() => r'4c951af2d872bba6523f71fe62373aee5a27d07d';
+String _$profileNotifierHash() => r'3996e92fe3799ba6b80d507a50bd47e1691f35e1';
 
-abstract class _$ProfileNotifier extends $AsyncNotifier<ProfileDto> {
-  FutureOr<ProfileDto> build();
+/// Session holder untuk profile user.
+///
+/// - [keepAlive: true] → state bertahan selama app hidup
+/// - Tidak auto-fetch — harus panggil [loadProfile()] secara eksplisit
+/// - Menggunakan shared [Future] agar semua caller menunggu fetch yang sama
+
+abstract class _$ProfileNotifier extends $Notifier<ProfileDto?> {
+  ProfileDto? build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<ProfileDto>, ProfileDto>;
+    final ref = this.ref as $Ref<ProfileDto?, ProfileDto?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<ProfileDto>, ProfileDto>,
-              AsyncValue<ProfileDto>,
+              AnyNotifier<ProfileDto?, ProfileDto?>,
+              ProfileDto?,
               Object?,
               Object?
             >;

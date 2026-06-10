@@ -94,8 +94,7 @@ class _MasterDataResellerPageState extends State<MasterDataResellerPage> {
             color: Colors.red.shade400,
             child: const Icon(FLucideIcons.trash2, color: Colors.white),
           ),
-          confirmDismiss: (_) => _confirmDelete(context),
-          onDismissed: (_) => setState(() => _items.removeAt(index)),
+          confirmDismiss: (_) => _confirmAndDelete(context, index),
           child: ListTile(
             dense: true,
             visualDensity: VisualDensity.compact,
@@ -123,8 +122,8 @@ class _MasterDataResellerPageState extends State<MasterDataResellerPage> {
     );
   }
 
-  Future<bool> _confirmDelete(BuildContext context) async {
-    final result = await showFDialog<String>(
+  Future<bool> _confirmAndDelete(BuildContext context, int index) async {
+    final confirmed = await showFDialog<String>(
       context: context,
       builder: (context, style, animation) => FDialog(
         title: const Text('Hapus Data'),
@@ -143,7 +142,11 @@ class _MasterDataResellerPageState extends State<MasterDataResellerPage> {
         ],
       ),
     );
-    return result == 'delete';
+
+    if (confirmed != 'delete') return false;
+
+    setState(() => _items.removeAt(index));
+    return true;
   }
 
   void _showForm({Map<String, dynamic>? item, int? index}) async {

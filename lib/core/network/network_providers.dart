@@ -7,17 +7,17 @@ import 'jnn_api_client.dart';
 
 part 'network_providers.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 JnnApiClient jnnApiClient(Ref ref) => JnnApiClient.instance;
 
-@riverpod
+@Riverpod(keepAlive: true)
 Dio dio(Ref ref) => ref.watch(jnnApiClientProvider).dio;
 
-@riverpod
+@Riverpod(keepAlive: true)
 AuthTokenStorage authTokenStorage(Ref ref) => AuthTokenStorage.instance;
 
-@riverpod
+@Riverpod(keepAlive: true)
 ImgbbApiClient imgbbApiClient(Ref ref) => ImgbbApiClient.instance;
 
-@riverpod
+@Riverpod(keepAlive: true)
 Dio imgbbDio(Ref ref) => ref.watch(imgbbApiClientProvider).dio;

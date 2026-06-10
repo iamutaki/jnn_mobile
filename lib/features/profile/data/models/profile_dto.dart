@@ -9,8 +9,8 @@ abstract class ProfileDto with _$ProfileDto {
     required String id,
     required String username,
     required String name,
-    required String phone,
-    required String email,
+    String? phone,
+    String? email,
     String? address,
     String? avatar,
   }) = _ProfileDto;

@@ -21,7 +21,7 @@ final class JnnApiClientProvider
         argument: null,
         retry: null,
         name: r'jnnApiClientProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class JnnApiClientProvider
   }
 }
 
-String _$jnnApiClientHash() => r'909560529208acc8f929922b9d97a2ffa5d02d17';
+String _$jnnApiClientHash() => r'1edb5cc4fb19f0072f75a8591e66c3812bc8fe8b';
 
 @ProviderFor(dio)
 final dioProvider = DioProvider._();
@@ -61,7 +61,7 @@ final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
         argument: null,
         retry: null,
         name: r'dioProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -88,7 +88,7 @@ final class DioProvider extends $FunctionalProvider<Dio, Dio, Dio>
   }
 }
 
-String _$dioHash() => r'00c24523027d3fd4d8aecf050b8098ad061b1f9a';
+String _$dioHash() => r'68437d380068be7adff0e0ddacc7f21c0be0284b';
 
 @ProviderFor(authTokenStorage)
 final authTokenStorageProvider = AuthTokenStorageProvider._();
@@ -107,7 +107,7 @@ final class AuthTokenStorageProvider
         argument: null,
         retry: null,
         name: r'authTokenStorageProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -134,7 +134,7 @@ final class AuthTokenStorageProvider
   }
 }
 
-String _$authTokenStorageHash() => r'e130a4f875fd7c9d293071d8a77c099ae6cad05b';
+String _$authTokenStorageHash() => r'7ba898e695c3ab9eca78fdca659d5a1520de8ebb';
 
 @ProviderFor(imgbbApiClient)
 final imgbbApiClientProvider = ImgbbApiClientProvider._();
@@ -148,7 +148,7 @@ final class ImgbbApiClientProvider
         argument: null,
         retry: null,
         name: r'imgbbApiClientProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -175,7 +175,7 @@ final class ImgbbApiClientProvider
   }
 }
 
-String _$imgbbApiClientHash() => r'2ec5116f6668a93d5948807b362bbf9f76b7ec20';
+String _$imgbbApiClientHash() => r'affcd5d7ad8cab67eb23530f659a463c0d1ec57d';
 
 @ProviderFor(imgbbDio)
 final imgbbDioProvider = ImgbbDioProvider._();
@@ -188,7 +188,7 @@ final class ImgbbDioProvider extends $FunctionalProvider<Dio, Dio, Dio>
         argument: null,
         retry: null,
         name: r'imgbbDioProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -215,4 +215,4 @@ final class ImgbbDioProvider extends $FunctionalProvider<Dio, Dio, Dio>
   }
 }
 
-String _$imgbbDioHash() => r'6de571ce1fa9c8512e99f7e60e5efea75ded83d2';
+String _$imgbbDioHash() => r'9af4fdb1c8480b988a06e04cf06f9c6f4b0cc2e8';

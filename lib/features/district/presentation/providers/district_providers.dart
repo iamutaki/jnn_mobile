@@ -67,16 +67,14 @@ class DistrictListNotifier extends _$DistrictListNotifier {
   Future<void> delete(String id) async {
     final repo = ref.read(districtRepositoryProvider);
     final result = await repo.deleteDistrict(id);
+
     result.fold(
       (failure) => throw Exception(failure.message),
-      (_) {},
+      (_) {
+        // Hapus dari local state tanpa re-fetch
+        final current = state.asData?.value ?? [];
+        state = AsyncData(current.where((d) => d.id != id).toList());
+      },
     );
-    state = const AsyncLoading();
-    try {
-      final list = await _fetch();
-      state = AsyncData(list);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
   }
 }
