@@ -30,11 +30,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<ProfileFailure, ProfileDto>> updateAvatar(String avatarUrl) async {
+  Future<Either<ProfileFailure, Unit>> updateAvatar(String avatarUrl) async {
     try {
       await _remoteDatasource.updateAvatar({'avatar': avatarUrl});
-      // 204 No Content — re-fetch profile untuk dapat data terbaru
-      return getProfile();
+      return Either.right(unit);
     } on DioException catch (error) {
       return Either.left(ProfileFailure(_mapDioError(error)));
     } catch (error) {

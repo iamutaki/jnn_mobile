@@ -6,5 +6,5 @@ import '../../data/models/profile_dto.dart';
 abstract interface class ProfileRepository {
   Future<Either<ProfileFailure, ProfileDto>> getProfile();
 
-  Future<Either<ProfileFailure, ProfileDto>> updateAvatar(String avatarUrl);
+  Future<Either<ProfileFailure, Unit>> updateAvatar(String avatarUrl);
 }

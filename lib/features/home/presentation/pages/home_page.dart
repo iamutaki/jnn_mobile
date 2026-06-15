@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../flavors.dart';
 import '../../../master_data/master_data_router.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
+import '../../../voucher_stock/voucher_stock_router.dart';
 
 /// Menu item model untuk grid menu.
 class _MenuItem {
@@ -36,8 +37,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   /// Semua menu yang tersedia (9+ items).
   static const _menus = [
     _MenuItem(
-      label: 'Kirim Voucher',
-      icon: FLucideIcons.ticketPlus,
+      label: 'Stok Voucher',
+      icon: FLucideIcons.ticket,
       color: Color(0xFFE8710A),
     ),
     _MenuItem(
@@ -287,7 +288,8 @@ class _MenuCard extends StatelessWidget {
     switch (menu.label) {
       case 'Master Data':
         context.push(MasterDataRouter.masterData.path);
-      case 'Kirim Voucher':
+      case 'Stok Voucher':
+        context.push(VoucherStockRouter.voucherStock.path);
       case 'Penjualan':
       case 'Laporan Kegiatan':
       default:

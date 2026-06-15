@@ -17,7 +17,7 @@ class ImagekitApiClient {
   }) {
     final dio = Dio(
       BaseOptions(
-        baseUrl: 'https://upload.imagekit.io/api/v1',
+        baseUrl: 'https://upload.imagekit.io/api/v2',
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),

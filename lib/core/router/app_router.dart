@@ -8,6 +8,7 @@ import '../../features/master_data/master_data_router.dart';
 import '../../features/reseller/reseller_router.dart';
 import '../../features/sub_district/sub_district_router.dart';
 import '../../features/voucher/voucher_router.dart';
+import '../../features/voucher_stock/voucher_stock_router.dart';
 import '../../shared/splash/splash_router.dart';
 import '../network/auth_token_storage.dart';
 
@@ -32,6 +33,7 @@ class AppRouter {
       ...MasterDataRouter.routes,
       ...ResellerRouter.routes,
       ...VoucherRouter.routes,
+      ...VoucherStockRouter.routes,
     ],
     redirect: _redirect,
     errorBuilder: (context, state) => Scaffold(

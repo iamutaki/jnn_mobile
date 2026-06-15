@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:uuid/uuid.dart';
 
+import 'image_compressor.dart';
 import 'image_source_picker.dart';
 
 /// Configuration for image processing.
@@ -73,21 +72,11 @@ Future<File?> processImage(
   }
 
   // 3. Compress & resize
-  final outputDir = Directory.systemTemp.path;
-  final outputName = '${const Uuid().v4()}.jpg';
-  final targetPath = '$outputDir/$outputName';
-
-  final compressed = await FlutterImageCompress.compressAndGetFile(
-    sourcePath,
-    targetPath,
-    minWidth: config.maxWidth,
+  return compressImage(
+    file: File(sourcePath),
     quality: config.quality,
-    format: CompressFormat.jpeg,
-    keepExif: false,
+    maxWidth: config.maxWidth,
   );
-
-  if (compressed == null) return null;
-  return File(compressed.path);
 }
 
 /// Build platform-specific UI settings for the cropper.

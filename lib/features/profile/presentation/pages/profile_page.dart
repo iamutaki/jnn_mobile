@@ -1,20 +1,16 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/network/auth_token_storage.dart';
 import '../../../../core/data/providers/image_upload_providers.dart';
 import '../../../../core/domain/entities/upload_image_request.dart';
 import '../../../../core/services/device_id_service.dart';
-import '../../../../shared/utils/image_compressor.dart';
-import '../../../../shared/utils/image_source_picker.dart';
+import '../../../../shared/utils/image_processor.dart';
 import '../../../device/domain/providers/device_domain_providers.dart';
 import '../../../device/domain/usecases/revoke_device_use_case.dart';
 import '../../data/models/profile_dto.dart';
@@ -123,36 +119,11 @@ class ProfilePage extends ConsumerWidget {
   }
 
   Future<void> _onAvatarTap(BuildContext context, WidgetRef ref) async {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
-    final file = await showImageSourcePicker(context);
+    final file = await processImage(
+      context,
+      config: ImageProcessConfig.avatar,
+    );
     if (file == null) return;
-
-    final croppedFile = await ImageCropper().cropImage(
-      sourcePath: file.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Foto',
-          toolbarColor: primaryColor,
-          statusBarLight: true,
-          initAspectRatio: CropAspectRatioPreset.square,
-          lockAspectRatio: true,
-        ),
-        IOSUiSettings(
-          title: 'Crop Foto',
-          aspectRatioLockEnabled: true,
-          resetAspectRatioEnabled: false,
-        ),
-      ],
-    );
-    if (croppedFile == null) return;
-
-    final compressed = compressImage(
-      file: File(croppedFile.path),
-      quality: 80,
-      maxWidth: 620,
-    );
 
     if (!context.mounted) return;
 
@@ -166,7 +137,7 @@ class ProfilePage extends ConsumerWidget {
       final uploadRepository = ref.read(imageUploadRepositoryProvider);
       final uploadResult = await uploadRepository.uploadImage(
         UploadImageRequest(
-          file: compressed,
+          file: file,
           folder: '/profile/avatars',
           tags: const ['profile', 'avatar'],
         ),
@@ -194,7 +165,7 @@ class ProfilePage extends ConsumerWidget {
             title: Text(failure.message),
           );
         },
-        (profile) {
+        (_) {
           ref.read(profileProvider.notifier).refresh();
           showFToast(
             context: context,
