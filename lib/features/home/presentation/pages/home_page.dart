@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../flavors.dart';
 import '../../../master_data/master_data_router.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
+import '../../../sales/sales_router.dart';
 import '../../../voucher_stock/voucher_stock_router.dart';
 
 /// Menu item model untuk grid menu.
@@ -291,6 +292,7 @@ class _MenuCard extends StatelessWidget {
       case 'Stok Voucher':
         context.push(VoucherStockRouter.voucherStock.path);
       case 'Penjualan':
+        context.push(SalesRouter.sales.path);
       case 'Laporan Kegiatan':
       default:
         break;

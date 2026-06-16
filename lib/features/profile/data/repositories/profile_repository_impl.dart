@@ -5,6 +5,7 @@ import '../../domain/failures/profile_failure.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../datasources/profile_remote_datasource.dart';
 import '../models/profile_dto.dart';
+import '../models/reseller_profile_dto.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
   ProfileRepositoryImpl(this._remoteDatasource);
@@ -22,6 +23,26 @@ class ProfileRepositoryImpl implements ProfileRepository {
       }
 
       return Either.right(profile);
+    } on DioException catch (error) {
+      return Either.left(ProfileFailure(_mapDioError(error)));
+    } catch (error) {
+      return Either.left(ProfileFailure(error.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ProfileFailure, ResellerProfileDto>> getResellerProfile() async {
+    try {
+      final response = await _remoteDatasource.getResellerProfile();
+      final resellerProfile = response.data;
+
+      if (resellerProfile == null) {
+        return Either.left(
+          const ProfileFailure('Data profil reseller tidak ditemukan'),
+        );
+      }
+
+      return Either.right(resellerProfile);
     } on DioException catch (error) {
       return Either.left(ProfileFailure(_mapDioError(error)));
     } catch (error) {

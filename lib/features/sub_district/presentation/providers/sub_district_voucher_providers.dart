@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../voucher/data/models/voucher_dto.dart';
 import '../../data/providers/sub_district_voucher_data_providers.dart';
 
 part 'sub_district_voucher_providers.g.dart';
@@ -41,6 +42,24 @@ class SubDistrictVoucherNotifier extends _$SubDistrictVoucherNotifier {
       (_) {
         state = AsyncData(voucherIds);
       },
+    );
+  }
+}
+
+/// Sama dengan [SubDistrictVoucherNotifier], tapi mengembalikan [VoucherDto]
+/// lengkap (id, nama, harga) — dipakai halaman penjualan untuk menampilkan
+/// produk beserta steppernya tanpa perlu intersect dengan master voucher.
+@Riverpod(keepAlive: true)
+class SubDistrictVouchersNotifier extends _$SubDistrictVouchersNotifier {
+  @override
+  Future<List<VoucherDto>> build(String subDistrictId) => _fetch(subDistrictId);
+
+  Future<List<VoucherDto>> _fetch(String subDistrictId) async {
+    final repo = ref.read(subDistrictVoucherRepositoryProvider);
+    final result = await repo.getSubDistrictVouchers(subDistrictId);
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (list) => list,
     );
   }
 }
