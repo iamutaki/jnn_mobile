@@ -20,6 +20,7 @@ abstract class ResellerVoucherSaleRemoteDatasource {
   @POST('/v1/reseller-voucher-sale')
   Future<BaseResponse<SaleCreatedDto>> create(
     @Body() ResellerVoucherSaleRequest body,
+    @Header('Idempotency-Key') String idempotencyKey,
   );
 
   @GET('/v1/reseller-voucher-sale/{id}')

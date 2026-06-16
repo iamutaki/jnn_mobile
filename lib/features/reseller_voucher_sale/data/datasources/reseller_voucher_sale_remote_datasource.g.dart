@@ -27,10 +27,12 @@ class _ResellerVoucherSaleRemoteDatasource
   @override
   Future<BaseResponse<SaleCreatedDto>> create(
     ResellerVoucherSaleRequest body,
+    String idempotencyKey,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Idempotency-Key': idempotencyKey};
+    _headers.removeWhere((k, v) => v == null);
     final _data = body;
     final _options = _setStreamType<BaseResponse<SaleCreatedDto>>(
       Options(method: 'POST', headers: _headers, extra: _extra)

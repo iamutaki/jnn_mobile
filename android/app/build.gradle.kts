@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,6 +9,15 @@ plugins {
 
     // Firebase
     id("com.google.gms.google-services")
+}
+
+// Release signing config: when android/key.properties exists (CI), sign with the
+// stable upload keystore injected from GitHub secrets. When absent (local dev),
+// builds fall back to the debug signing config so nothing breaks day-to-day.
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -34,10 +46,36 @@ android {
         versionName = flutter.versionName
     }
 
+    // Only define the release signing config when key.properties exists (CI).
+    // Defining it with null storeFile — even if unused — makes AGP fail the
+    // package task, so it must not exist at all in local (debug) builds.
+    if (keystorePropertiesFile.exists()) {
+        signingConfigs {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
+    }
+
+    // lintVitalRelease (run automatically during release builds) hits an AGP 8.x
+    // task-dependency bug ("returnValueInputFile ... doesn't exist") that breaks
+    // every release build. Disable it; lint is still runnable on demand via
+    // `flutter analyze` / `./gradlew lint`.
+    lint {
+        checkReleaseBuilds = false
     }
 
     packaging {

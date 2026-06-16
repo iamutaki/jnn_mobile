@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/models/paginated_result.dart';
 import '../../domain/failures/reseller_voucher_sale_failure.dart';
@@ -20,7 +21,9 @@ class ResellerVoucherSaleRepositoryImpl
     ResellerVoucherSaleRequest request,
   ) async {
     try {
-      final response = await _remoteDatasource.create(request);
+      final idempotencyKey = _generateIdempotencyKey(request);
+      final response =
+          await _remoteDatasource.create(request, idempotencyKey);
       final id = response.data?.id;
       if (id == null) {
         return Either.left(
@@ -33,6 +36,26 @@ class ResellerVoucherSaleRepositoryImpl
     } catch (error) {
       return Either.left(ResellerVoucherSaleFailure(error.toString()));
     }
+  }
+
+  String _generateIdempotencyKey(ResellerVoucherSaleRequest request) {
+    final sortedItems = List<ResellerVoucherSaleItem>.from(request.items)
+      ..sort((a, b) => a.voucherId.compareTo(b.voucherId));
+
+    final buffer = StringBuffer()
+      ..write(request.saleDate)
+      ..write('|')
+      ..write(request.saleMonth)
+      ..write('|');
+
+    for (var i = 0; i < sortedItems.length; i++) {
+      if (i > 0) buffer.write(',');
+      buffer.write(
+        '${sortedItems[i].voucherId}:${sortedItems[i].qty}:${sortedItems[i].unitPrice}',
+      );
+    }
+
+    return Uuid().v5(Namespace.oid.value, buffer.toString());
   }
 
   @override
