@@ -77,7 +77,7 @@ final class ResellerVoucherSaleDetailNotifierProvider
   }) : super(
          retry: null,
          name: r'resellerVoucherSaleDetailProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -111,7 +111,7 @@ final class ResellerVoucherSaleDetailNotifierProvider
 }
 
 String _$resellerVoucherSaleDetailNotifierHash() =>
-    r'2625e3c996b3254b86171915cd3416d9d0c210b4';
+    r'c00fa823c262ceccf632bc820202c9d16b2876db';
 
 /// Detail sebuah sale (family by saleId). Menyediakan [complete] untuk
 /// menyelesaikan sale & me-reveal kode voucher.
@@ -131,7 +131,7 @@ final class ResellerVoucherSaleDetailNotifierFamily extends $Family
         name: r'resellerVoucherSaleDetailProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   /// Detail sebuah sale (family by saleId). Menyediakan [complete] untuk
@@ -174,5 +174,85 @@ abstract class _$ResellerVoucherSaleDetailNotifier
               Object?
             >;
     element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+/// Cursor-based pagination untuk riwayat penjualan (keepAlive agar state
+/// tetap ada saat navigasi bolak-balik, mengurangi API call).
+
+@ProviderFor(SaleHistoryPaging)
+final saleHistoryPagingProvider = SaleHistoryPagingProvider._();
+
+/// Cursor-based pagination untuk riwayat penjualan (keepAlive agar state
+/// tetap ada saat navigasi bolak-balik, mengurangi API call).
+final class SaleHistoryPagingProvider
+    extends
+        $NotifierProvider<
+          SaleHistoryPaging,
+          PagingController<String, ResellerVoucherSaleDto>
+        > {
+  /// Cursor-based pagination untuk riwayat penjualan (keepAlive agar state
+  /// tetap ada saat navigasi bolak-balik, mengurangi API call).
+  SaleHistoryPagingProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'saleHistoryPagingProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$saleHistoryPagingHash();
+
+  @$internal
+  @override
+  SaleHistoryPaging create() => SaleHistoryPaging();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(
+    PagingController<String, ResellerVoucherSaleDto> value,
+  ) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<PagingController<String, ResellerVoucherSaleDto>>(
+            value,
+          ),
+    );
+  }
+}
+
+String _$saleHistoryPagingHash() => r'3421fa2a24216f31f097a0784d65371639ee3742';
+
+/// Cursor-based pagination untuk riwayat penjualan (keepAlive agar state
+/// tetap ada saat navigasi bolak-balik, mengurangi API call).
+
+abstract class _$SaleHistoryPaging
+    extends $Notifier<PagingController<String, ResellerVoucherSaleDto>> {
+  PagingController<String, ResellerVoucherSaleDto> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              PagingController<String, ResellerVoucherSaleDto>,
+              PagingController<String, ResellerVoucherSaleDto>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                PagingController<String, ResellerVoucherSaleDto>,
+                PagingController<String, ResellerVoucherSaleDto>
+              >,
+              PagingController<String, ResellerVoucherSaleDto>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
   }
 }

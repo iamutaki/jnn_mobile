@@ -5,9 +5,13 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../flavors.dart';
+import '../../../activity_report/activity_report_router.dart';
 import '../../../master_data/master_data_router.dart';
 import '../../../profile/presentation/providers/profile_providers.dart';
+import '../../../sales/presentation/pages/voucher_sale_form_page.dart';
+import '../../../sales/presentation/pages/voucher_sale_history_page.dart';
 import '../../../sales/sales_router.dart';
+import '../../../voucher_stock/presentation/pages/voucher_stock_upload_form_page.dart';
 import '../../../voucher_stock/voucher_stock_router.dart';
 
 /// Menu item model untuk grid menu.
@@ -117,6 +121,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ],
                   ),
                 ),
+                const Gap(20),
+
+                // ── Quick Actions ──
+                _buildQuickActions(),
                 const Gap(24),
 
                 // ── Info Section ──
@@ -176,6 +184,57 @@ class _HomePageState extends ConsumerState<HomePage> {
                 style: const TextStyle(fontSize: 13, color: Color(0xFF8C8C8C)),
               ),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Section shortcut vertical — compact.
+  Widget _buildQuickActions() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            'Akses Cepat',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade500,
+            ),
+          ),
+        ),
+        const Gap(2),
+        _QuickActionTile(
+          icon: FLucideIcons.upload,
+          label: 'Upload Stok',
+          color: const Color(0xFFE8710A),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const VoucherStockUploadFormPage(),
+            ),
+          ),
+        ),
+        _QuickActionTile(
+          icon: FLucideIcons.receipt,
+          label: 'Penjualan Baru',
+          color: const Color(0xFF0EA573),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const VoucherSaleFormPage(),
+            ),
+          ),
+        ),
+        _QuickActionTile(
+          icon: FLucideIcons.clock,
+          label: 'Riwayat Penjualan',
+          color: const Color(0xFF2563EB),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const VoucherSaleHistoryPage(),
+            ),
           ),
         ),
       ],
@@ -294,7 +353,7 @@ class _MenuCard extends StatelessWidget {
       case 'Penjualan':
         context.push(SalesRouter.sales.path);
       case 'Laporan Kegiatan':
-      default:
+        context.push(ActivityReportRouter.activityReport.path);
         break;
     }
   }
@@ -336,6 +395,62 @@ class _MenuCard extends StatelessWidget {
                     color: Color(0xFF4A4A4A),
                   ),
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tile shortcut compact — icon + label + chevron.
+class _QuickActionTile extends StatelessWidget {
+  const _QuickActionTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 14),
+              ),
+              const Gap(10),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Icon(
+                FLucideIcons.chevronRight,
+                size: 14,
+                color: Colors.grey.shade400,
               ),
             ],
           ),

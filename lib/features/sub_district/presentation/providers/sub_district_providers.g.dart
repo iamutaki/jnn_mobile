@@ -35,7 +35,7 @@ final class SubDistrictListNotifierProvider
 }
 
 String _$subDistrictListNotifierHash() =>
-    r'52731850d61ac5137039e7d0e2a732f1fdc5a81f';
+    r'c141408f5a1832aa316d88c182b822a2b3f1b13f';
 
 abstract class _$SubDistrictListNotifier
     extends $AsyncNotifier<List<SubDistrictDto>> {

@@ -34,7 +34,7 @@ final class ResellerListNotifierProvider
 }
 
 String _$resellerListNotifierHash() =>
-    r'df9ed689eabc10e50827ae87a4124e9fe09a7e4b';
+    r'92cc9e19b4e499d5bb69646b7225990d62b31920';
 
 abstract class _$ResellerListNotifier
     extends $AsyncNotifier<List<ResellerDto>> {

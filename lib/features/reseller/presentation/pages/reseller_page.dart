@@ -63,7 +63,7 @@ class _ResellerPageState extends ConsumerState<ResellerPage> {
                   }
 
                   if (resellersAsync.hasError) {
-                    return _buildError(context);
+                    return _buildError(context, resellersAsync.error);
                   }
 
                   final items = resellersAsync.asData?.value ?? [];
@@ -100,8 +100,9 @@ class _ResellerPageState extends ConsumerState<ResellerPage> {
     await ref.read(resellerListProvider.notifier).refresh();
   }
 
-  Widget _buildError(BuildContext context) {
+  Widget _buildError(BuildContext context, Object? error) {
     return DataErrorWidget(
+      error: error,
       onRetry: () => ref.read(resellerListProvider.notifier).refresh(),
     );
   }

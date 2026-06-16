@@ -31,6 +31,9 @@ abstract class ResellerVoucherSaleRemoteDatasource {
   @POST('/v1/reseller-voucher-sale/{id}/complete')
   Future<HttpResponse<void>> complete(@Path('id') String id);
 
+  @POST('/v1/reseller-voucher-sale/{id}/cancel')
+  Future<HttpResponse<void>> cancel(@Path('id') String id);
+
   @GET('/v1/reseller-voucher-sale')
   Future<BaseResponse<List<ResellerVoucherSaleDto>>> getHistory(
     @Query('cursor') String? cursor,

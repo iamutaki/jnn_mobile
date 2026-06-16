@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/exceptions/api_exception.dart';
 import '../../data/models/district_dto.dart';
 import '../../data/providers/district_data_providers.dart';
 
@@ -16,7 +17,7 @@ class DistrictListNotifier extends _$DistrictListNotifier {
     final repo = ref.read(districtRepositoryProvider);
     final result = await repo.getDistricts();
     return result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (list) => list,
     );
   }
@@ -35,7 +36,7 @@ class DistrictListNotifier extends _$DistrictListNotifier {
     final repo = ref.read(districtRepositoryProvider);
     final result = await repo.createDistrict(name);
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     // Set loading lalu fetch ulang.
@@ -52,7 +53,7 @@ class DistrictListNotifier extends _$DistrictListNotifier {
     final repo = ref.read(districtRepositoryProvider);
     final result = await repo.updateDistrict(id, name);
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     state = const AsyncLoading();
@@ -69,7 +70,7 @@ class DistrictListNotifier extends _$DistrictListNotifier {
     final result = await repo.deleteDistrict(id);
 
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {
         // Hapus dari local state tanpa re-fetch
         final current = state.asData?.value ?? [];

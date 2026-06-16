@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/exceptions/api_exception.dart';
 import '../../data/models/reseller_dto.dart';
 import '../../data/providers/reseller_data_providers.dart';
 
@@ -16,7 +17,7 @@ class ResellerListNotifier extends _$ResellerListNotifier {
     final repo = ref.read(resellerRepositoryProvider);
     final result = await repo.getResellers();
     return result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (list) => list,
     );
   }
@@ -59,7 +60,7 @@ class ResellerListNotifier extends _$ResellerListNotifier {
       lng,
     );
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     state = const AsyncLoading();
@@ -101,7 +102,7 @@ class ResellerListNotifier extends _$ResellerListNotifier {
       lng,
     );
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     state = const AsyncLoading();
@@ -117,7 +118,7 @@ class ResellerListNotifier extends _$ResellerListNotifier {
     final repo = ref.read(resellerRepositoryProvider);
     final result = await repo.getReseller(id);
     return result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (reseller) => reseller,
     );
   }
@@ -127,7 +128,7 @@ class ResellerListNotifier extends _$ResellerListNotifier {
     final result = await repo.deleteReseller(id);
 
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {
         final current = state.asData?.value ?? [];
         state = AsyncData(current.where((r) => r.user.id != id).toList());

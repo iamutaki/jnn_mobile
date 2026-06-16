@@ -16,6 +16,8 @@ abstract interface class ResellerVoucherSaleRepository {
 
   Future<Either<ResellerVoucherSaleFailure, Unit>> complete(String id);
 
+  Future<Either<ResellerVoucherSaleFailure, Unit>> cancel(String id);
+
   Future<Either<ResellerVoucherSaleFailure,
       PaginatedResult<ResellerVoucherSaleDto>>> getHistory(String? cursor);
 }

@@ -69,6 +69,7 @@ dependencies:
   flutter_contacts: 2.2.1
   image: ^4.8.0
   infinite_scroll_pagination: ^5.1.1
+  qr_flutter: ^4.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -44,10 +44,13 @@ class ProfilePage extends ConsumerWidget {
                   children: [
                     GestureDetector(
                       onTap: () => _onAvatarTap(context, ref),
-                      child: SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: ClipOval(child: _buildAvatar(profile)),
+                      child: Skeletonizer(
+                        enabled: profile == null,
+                        child: SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: ClipOval(child: _buildAvatar(profile)),
+                        ),
                       ),
                     ),
                     const Gap(12),

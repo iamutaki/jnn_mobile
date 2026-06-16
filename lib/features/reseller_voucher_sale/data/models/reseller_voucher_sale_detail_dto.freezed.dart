@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AllocatedCodeDto {
 
- String get id; String? get status;
+ String get id; String? get status; String? get code;
 /// Create a copy of AllocatedCodeDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AllocatedCodeDtoCopyWith<AllocatedCodeDto> get copyWith => _$AllocatedCodeDtoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AllocatedCodeDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AllocatedCodeDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.code, code) || other.code == code));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status);
+int get hashCode => Object.hash(runtimeType,id,status,code);
 
 @override
 String toString() {
-  return 'AllocatedCodeDto(id: $id, status: $status)';
+  return 'AllocatedCodeDto(id: $id, status: $status, code: $code)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AllocatedCodeDtoCopyWith<$Res>  {
   factory $AllocatedCodeDtoCopyWith(AllocatedCodeDto value, $Res Function(AllocatedCodeDto) _then) = _$AllocatedCodeDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String? status
+ String id, String? status, String? code
 });
 
 
@@ -65,10 +65,11 @@ class _$AllocatedCodeDtoCopyWithImpl<$Res>
 
 /// Create a copy of AllocatedCodeDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = freezed,Object? code = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -154,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? status,  String? code)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AllocatedCodeDto() when $default != null:
-return $default(_that.id,_that.status);case _:
+return $default(_that.id,_that.status,_that.code);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return $default(_that.id,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? status,  String? code)  $default,) {final _that = this;
 switch (_that) {
 case _AllocatedCodeDto():
-return $default(_that.id,_that.status);case _:
+return $default(_that.id,_that.status,_that.code);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +196,10 @@ return $default(_that.id,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? status,  String? code)?  $default,) {final _that = this;
 switch (_that) {
 case _AllocatedCodeDto() when $default != null:
-return $default(_that.id,_that.status);case _:
+return $default(_that.id,_that.status,_that.code);case _:
   return null;
 
 }
@@ -210,11 +211,12 @@ return $default(_that.id,_that.status);case _:
 @JsonSerializable()
 
 class _AllocatedCodeDto implements AllocatedCodeDto {
-  const _AllocatedCodeDto({required this.id, this.status});
+  const _AllocatedCodeDto({required this.id, this.status, this.code});
   factory _AllocatedCodeDto.fromJson(Map<String, dynamic> json) => _$AllocatedCodeDtoFromJson(json);
 
 @override final  String id;
 @override final  String? status;
+@override final  String? code;
 
 /// Create a copy of AllocatedCodeDto
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AllocatedCodeDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AllocatedCodeDto&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.code, code) || other.code == code));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status);
+int get hashCode => Object.hash(runtimeType,id,status,code);
 
 @override
 String toString() {
-  return 'AllocatedCodeDto(id: $id, status: $status)';
+  return 'AllocatedCodeDto(id: $id, status: $status, code: $code)';
 }
 
 
@@ -249,7 +251,7 @@ abstract mixin class _$AllocatedCodeDtoCopyWith<$Res> implements $AllocatedCodeD
   factory _$AllocatedCodeDtoCopyWith(_AllocatedCodeDto value, $Res Function(_AllocatedCodeDto) _then) = __$AllocatedCodeDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? status
+ String id, String? status, String? code
 });
 
 
@@ -266,10 +268,11 @@ class __$AllocatedCodeDtoCopyWithImpl<$Res>
 
 /// Create a copy of AllocatedCodeDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = freezed,Object? code = freezed,}) {
   return _then(_AllocatedCodeDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

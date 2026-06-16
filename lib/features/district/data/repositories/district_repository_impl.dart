@@ -18,7 +18,7 @@ class DistrictRepositoryImpl implements DistrictRepository {
       final response = await _remoteDatasource.getDistricts();
       return Either.right(response.data ?? []);
     } on DioException catch (error) {
-      return Either.left(DistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(DistrictFailure(error.toString()));
     }
@@ -32,7 +32,7 @@ class DistrictRepositoryImpl implements DistrictRepository {
       await _remoteDatasource.createDistrict(DistrictRequest(name: name));
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(DistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(DistrictFailure(error.toString()));
     }
@@ -47,7 +47,7 @@ class DistrictRepositoryImpl implements DistrictRepository {
       await _remoteDatasource.updateDistrict(id, DistrictRequest(name: name));
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(DistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(DistrictFailure(error.toString()));
     }
@@ -59,26 +59,28 @@ class DistrictRepositoryImpl implements DistrictRepository {
       await _remoteDatasource.deleteDistrict(id);
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(DistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(DistrictFailure(error.toString()));
     }
   }
 
-  String _mapDioError(DioException error) {
+  DistrictFailure _mapDioError(DioException error) {
     final responseData = error.response?.data;
+    final statusCode = error.response?.statusCode;
 
     if (responseData is Map<String, dynamic>) {
       final message = responseData['error'];
       if (message is String && message.trim().isNotEmpty) {
-        return message;
+        return DistrictFailure(message, statusCode: statusCode);
       }
     }
 
     if (error.message != null && error.message!.trim().isNotEmpty) {
-      return error.message!;
+      return DistrictFailure(error.message!, statusCode: statusCode);
     }
 
-    return 'Terjadi kesalahan. Silakan coba lagi.';
+    return DistrictFailure('Terjadi kesalahan. Silakan coba lagi.',
+        statusCode: statusCode);
   }
 }

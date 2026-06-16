@@ -1,5 +1,6 @@
 class SubDistrictFailure {
-  const SubDistrictFailure(this.message);
+  const SubDistrictFailure(this.message, {this.statusCode});
 
   final String message;
+  final int? statusCode;
 }

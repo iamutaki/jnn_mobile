@@ -7,7 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../shared/widgets/data_error_widget.dart';
 import '../../../reseller_voucher_sale/data/models/reseller_voucher_sale_dto.dart';
-import '../../../reseller_voucher_sale/domain/providers/reseller_voucher_sale_domain_providers.dart';
+import '../../../reseller_voucher_sale/presentation/providers/reseller_voucher_sale_providers.dart';
 import 'sales_detail_page.dart';
 
 /// Format harga ke ribuan pemisah '.' (tanpa simbol), cth: 5000 -> "5.000".
@@ -38,6 +38,7 @@ class _VoucherSaleHistoryPageState
       saleNo: 'INV-XXXX',
       saleDate: '2026-06-16',
       saleMonth: '2026-06',
+      status: 'completed',
       items: const [
         ResellerVoucherSaleItemDto(voucherId: '1', qty: 0, unitPrice: 0),
       ],
@@ -49,6 +50,7 @@ class _VoucherSaleHistoryPageState
       saleNo: 'INV-XXXX',
       saleDate: '2026-06-16',
       saleMonth: '2026-06',
+      status: 'draft',
       items: const [
         ResellerVoucherSaleItemDto(voucherId: '2', qty: 0, unitPrice: 0),
       ],
@@ -60,6 +62,7 @@ class _VoucherSaleHistoryPageState
       saleNo: 'INV-XXXX',
       saleDate: '2026-06-16',
       saleMonth: '2026-06',
+      status: 'cancelled',
       items: const [
         ResellerVoucherSaleItemDto(voucherId: '3', qty: 0, unitPrice: 0),
       ],
@@ -68,38 +71,18 @@ class _VoucherSaleHistoryPageState
     ),
   ];
 
-  String? _nextCursor;
-  late final PagingController<String, ResellerVoucherSaleDto> _pagingController;
   late final VoidCallback _onStateChanged;
 
   @override
   void initState() {
     super.initState();
     _onStateChanged = () => setState(() {});
-    _pagingController = PagingController<String, ResellerVoucherSaleDto>(
-      getNextPageKey: (state) {
-        if (state.keys == null || state.keys!.isEmpty) return '';
-        return _nextCursor;
-      },
-      fetchPage: _fetchPage,
-    );
-    _pagingController.addListener(_onStateChanged);
-  }
-
-  Future<List<ResellerVoucherSaleDto>> _fetchPage(String pageKey) async {
-    final useCase = ref.read(getResellerVoucherSaleHistoryUseCaseProvider);
-    final cursor = pageKey.isEmpty ? null : pageKey;
-    final result = await useCase(cursor);
-    return result.fold((failure) => throw Exception(failure.message), (page) {
-      _nextCursor = page.nextCursor;
-      return page.items;
-    });
+    ref.read(saleHistoryPagingProvider).addListener(_onStateChanged);
   }
 
   @override
   void dispose() {
-    _pagingController.removeListener(_onStateChanged);
-    _pagingController.dispose();
+    ref.read(saleHistoryPagingProvider).removeListener(_onStateChanged);
     super.dispose();
   }
 
@@ -139,22 +122,24 @@ class _VoucherSaleHistoryPageState
   }
 
   Widget _buildBody() {
+    final pagingController = ref.watch(saleHistoryPagingProvider);
     return RefreshIndicator(
       onRefresh: () async {
-        _pagingController.refresh();
+        pagingController.refresh();
       },
       backgroundColor: Theme.of(context).colorScheme.surface,
       color: Theme.of(context).colorScheme.primary,
       child: PagedListView<String, ResellerVoucherSaleDto>.separated(
         shrinkWrap: true,
-        state: _pagingController.value,
-        fetchNextPage: () => _pagingController.fetchNextPage(),
+        state: pagingController.value,
+        fetchNextPage: () => pagingController.fetchNextPage(),
         builderDelegate: PagedChildBuilderDelegate<ResellerVoucherSaleDto>(
           itemBuilder: (context, item, index) {
             final subtitle = _buildSubtitle(item);
             return _ItemTile(
               item: item,
               subtitle: subtitle,
+              status: item.status,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => SalesDetailPage(saleId: item.id),
@@ -172,7 +157,7 @@ class _VoucherSaleHistoryPageState
             ),
           ),
           firstPageErrorIndicatorBuilder: (context) =>
-              DataErrorWidget(onRetry: () => _pagingController.refresh()),
+              DataErrorWidget(onRetry: () => pagingController.refresh()),
           noItemsFoundIndicatorBuilder: (context) => _buildEmptyState(),
         ),
         separatorBuilder: (context, index) =>
@@ -211,13 +196,53 @@ class _VoucherSaleHistoryPageState
     final parts = <String>['$totalQty qty', 'Rp${_formatPrice(totalAmount)}'];
     return parts.join(' · ');
   }
+
+  static String _statusLabel(String? status) {
+    switch (status) {
+      case 'draft':
+        return 'Draft';
+      case 'completed':
+        return 'Selesai';
+      case 'cancelled':
+        return 'Dibatalkan';
+      default:
+        return status ?? '';
+    }
+  }
+
+  static Color _statusColor(String? status) {
+    switch (status) {
+      case 'draft':
+        return const Color(0xFFD97706);
+      case 'completed':
+        return const Color(0xFF059669);
+      case 'cancelled':
+        return const Color(0xFFDC2626);
+      default:
+        return Colors.grey;
+    }
+  }
+
+  static Color _statusBgColor(String? status) {
+    switch (status) {
+      case 'draft':
+        return const Color(0xFFFEF3C7);
+      case 'completed':
+        return const Color(0xFFD1FAE5);
+      case 'cancelled':
+        return const Color(0xFFFEE2E2);
+      default:
+        return Colors.grey.shade100;
+    }
+  }
 }
 
 class _ItemTile extends StatelessWidget {
-  const _ItemTile({required this.item, required this.subtitle, this.onTap});
+  const _ItemTile({required this.item, required this.subtitle, this.status, this.onTap});
 
   final ResellerVoucherSaleDto item;
   final String subtitle;
+  final String? status;
   final VoidCallback? onTap;
 
   @override
@@ -247,11 +272,27 @@ class _ItemTile extends StatelessWidget {
               size: 20,
             ),
           ),
-          trailing: Icon(
-            FLucideIcons.chevronRight,
-            size: 16,
-            color: Colors.grey.shade400,
-          ),
+          trailing: status != null
+              ? Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _VoucherSaleHistoryPageState._statusBgColor(status),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    _VoucherSaleHistoryPageState._statusLabel(status!),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: _VoucherSaleHistoryPageState._statusColor(status),
+                    ),
+                  ),
+                )
+              : Icon(
+                  FLucideIcons.chevronRight,
+                  size: 16,
+                  color: Colors.grey.shade400,
+                ),
           title: Text(
             title,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),

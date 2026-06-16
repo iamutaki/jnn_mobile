@@ -19,7 +19,7 @@ class SubDistrictRepositoryImpl implements SubDistrictRepository {
       final response = await _remoteDatasource.getSubDistricts();
       return Either.right(response.data ?? []);
     } on DioException catch (error) {
-      return Either.left(SubDistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(SubDistrictFailure(error.toString()));
     }
@@ -36,7 +36,7 @@ class SubDistrictRepositoryImpl implements SubDistrictRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(SubDistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(SubDistrictFailure(error.toString()));
     }
@@ -55,7 +55,7 @@ class SubDistrictRepositoryImpl implements SubDistrictRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(SubDistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(SubDistrictFailure(error.toString()));
     }
@@ -69,26 +69,28 @@ class SubDistrictRepositoryImpl implements SubDistrictRepository {
       await _remoteDatasource.deleteSubDistrict(id);
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(SubDistrictFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(SubDistrictFailure(error.toString()));
     }
   }
 
-  String _mapDioError(DioException error) {
+  SubDistrictFailure _mapDioError(DioException error) {
     final responseData = error.response?.data;
+    final statusCode = error.response?.statusCode;
 
     if (responseData is Map<String, dynamic>) {
       final message = responseData['error'];
       if (message is String && message.trim().isNotEmpty) {
-        return message;
+        return SubDistrictFailure(message, statusCode: statusCode);
       }
     }
 
     if (error.message != null && error.message!.trim().isNotEmpty) {
-      return error.message!;
+      return SubDistrictFailure(error.message!, statusCode: statusCode);
     }
 
-    return 'Terjadi kesalahan. Silakan coba lagi.';
+    return SubDistrictFailure('Terjadi kesalahan. Silakan coba lagi.',
+        statusCode: statusCode);
   }
 }

@@ -71,7 +71,7 @@ class _VoucherPageState extends ConsumerState<VoucherPage> {
                   }
 
                   if (vouchersAsync.hasError) {
-                    return _buildError(context);
+                    return _buildError(context, vouchersAsync.error);
                   }
 
                   final items = vouchersAsync.asData?.value ?? [];
@@ -108,8 +108,9 @@ class _VoucherPageState extends ConsumerState<VoucherPage> {
     await ref.read(voucherListProvider.notifier).refresh();
   }
 
-  Widget _buildError(BuildContext context) {
+  Widget _buildError(BuildContext context, Object? error) {
     return DataErrorWidget(
+      error: error,
       onRetry: () => ref.read(voucherListProvider.notifier).refresh(),
     );
   }

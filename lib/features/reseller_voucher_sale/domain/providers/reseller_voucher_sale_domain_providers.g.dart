@@ -163,6 +163,57 @@ final class GetResellerVoucherSaleDetailUseCaseProvider
 String _$getResellerVoucherSaleDetailUseCaseHash() =>
     r'edf0a7bc79befe64e503705cb11112f78af7fafe';
 
+@ProviderFor(cancelResellerVoucherSaleUseCase)
+final cancelResellerVoucherSaleUseCaseProvider =
+    CancelResellerVoucherSaleUseCaseProvider._();
+
+final class CancelResellerVoucherSaleUseCaseProvider
+    extends
+        $FunctionalProvider<
+          CancelResellerVoucherSaleUseCase,
+          CancelResellerVoucherSaleUseCase,
+          CancelResellerVoucherSaleUseCase
+        >
+    with $Provider<CancelResellerVoucherSaleUseCase> {
+  CancelResellerVoucherSaleUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cancelResellerVoucherSaleUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cancelResellerVoucherSaleUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<CancelResellerVoucherSaleUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CancelResellerVoucherSaleUseCase create(Ref ref) {
+    return cancelResellerVoucherSaleUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CancelResellerVoucherSaleUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CancelResellerVoucherSaleUseCase>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$cancelResellerVoucherSaleUseCaseHash() =>
+    r'5d6c4ceeabe207ad7db2bd460c7fb2a77129867c';
+
 @ProviderFor(completeResellerVoucherSaleUseCase)
 final completeResellerVoucherSaleUseCaseProvider =
     CompleteResellerVoucherSaleUseCaseProvider._();

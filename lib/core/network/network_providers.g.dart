@@ -303,3 +303,91 @@ final class ImagekitDioProvider extends $FunctionalProvider<Dio, Dio, Dio>
 }
 
 String _$imagekitDioHash() => r'a73ba66c37b2f5b965782811d45cb55b56bd39a5';
+
+@ProviderFor(nominatimApiClient)
+final nominatimApiClientProvider = NominatimApiClientProvider._();
+
+final class NominatimApiClientProvider
+    extends
+        $FunctionalProvider<
+          NominatimApiClient,
+          NominatimApiClient,
+          NominatimApiClient
+        >
+    with $Provider<NominatimApiClient> {
+  NominatimApiClientProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'nominatimApiClientProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$nominatimApiClientHash();
+
+  @$internal
+  @override
+  $ProviderElement<NominatimApiClient> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  NominatimApiClient create(Ref ref) {
+    return nominatimApiClient(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(NominatimApiClient value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<NominatimApiClient>(value),
+    );
+  }
+}
+
+String _$nominatimApiClientHash() =>
+    r'b9c677471da9191863bf6722e3d8f54a6d2f72eb';
+
+@ProviderFor(nominatimDio)
+final nominatimDioProvider = NominatimDioProvider._();
+
+final class NominatimDioProvider extends $FunctionalProvider<Dio, Dio, Dio>
+    with $Provider<Dio> {
+  NominatimDioProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'nominatimDioProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$nominatimDioHash();
+
+  @$internal
+  @override
+  $ProviderElement<Dio> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Dio create(Ref ref) {
+    return nominatimDio(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Dio value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Dio>(value),
+    );
+  }
+}
+
+String _$nominatimDioHash() => r'b23df0d0bf818a074eef47ee1b32f33d7d59a188';

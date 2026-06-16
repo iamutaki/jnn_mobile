@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/models/reseller_voucher_sale_detail_dto.dart';
+import '../../data/models/reseller_voucher_sale_dto.dart';
 import '../../data/models/reseller_voucher_sale_request.dart';
 import '../../domain/providers/reseller_voucher_sale_domain_providers.dart';
 
@@ -37,7 +39,7 @@ class ResellerVoucherSaleNotifier extends _$ResellerVoucherSaleNotifier {
 
 /// Detail sebuah sale (family by saleId). Menyediakan [complete] untuk
 /// menyelesaikan sale & me-reveal kode voucher.
-@riverpod
+@Riverpod(keepAlive: true)
 class ResellerVoucherSaleDetailNotifier
     extends _$ResellerVoucherSaleDetailNotifier {
   @override
@@ -66,8 +68,49 @@ class ResellerVoucherSaleDetailNotifier
     state = await AsyncValue.guard(() => _fetch(saleId));
   }
 
+  /// Cancel sale (POST /:id/cancel, 204) lalu re-fetch detail.
+  Future<void> cancel() async {
+    final useCase = ref.read(cancelResellerVoucherSaleUseCaseProvider);
+    final result = await useCase(saleId);
+    result.fold(
+      (failure) => throw Exception(failure.message),
+      (_) {},
+    );
+    state = await AsyncValue.guard(() => _fetch(saleId));
+  }
+
   Future<void> refresh() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => _fetch(saleId));
+  }
+}
+
+/// Cursor-based pagination untuk riwayat penjualan (keepAlive agar state
+/// tetap ada saat navigasi bolak-balik, mengurangi API call).
+@Riverpod(keepAlive: true)
+class SaleHistoryPaging extends _$SaleHistoryPaging {
+  @override
+  PagingController<String, ResellerVoucherSaleDto> build() {
+    String? nextCursor;
+    final controller = PagingController<String, ResellerVoucherSaleDto>(
+      getNextPageKey: (state) {
+        if (state.keys == null || state.keys!.isEmpty) return '';
+        return nextCursor;
+      },
+      fetchPage: (pageKey) async {
+        final useCase = ref.read(getResellerVoucherSaleHistoryUseCaseProvider);
+        final cursor = pageKey.isEmpty ? null : pageKey;
+        final result = await useCase(cursor);
+        return result.fold(
+          (failure) => throw Exception(failure.message),
+          (page) {
+            nextCursor = page.nextCursor;
+            return page.items;
+          },
+        );
+      },
+    );
+    ref.onDispose(controller.dispose);
+    return controller;
   }
 }

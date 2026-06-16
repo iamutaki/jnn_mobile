@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/providers/reseller_voucher_sale_data_providers.dart';
+import '../usecases/cancel_reseller_voucher_sale_use_case.dart';
 import '../usecases/complete_reseller_voucher_sale_use_case.dart';
 import '../usecases/create_reseller_voucher_sale_use_case.dart';
 import '../usecases/get_reseller_voucher_sale_detail_use_case.dart';
@@ -29,6 +30,13 @@ GetResellerVoucherSaleDetailUseCase getResellerVoucherSaleDetailUseCase(
   Ref ref,
 ) {
   return GetResellerVoucherSaleDetailUseCase(
+    ref.watch(resellerVoucherSaleRepositoryProvider),
+  );
+}
+
+@riverpod
+CancelResellerVoucherSaleUseCase cancelResellerVoucherSaleUseCase(Ref ref) {
+  return CancelResellerVoucherSaleUseCase(
     ref.watch(resellerVoucherSaleRepositoryProvider),
   );
 }

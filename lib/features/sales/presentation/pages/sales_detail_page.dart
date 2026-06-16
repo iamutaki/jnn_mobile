@@ -5,8 +5,9 @@ import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import 'package:qr_flutter/qr_flutter.dart';
+
 import '../../../../shared/widgets/data_error_widget.dart';
-import '../../../digital_voucher/presentation/providers/digital_voucher_providers.dart';
 import '../../../reseller_voucher_sale/data/models/reseller_voucher_sale_detail_dto.dart';
 import '../../../reseller_voucher_sale/presentation/providers/reseller_voucher_sale_providers.dart';
 import '../../../voucher/data/models/voucher_dto.dart';
@@ -23,8 +24,18 @@ String _formatPrice(int price) {
 }
 
 const _shortMonths = <String>[
-  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'Mei',
+  'Jun',
+  'Jul',
+  'Agu',
+  'Sep',
+  'Okt',
+  'Nov',
+  'Des',
 ];
 
 /// Format "YYYY-MM-DD" → "16 Jun 2026".
@@ -36,13 +47,18 @@ String _formatSaleDate(String iso) {
 
 /// Halaman detail sale.
 ///
-/// - `status == draft` → tampilkan tombol **Tampilkan Kode** (POST
-///   `/v1/reseller-voucher-sale/:id/complete`, 204) lalu re-fetch.
-/// - `status == completed` → tampilkan kode voucher tiap allocatedCode,
-///   di-fetch via `GET /v1/digital-voucher/:id`. Kode bisa di-copy / difoto.
+/// Kode voucher dibaca langsung dari `allocatedCodes[].code` di response sales
+/// detail (tidak ada fetch terpisah):
+/// - Default tampilkan `••••••`, tap pada kartu untuk reveal kode (hanya saat
+///   `status == completed` dan kode tersedia).
+/// - `status == draft` → tersedia tombol **Pembayaran Diterima**.
 /// - `status == cancelled` → tampilkan catatan.
 class SalesDetailPage extends ConsumerStatefulWidget {
-  const SalesDetailPage({super.key, required this.saleId, this.showBackButton = true});
+  const SalesDetailPage({
+    super.key,
+    required this.saleId,
+    this.showBackButton = true,
+  });
 
   final String saleId;
   final bool showBackButton;
@@ -53,51 +69,92 @@ class SalesDetailPage extends ConsumerStatefulWidget {
 
 class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
   bool _isCompleting = false;
-  bool _codesRevealed = false;
+  bool _isCancelling = false;
 
-  Future<void> _onTampilkanKode() async {
-    // complete() HANYA dipanggil saat status masih draft (tap pertama).
-    // Sale yang sudah completed cukup reveal kode tanpa call complete lagi.
-    final isDraft = ref
+  Future<void> _onConfirmPayment() async {
+    // Tombol ini hanya tampil saat status `draft`. complete() memicu re-fetch
+    // → status jadi `completed` → kode tampil plain di build berikutnya.
+    final isDraft =
+        ref
             .read(resellerVoucherSaleDetailProvider(widget.saleId))
             .asData
             ?.value
             .status ==
         'draft';
 
-    if (isDraft) {
-      setState(() => _isCompleting = true);
-      try {
-        await ref
-            .read(resellerVoucherSaleDetailProvider(widget.saleId).notifier)
-            .complete();
-      } catch (e) {
-        if (!mounted) return;
-        setState(() => _isCompleting = false);
-        _showToast(
-          e.toString().replaceFirst('Exception: ', ''),
-          destructive: true,
-        );
-        return;
-      }
+    if (!isDraft) return;
+
+    setState(() => _isCompleting = true);
+    try {
+      await ref
+          .read(resellerVoucherSaleDetailProvider(widget.saleId).notifier)
+          .complete();
+      ref.read(saleHistoryPagingProvider).refresh();
+    } catch (e) {
       if (!mounted) return;
       setState(() => _isCompleting = false);
+      _showToast(
+        e.toString().replaceFirst('Exception: ', ''),
+        destructive: true,
+      );
+      return;
     }
+    if (!mounted) return;
+    setState(() => _isCompleting = false);
+  }
 
-    // Reveal kode (status kini 'completed').
-    setState(() => _codesRevealed = true);
+  Future<void> _onCancel() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Batalkan Transaksi'),
+        content: const Text('Yakin ingin membatalkan transaksi ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Tidak'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              'Ya, Batalkan',
+              style: TextStyle(color: Colors.red.shade600),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    setState(() => _isCancelling = true);
+    try {
+      await ref
+          .read(resellerVoucherSaleDetailProvider(widget.saleId).notifier)
+          .cancel();
+      ref.read(saleHistoryPagingProvider).refresh();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isCancelling = false);
+      _showToast(
+        e.toString().replaceFirst('Exception: ', ''),
+        destructive: true,
+      );
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _isCancelling = false);
   }
 
   void _copyCode(String code) {
     Clipboard.setData(ClipboardData(text: code));
-    _showToast('Kode disalin');
+    _showToast('Kode $code disalin');
   }
 
   void _showToast(String message, {bool destructive = false}) {
     showFToast(
       context: context,
-      variant:
-          destructive ? FToastVariant.destructive : FToastVariant.primary,
+      variant: destructive ? FToastVariant.destructive : FToastVariant.primary,
       icon: Icon(
         destructive ? FLucideIcons.alertCircle : FLucideIcons.checkCircle2,
         size: 16,
@@ -108,7 +165,9 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final detailAsync = ref.watch(resellerVoucherSaleDetailProvider(widget.saleId));
+    final detailAsync = ref.watch(
+      resellerVoucherSaleDetailProvider(widget.saleId),
+    );
     final vouchersAsync = ref.watch(voucherListProvider);
     final nameMap = <String, String>{
       for (final v in (vouchersAsync.asData?.value ?? const <VoucherDto>[]))
@@ -135,8 +194,8 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
                     Text(
                       'Detail Penjualan',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
@@ -147,8 +206,11 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
                   loading: () => _buildSkeleton(),
                   error: (e, _) => DataErrorWidget(
                     onRetry: () => ref
-                        .read(resellerVoucherSaleDetailProvider(widget.saleId)
-                            .notifier)
+                        .read(
+                          resellerVoucherSaleDetailProvider(
+                            widget.saleId,
+                          ).notifier,
+                        )
                         .refresh(),
                   ),
                   data: (detail) => ListView(
@@ -253,8 +315,8 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
     );
   }
 
-  int _itemsTotal(ResellerVoucherSaleDetailDto detail) =>
-      detail.items.fold<int>(0, (s, i) => s + (i.totalAmount ?? i.qty * i.unitPrice));
+  int _itemsTotal(ResellerVoucherSaleDetailDto detail) => detail.items
+      .fold<int>(0, (s, i) => s + (i.totalAmount ?? i.qty * i.unitPrice));
 
   /// Placeholder loading yang menyerupai layout detail (summary + item).
   Widget _buildSkeleton() {
@@ -305,9 +367,9 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
 
   /// Section yang berubah sesuai status.
   ///
-  /// Tombol tampil untuk semua status kecuali `cancelled`. Kode hanya tampil
-  /// setelah user menekan tombol (reveal). complete() hanya dipanggil saat
-  /// status masih `draft` — lihat [_onTampilkanKode].
+  /// - `cancelled` → banner.
+  /// - `completed` → voucher tampil, kode **plain**.
+  /// - `draft` → info + tombol **Pembayaran Diterima**; kode `******`.
   Widget _buildStatusSection(
     ResellerVoucherSaleDetailDto detail,
     Map<String, String> nameMap,
@@ -320,41 +382,65 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
       );
     }
 
-    // Kode tampil hanya setelah user menekan tombol (reveal).
-    if (detail.status == 'completed' && _codesRevealed) {
-      return _buildCodes(detail, nameMap);
-    }
+    final hasCodes = detail.items.any((i) => i.allocatedCodes.isNotEmpty);
+    final completed = detail.status == 'completed';
 
-    // draft (tap pertama → complete) ATAU completed-belum-reveal (cukup reveal).
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildInfoBanner(
-          icon: FLucideIcons.ticket,
-          message: detail.status == 'draft'
-              ? 'Selesaikan transaksi untuk menampilkan kode voucher.'
-              : 'Kode voucher siap ditampilkan.',
-        ),
-        const Gap(12),
-        FButton(
-          onPress: _isCompleting ? null : _onTampilkanKode,
-          variant: FButtonVariant.primary,
-          child: _isCompleting
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: FCircularProgress.loader(),
-                )
-              : const Text('Tampilkan Kode'),
-        ),
+        if (detail.status == 'draft') ...[
+          _buildInfoBanner(
+            icon: FLucideIcons.ticket,
+            message: 'Selesaikan transaksi untuk membuka kode voucher.',
+          ),
+          const Gap(12),
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: FButton(
+                  onPress: _isCancelling ? null : _onCancel,
+                  variant: FButtonVariant.destructive,
+                  child: _isCancelling
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: FCircularProgress.loader(),
+                        )
+                      : const Text('Batalkan'),
+                ),
+              ),
+              const Gap(12),
+              SizedBox(
+                width: double.infinity,
+                child: FButton(
+                  onPress: _isCompleting ? null : _onConfirmPayment,
+                  variant: FButtonVariant.primary,
+                  child: _isCompleting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: FCircularProgress.loader(),
+                        )
+                      : const Text('Pembayaran Diterima'),
+                ),
+              ),
+            ],
+          ),
+          if (hasCodes) const Gap(16),
+        ],
+        if (hasCodes) _buildCodes(detail, nameMap, completed: completed),
       ],
     );
   }
 
+  /// Daftar voucher (per item → per allocatedCode). [completed] menentukan
+  /// apakah reveal kode diperbolehkan.
   Widget _buildCodes(
     ResellerVoucherSaleDetailDto detail,
-    Map<String, String> nameMap,
-  ) {
+    Map<String, String> nameMap, {
+    required bool completed,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -368,8 +454,13 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
         ),
         const Gap(8),
         for (final item in detail.items) ...[
-          _ItemCodesCard(item: item, nameMap: nameMap, onCopy: _copyCode),
-          const Gap(12),
+          _VoucherGroup(
+            item: item,
+            nameMap: nameMap,
+            completed: completed,
+            onCopy: _copyCode,
+          ),
+          const Gap(16),
         ],
       ],
     );
@@ -426,112 +517,402 @@ class _SalesDetailPageState extends ConsumerState<SalesDetailPage> {
   }
 }
 
-/// Kartu satu item: header (nama voucher + qty × harga = total) lalu daftar
-/// kode (tiap kode di-fetch via digitalVoucherDetailProvider).
-class _ItemCodesCard extends ConsumerWidget {
-  const _ItemCodesCard({
+/// Satu grup voucher: header "{nama} ({n} Voucher)" lalu satu kartu tiket
+/// per `allocatedCode`.
+class _VoucherGroup extends StatelessWidget {
+  const _VoucherGroup({
     required this.item,
     required this.nameMap,
+    required this.completed,
     required this.onCopy,
   });
 
   final ResellerVoucherSaleDetailItemDto item;
   final Map<String, String> nameMap;
+  final bool completed;
   final void Function(String code) onCopy;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final name = nameMap[item.voucherId] ?? item.voucherId;
-    final total = item.totalAmount ?? item.qty * item.unitPrice;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            name,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    final count = item.allocatedCodes.length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: Row(
+            children: [
+              Flexible(
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF111827),
+                  ),
+                ),
+              ),
+              const Gap(8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _VoucherTicket.accent.withAlpha(20),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '$count Voucher',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: _VoucherTicket.accent,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const Gap(2),
-          Text(
-            '${item.qty} × Rp${_formatPrice(item.unitPrice)} = Rp${_formatPrice(total)}',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+        ),
+        for (final ac in item.allocatedCodes)
+          _VoucherTicket(
+            voucherName: name,
+            code: ac.code,
+            unitPrice: item.unitPrice,
+            completed: completed,
+            onCopy: onCopy,
           ),
-          const Gap(4),
-          for (final code in item.allocatedCodes)
-            _CodeRow(
-              digitalVoucherId: code.id,
-              onCopy: onCopy,
-            ),
-        ],
-      ),
+      ],
     );
   }
 }
 
-/// Satu baris kode voucher; menampilkan kode (selectable) + tombol copy.
-class _CodeRow extends ConsumerWidget {
-  const _CodeRow({required this.digitalVoucherId, required this.onCopy});
+/// Kartu tiket voucher per `allocatedCode`.
+///
+/// Default menampilkan `••••••`, tap pada area info untuk reveal kode.
+/// QR code di kiri, tap untuk preview/zoom. Tinggi konsisten antara state.
+class _VoucherTicket extends StatefulWidget {
+  const _VoucherTicket({
+    required this.voucherName,
+    required this.code,
+    required this.unitPrice,
+    required this.completed,
+    required this.onCopy,
+  });
 
-  final String digitalVoucherId;
+  final String voucherName;
+  final String? code;
+  final int unitPrice;
+  final bool completed;
   final void Function(String code) onCopy;
 
+  static const Color accent = Color(0xFF1447E6);
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(digitalVoucherDetailProvider(digitalVoucherId));
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: async.when(
-        loading: () => const Text(
-          '••••••••',
-          style: TextStyle(
-            fontFamily: 'monospace',
-            fontWeight: FontWeight.w600,
-            color: Colors.grey,
-          ),
+  State<_VoucherTicket> createState() => _VoucherTicketState();
+}
+
+class _VoucherTicketState extends State<_VoucherTicket> {
+  bool _revealed = false;
+  static const double _qrSize = 96.0;
+  static const double _qrAreaWidth = 120.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasCode =
+        widget.completed && widget.code != null && widget.code!.isNotEmpty;
+    final display = _revealed && hasCode ? widget.code! : '••••••';
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.grey.shade200),
         ),
-        error: (e, _) => const Text(
-          'Gagal memuat kode',
-          style: TextStyle(fontSize: 13, color: Colors.red),
-        ),
-        data: (dv) {
-          final code = dv.code;
-          return Row(
-            children: [
-              Expanded(
-                child: SelectableText(
-                  code ?? '-',
-                  style: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+        child: Stack(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(width: 30),
+                _buildQrSection(hasCode),
+                Expanded(child: _buildInfoContent(hasCode, display)),
+                const SizedBox(width: 30),
+              ],
+            ),
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 30,
+              child: _buildAccentStrip(),
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: 30,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _VoucherTicket.accent,
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(14),
+                    bottomRight: Radius.circular(14),
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: RotatedBox(
+                  quarterTurns: 1,
+                  child: Text(
+                    'JNN WiFi',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
               ),
-              if (code != null && code.isNotEmpty)
-                GestureDetector(
-                  onTap: () => onCopy(code),
-                  child: Icon(
-                    FLucideIcons.copy,
-                    size: 16,
-                    color: Colors.grey.shade500,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccentStrip() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(14),
+          bottomLeft: Radius.circular(14),
+        ),
+      ),
+      child: Center(
+        child: RotatedBox(
+          quarterTurns: 3,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              _formatPrice(widget.unitPrice),
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQrSection(bool hasCode) {
+    return GestureDetector(
+      onTap: hasCode ? () => _showQrPreview(context) : null,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: _qrAreaWidth,
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            QrImageView(
+              data: 'https://jnn.net/login.html?code=${widget.code ?? ''}',
+              version: QrVersions.auto,
+              size: _qrSize,
+              backgroundColor: Colors.white,
+              eyeStyle: const QrEyeStyle(
+                eyeShape: QrEyeShape.square,
+                color: Colors.black,
+              ),
+              dataModuleStyle: const QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoContent(bool hasCode, String display) {
+    return GestureDetector(
+      onTap: hasCode ? () => setState(() => _revealed = !_revealed) : null,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 10, 12, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.voucherName,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const Gap(8),
+            SizedBox(
+              height: 34,
+              child: Row(
+                children: [
+                  Icon(
+                    hasCode && _revealed
+                        ? FLucideIcons.eye
+                        : FLucideIcons.eyeOff,
+                    size: 17,
+                    color: _VoucherTicket.accent.withAlpha(180),
+                  ),
+                  const Gap(8),
+                  Expanded(
+                    child: Text(
+                      display,
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.5,
+                        color: hasCode ? const Color(0xFF111827) : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  if (hasCode)
+                    GestureDetector(
+                      onTap: () => widget.onCopy(widget.code!),
+                      child: Icon(
+                        FLucideIcons.copy,
+                        size: 18,
+                        color: _VoucherTicket.accent,
+                      ),
+                    )
+                  else
+                    const SizedBox(width: 24, height: 24),
+                ],
+              ),
+            ),
+            if (hasCode) ...[
+              const Gap(3),
+              Text(
+                _revealed ? 'Tap untuk sembunyikan' : 'Tap untuk lihat kode',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showQrPreview(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.all(16),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.voucherName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.of(ctx).pop(),
+                    child: const Icon(FLucideIcons.x, size: 20),
+                  ),
+                ],
+              ),
+              const Gap(20),
+              Container(
+                width: 320,
+                height: 320,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  child: Center(
+                    child: QrImageView(
+                      data: 'https://jnn.net/login.html?code=${widget.code!}',
+                      version: QrVersions.auto,
+                      size: 290,
+                      backgroundColor: Colors.white,
+                      eyeStyle: const QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: Colors.black,
+                      ),
+                      dataModuleStyle: const QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.square,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ),
+              ),
+              const Gap(16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: SelectableText(
+                  widget.code!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+              const Gap(16),
+              SizedBox(
+                width: double.infinity,
+                child: FButton(
+                  onPress: () => Navigator.of(ctx).pop(),
+                  variant: FButtonVariant.secondary,
+                  child: const Text('Tutup'),
+                ),
+              ),
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
   }

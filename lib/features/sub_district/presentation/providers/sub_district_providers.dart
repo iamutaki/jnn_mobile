@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/exceptions/api_exception.dart';
 import '../../data/models/sub_district_dto.dart';
 import '../../data/providers/sub_district_data_providers.dart';
 
@@ -16,7 +17,7 @@ class SubDistrictListNotifier extends _$SubDistrictListNotifier {
     final repo = ref.read(subDistrictRepositoryProvider);
     final result = await repo.getSubDistricts();
     return result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (list) => list,
     );
   }
@@ -35,7 +36,7 @@ class SubDistrictListNotifier extends _$SubDistrictListNotifier {
     final repo = ref.read(subDistrictRepositoryProvider);
     final result = await repo.createSubDistrict(districtId, name);
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     state = const AsyncLoading();
@@ -51,7 +52,7 @@ class SubDistrictListNotifier extends _$SubDistrictListNotifier {
     final repo = ref.read(subDistrictRepositoryProvider);
     final result = await repo.updateSubDistrict(id, districtId, name);
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     state = const AsyncLoading();
@@ -68,7 +69,7 @@ class SubDistrictListNotifier extends _$SubDistrictListNotifier {
     final result = await repo.deleteSubDistrict(id);
 
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {
         final current = state.asData?.value ?? [];
         state = AsyncData(current.where((d) => d.id != id).toList());

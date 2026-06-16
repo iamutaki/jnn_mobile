@@ -90,6 +90,18 @@ class ResellerVoucherSaleRepositoryImpl
   }
 
   @override
+  Future<Either<ResellerVoucherSaleFailure, Unit>> cancel(String id) async {
+    try {
+      await _remoteDatasource.cancel(id);
+      return Either.right(unit);
+    } on DioException catch (error) {
+      return Either.left(ResellerVoucherSaleFailure(_mapDioError(error)));
+    } catch (error) {
+      return Either.left(ResellerVoucherSaleFailure(error.toString()));
+    }
+  }
+
+  @override
   Future<
       Either<ResellerVoucherSaleFailure,
           PaginatedResult<ResellerVoucherSaleDto>>> getHistory(

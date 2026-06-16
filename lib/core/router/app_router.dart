@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/activity_report/activity_report_router.dart';
 import '../../features/auth/auth_router.dart';
 import '../../features/home/home_router.dart';
 import '../../features/district/district_router.dart';
@@ -36,6 +37,7 @@ class AppRouter {
       ...VoucherRouter.routes,
       ...VoucherStockRouter.routes,
       ...SalesRouter.routes,
+      ...ActivityReportRouter.routes,
     ],
     redirect: _redirect,
     errorBuilder: (context, state) => Scaffold(

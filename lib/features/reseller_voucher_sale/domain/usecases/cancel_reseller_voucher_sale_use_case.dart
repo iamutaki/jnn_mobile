@@ -1,0 +1,14 @@
+import 'package:fpdart/fpdart.dart';
+
+import '../failures/reseller_voucher_sale_failure.dart';
+import '../repositories/reseller_voucher_sale_repository.dart';
+
+class CancelResellerVoucherSaleUseCase {
+  const CancelResellerVoucherSaleUseCase(this._repository);
+
+  final ResellerVoucherSaleRepository _repository;
+
+  Future<Either<ResellerVoucherSaleFailure, Unit>> call(String id) {
+    return _repository.cancel(id);
+  }
+}

@@ -85,7 +85,7 @@ class _SubDistrictPageState extends ConsumerState<SubDistrictPage> {
                   }
 
                   if (subDistrictsAsync.hasError) {
-                    return _buildError(context);
+                    return _buildError(context, subDistrictsAsync.error);
                   }
 
                   final items = subDistrictsAsync.asData?.value ?? [];
@@ -122,8 +122,9 @@ class _SubDistrictPageState extends ConsumerState<SubDistrictPage> {
     await ref.read(subDistrictListProvider.notifier).refresh();
   }
 
-  Widget _buildError(BuildContext context) {
+  Widget _buildError(BuildContext context, Object? error) {
     return DataErrorWidget(
+      error: error,
       onRetry: () => ref.read(subDistrictListProvider.notifier).refresh(),
     );
   }

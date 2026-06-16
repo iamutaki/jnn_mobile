@@ -4,13 +4,15 @@ part 'reseller_voucher_sale_detail_dto.freezed.dart';
 part 'reseller_voucher_sale_detail_dto.g.dart';
 
 /// Satu instance kode voucher yang sudah dialokasikan ke item sale.
-/// Hanya membawa id (instance digital-voucher) + status; kode lengkapnya
-/// di-fetch terpisah via `GET /v1/digital-voucher/:id`.
+///
+/// `code`: kode voucher. Berisi kode asli saat sale `completed`; saat belum
+/// complete berisi `******` (masked oleh backend).
 @freezed
 abstract class AllocatedCodeDto with _$AllocatedCodeDto {
   const factory AllocatedCodeDto({
     required String id,
     String? status,
+    String? code,
   }) = _AllocatedCodeDto;
 
   factory AllocatedCodeDto.fromJson(Map<String, dynamic> json) =>

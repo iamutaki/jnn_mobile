@@ -55,6 +55,7 @@ class _UserPageState extends ConsumerState<UserPage> {
 
                   if (usersAsync.hasError) {
                     return DataErrorWidget(
+                      error: usersAsync.error,
                       onRetry: () =>
                           ref.read(userListProvider.notifier).refresh(),
                     );

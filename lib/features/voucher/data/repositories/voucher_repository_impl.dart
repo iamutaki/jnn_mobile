@@ -18,7 +18,7 @@ class VoucherRepositoryImpl implements VoucherRepository {
       final response = await _remoteDatasource.getVouchers();
       return Either.right(response.data ?? []);
     } on DioException catch (error) {
-      return Either.left(VoucherFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(VoucherFailure(error.toString()));
     }
@@ -36,7 +36,7 @@ class VoucherRepositoryImpl implements VoucherRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(VoucherFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(VoucherFailure(error.toString()));
     }
@@ -56,7 +56,7 @@ class VoucherRepositoryImpl implements VoucherRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(VoucherFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(VoucherFailure(error.toString()));
     }
@@ -68,26 +68,28 @@ class VoucherRepositoryImpl implements VoucherRepository {
       await _remoteDatasource.deleteVoucher(id);
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(VoucherFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(VoucherFailure(error.toString()));
     }
   }
 
-  String _mapDioError(DioException error) {
+  VoucherFailure _mapDioError(DioException error) {
     final responseData = error.response?.data;
+    final statusCode = error.response?.statusCode;
 
     if (responseData is Map<String, dynamic>) {
       final message = responseData['error'];
       if (message is String && message.trim().isNotEmpty) {
-        return message;
+        return VoucherFailure(message, statusCode: statusCode);
       }
     }
 
     if (error.message != null && error.message!.trim().isNotEmpty) {
-      return error.message!;
+      return VoucherFailure(error.message!, statusCode: statusCode);
     }
 
-    return 'Terjadi kesalahan. Silakan coba lagi.';
+    return VoucherFailure('Terjadi kesalahan. Silakan coba lagi.',
+        statusCode: statusCode);
   }
 }

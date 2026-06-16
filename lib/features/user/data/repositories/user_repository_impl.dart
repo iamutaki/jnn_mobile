@@ -18,7 +18,7 @@ class UserRepositoryImpl implements UserRepository {
       final response = await _remoteDatasource.getUsers();
       return Either.right(response.data ?? []);
     } on DioException catch (error) {
-      return Either.left(UserFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(UserFailure(error.toString()));
     }
@@ -48,7 +48,7 @@ class UserRepositoryImpl implements UserRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(UserFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(UserFailure(error.toString()));
     }
@@ -80,7 +80,7 @@ class UserRepositoryImpl implements UserRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(UserFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(UserFailure(error.toString()));
     }
@@ -92,7 +92,7 @@ class UserRepositoryImpl implements UserRepository {
       final response = await _remoteDatasource.getUser(id);
       return Either.right(response.data!);
     } on DioException catch (error) {
-      return Either.left(UserFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(UserFailure(error.toString()));
     }
@@ -104,26 +104,28 @@ class UserRepositoryImpl implements UserRepository {
       await _remoteDatasource.deleteUser(id);
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(UserFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(UserFailure(error.toString()));
     }
   }
 
-  String _mapDioError(DioException error) {
+  UserFailure _mapDioError(DioException error) {
     final responseData = error.response?.data;
+    final statusCode = error.response?.statusCode;
 
     if (responseData is Map<String, dynamic>) {
       final message = responseData['error'];
       if (message is String && message.trim().isNotEmpty) {
-        return message;
+        return UserFailure(message, statusCode: statusCode);
       }
     }
 
     if (error.message != null && error.message!.trim().isNotEmpty) {
-      return error.message!;
+      return UserFailure(error.message!, statusCode: statusCode);
     }
 
-    return 'Terjadi kesalahan. Silakan coba lagi.';
+    return UserFailure('Terjadi kesalahan. Silakan coba lagi.',
+        statusCode: statusCode);
   }
 }

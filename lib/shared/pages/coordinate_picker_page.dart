@@ -1,10 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
-class CoordinatePickerPage extends StatefulWidget {
+import '../../core/network/models/nominatim_search_result.dart';
+import '../../core/network/network_providers.dart';
+
+class CoordinatePickerPage extends ConsumerStatefulWidget {
   final String? initialLatitude;
   final String? initialLongitude;
 
@@ -15,10 +21,11 @@ class CoordinatePickerPage extends StatefulWidget {
   });
 
   @override
-  State<CoordinatePickerPage> createState() => _CoordinatePickerPageState();
+  ConsumerState<CoordinatePickerPage> createState() =>
+      _CoordinatePickerPageState();
 }
 
-class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
+class _CoordinatePickerPageState extends ConsumerState<CoordinatePickerPage> {
   MapLibreMapController? _controller;
   LatLng? _selectedPosition;
   bool _loading = true;
@@ -26,16 +33,34 @@ class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
   bool _hasPicked = false;
   String _error = '';
 
+  final _searchController = TextEditingController();
+  List<NominatimSearchResult> _searchResults = [];
+  bool _searching = false;
+  Timer? _debounceTimer;
+
   @override
   void initState() {
     super.initState();
     _initLocation();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    _debounceTimer?.cancel();
+    final text = _searchController.text.trim();
+    if (text.isEmpty) {
+      setState(() => _searchResults = []);
+      return;
+    }
+    _debounceTimer = Timer(const Duration(milliseconds: 400), () {
+      _onSearch(text);
+    });
   }
 
   Future<void> _initLocation() async {
-    // Jika sudah ada koordinat awal, langsung tampilkan map tanpa GPS request
-    final hasInitial = widget.initialLatitude?.isNotEmpty == true
-        && widget.initialLongitude?.isNotEmpty == true;
+    final hasInitial =
+        widget.initialLatitude?.isNotEmpty == true &&
+        widget.initialLongitude?.isNotEmpty == true;
 
     if (hasInitial) {
       setState(() {
@@ -43,13 +68,12 @@ class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
           double.parse(widget.initialLatitude!),
           double.parse(widget.initialLongitude!),
         );
-        _hasPicked = true; // Sudah ada koordinat → langsung tampilkan marker
+        _hasPicked = true;
         _loading = false;
       });
       return;
     }
 
-    // Tanpa koordinat awal → butuh GPS
     try {
       final permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
@@ -63,7 +87,6 @@ class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
         return;
       }
 
-      // Coba last known position dulu (instant), fallback ke GPS request
       var pos = await Geolocator.getLastKnownPosition();
       pos ??= await Geolocator.getCurrentPosition();
 
@@ -79,9 +102,65 @@ class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
     }
   }
 
+  Future<void> _onSearch(String query) async {
+    if (query.trim().isEmpty) return;
+
+    setState(() => _searching = true);
+
+    try {
+      final results = await ref
+          .read(nominatimApiClientProvider)
+          .search(query.trim());
+      if (!mounted) return;
+      setState(() => _searchResults = results);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _searchResults = []);
+    } finally {
+      if (mounted) setState(() => _searching = false);
+    }
+  }
+
+  Future<void> _onSelectSearchResult(NominatimSearchResult result) async {
+    final latlng = LatLng(result.lat, result.lon);
+
+    setState(() {
+      _selectedPosition = latlng;
+      _hasPicked = true;
+      _searchResults = [];
+      _searchController.clear();
+    });
+
+    await _controller?.animateCamera(
+      CameraUpdate.newCameraPosition(CameraPosition(target: latlng, zoom: 15)),
+    );
+  }
+
+  Widget _buildSearchingSuffix(
+    BuildContext context,
+    FTextFieldStyle style,
+    Set<FTextFieldVariant> variants,
+  ) => const Padding(
+    padding: EdgeInsets.all(12),
+    child: FCircularProgress.loader(),
+  );
+
+  Widget _buildSearchSuffix(
+    BuildContext context,
+    FTextFieldStyle style,
+    Set<FTextFieldVariant> variants,
+  ) => GestureDetector(
+    onTap: () => _onSearch(_searchController.text),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Icon(FLucideIcons.search, size: 18),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: FScaffold(
         childPad: false,
         child: SafeArea(
@@ -105,7 +184,42 @@ class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
                   ],
                 ),
               ),
-              const Divider(height: 24),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: FTextField(
+                  control: FTextFieldControl.managed(
+                    controller: _searchController,
+                  ),
+                  hint: 'Cari lokasi...',
+                  suffixBuilder: _searching
+                      ? _buildSearchingSuffix
+                      : _buildSearchSuffix,
+                  onSubmit: _onSearch,
+                ),
+              ),
+              if (_searchResults.isNotEmpty)
+                SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) {
+                      final result = _searchResults[index];
+                      return ListTile(
+                        dense: true,
+                        title: Text(
+                          result.displayName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                        leading: const Icon(FLucideIcons.mapPin, size: 18),
+                        onTap: () => _onSelectSearchResult(result),
+                      );
+                    },
+                  ),
+                ),
+              const Divider(height: 12),
               Expanded(
                 child: _loading
                     ? const Center(child: FCircularProgress.loader())
@@ -172,9 +286,7 @@ class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
           compassEnabled: true,
         ),
 
-        // Loading overlay sampai map style + tile selesai render
-        if (!_mapReady)
-          const Center(child: FCircularProgress.loader()),
+        if (!_mapReady) const Center(child: FCircularProgress.loader()),
 
         if (_hasPicked && _mapReady)
           const Center(
@@ -232,6 +344,8 @@ class _CoordinatePickerPageState extends State<CoordinatePickerPage> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
     _controller?.dispose();
     super.dispose();
   }

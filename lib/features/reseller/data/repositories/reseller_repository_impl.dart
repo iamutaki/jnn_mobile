@@ -18,7 +18,7 @@ class ResellerRepositoryImpl implements ResellerRepository {
       final response = await _remoteDatasource.getResellers();
       return Either.right(response.data ?? []);
     } on DioException catch (error) {
-      return Either.left(ResellerFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(ResellerFailure(error.toString()));
     }
@@ -56,7 +56,7 @@ class ResellerRepositoryImpl implements ResellerRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(ResellerFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(ResellerFailure(error.toString()));
     }
@@ -96,7 +96,7 @@ class ResellerRepositoryImpl implements ResellerRepository {
       );
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(ResellerFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(ResellerFailure(error.toString()));
     }
@@ -108,7 +108,7 @@ class ResellerRepositoryImpl implements ResellerRepository {
       final response = await _remoteDatasource.getReseller(id);
       return Either.right(response.data!);
     } on DioException catch (error) {
-      return Either.left(ResellerFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(ResellerFailure(error.toString()));
     }
@@ -120,26 +120,28 @@ class ResellerRepositoryImpl implements ResellerRepository {
       await _remoteDatasource.deleteReseller(id);
       return Either.right(unit);
     } on DioException catch (error) {
-      return Either.left(ResellerFailure(_mapDioError(error)));
+      return Either.left(_mapDioError(error));
     } catch (error) {
       return Either.left(ResellerFailure(error.toString()));
     }
   }
 
-  String _mapDioError(DioException error) {
+  ResellerFailure _mapDioError(DioException error) {
     final responseData = error.response?.data;
+    final statusCode = error.response?.statusCode;
 
     if (responseData is Map<String, dynamic>) {
       final message = responseData['error'];
       if (message is String && message.trim().isNotEmpty) {
-        return message;
+        return ResellerFailure(message, statusCode: statusCode);
       }
     }
 
     if (error.message != null && error.message!.trim().isNotEmpty) {
-      return error.message!;
+      return ResellerFailure(error.message!, statusCode: statusCode);
     }
 
-    return 'Terjadi kesalahan. Silakan coba lagi.';
+    return ResellerFailure('Terjadi kesalahan. Silakan coba lagi.',
+        statusCode: statusCode);
   }
 }

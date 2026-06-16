@@ -10,10 +10,15 @@ _AllocatedCodeDto _$AllocatedCodeDtoFromJson(Map<String, dynamic> json) =>
     _AllocatedCodeDto(
       id: json['id'] as String,
       status: json['status'] as String?,
+      code: json['code'] as String?,
     );
 
 Map<String, dynamic> _$AllocatedCodeDtoToJson(_AllocatedCodeDto instance) =>
-    <String, dynamic>{'id': instance.id, 'status': instance.status};
+    <String, dynamic>{
+      'id': instance.id,
+      'status': instance.status,
+      'code': instance.code,
+    };
 
 _ResellerVoucherSaleDetailItemDto _$ResellerVoucherSaleDetailItemDtoFromJson(
   Map<String, dynamic> json,

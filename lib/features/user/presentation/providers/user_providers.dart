@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/exceptions/api_exception.dart';
 import '../../data/models/user_dto.dart';
 import '../../data/providers/user_data_providers.dart';
 
@@ -16,7 +17,7 @@ class UserListNotifier extends _$UserListNotifier {
     final repo = ref.read(userRepositoryProvider);
     final result = await repo.getUsers();
     return result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (list) => list,
     );
   }
@@ -51,7 +52,7 @@ class UserListNotifier extends _$UserListNotifier {
       roleIds: roleIds,
     );
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     state = const AsyncLoading();
@@ -85,7 +86,7 @@ class UserListNotifier extends _$UserListNotifier {
       roleIds: roleIds,
     );
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {},
     );
     state = const AsyncLoading();
@@ -102,7 +103,7 @@ class UserListNotifier extends _$UserListNotifier {
     final result = await repo.deleteUser(id);
 
     result.fold(
-      (failure) => throw Exception(failure.message),
+      (failure) => throw ApiException(failure.message, statusCode: failure.statusCode),
       (_) {
         final current = state.asData?.value ?? [];
         state = AsyncData(current.where((r) => r.id != id).toList());

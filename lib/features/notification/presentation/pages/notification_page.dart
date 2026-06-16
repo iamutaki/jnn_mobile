@@ -25,6 +25,7 @@ class NotificationPage extends StatelessWidget {
               const Gap(16),
               Center(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       FLucideIcons.bellOff,
