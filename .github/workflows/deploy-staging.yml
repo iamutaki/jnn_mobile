@@ -4,8 +4,9 @@ name: Deploy (Staging)
 # Release (NOT marked as latest). Obtainium reads GitHub Releases to
 # install/update the app.
 #
-# Before merging to develop, bump `version:` in pubspec.yaml so Obtainium
-# detects a new version. Pushes without a bump refresh the existing release.
+# Staging version is auto-incremented: patch + buildNumber both equal the
+# commit count, so they advance by 1 on every push without mutating the repo.
+# Bump major.minor in pubspec.yaml manually when you need a new minor/major.
 
 on:
   push:
@@ -29,12 +30,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history so the commit-count build number is accurate.
+          # Default fetch-depth is 1, which would always yield 1.
+          fetch-depth: 0
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -54,15 +59,22 @@ jobs:
           printf 'storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=upload-keystore.jks\n' \
             "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
 
-      - name: Read version from pubspec.yaml
+      - name: Resolve staging version (auto-increment)
         id: version
+        # patch + buildNumber both = commit count -> +1 every push, no commit-back.
+        # major.minor is taken from pubspec.yaml.
         run: |
-          VERSION_LINE=$(grep '^version:' pubspec.yaml)
-          VERSION_NAME=$(echo "$VERSION_LINE" | sed 's/version: *//' | cut -d+ -f1)
-          VERSION_CODE=$(echo "$VERSION_LINE" | sed 's/version: *//' | cut -d+ -f2)
-          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
-          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
-          echo "Detected version: $VERSION_NAME+$VERSION_CODE"
+          BASE=$(grep '^version:' pubspec.yaml | sed 's/version: *//' | cut -d+ -f1)
+          MAJOR_MINOR=$(printf '%s' "$BASE" | awk -F. '{print $1"."$2}')
+          N=$(git rev-list --count HEAD)
+          echo "name=${MAJOR_MINOR}.${N}" >> "$GITHUB_OUTPUT"
+          echo "code=${N}"              >> "$GITHUB_OUTPUT"
+          echo "Staging version: ${MAJOR_MINOR}.${N}+${N}"
+
+      - name: Write resolved version into pubspec.yaml
+        run: |
+          sed -i "s|^version:.*|version: ${{ steps.version.outputs.name }}+${{ steps.version.outputs.code }}|" pubspec.yaml
+          grep '^version:' pubspec.yaml
 
       - name: Resolve Flutter dependencies
         run: flutter pub get

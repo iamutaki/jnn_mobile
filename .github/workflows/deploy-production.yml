@@ -1,15 +1,14 @@
 name: Deploy (Production)
 
-# Builds the `production` flavor from the main branch and publishes a GitHub
-# Release. Obtainium reads GitHub Releases to install/update the app.
-#
-# Before merging to main, bump `version:` in pubspec.yaml so Obtainium detects
-# a new version. Pushes without a bump refresh the existing release in place.
+# Builds the `production` flavor and publishes a GitHub Release. Triggered by
+# pushing a semantic-version tag (e.g. `v1.0.0`) — the tag IS the version and
+# the single source of truth. Obtainium reads GitHub Releases to install/update.
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      # Push `v1.0.0` to cut a production release.
+      - 'v*'
   workflow_dispatch:
 
 # Required to create the tag + GitHub Release.
@@ -28,12 +27,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history so the commit-count build number is accurate.
+          fetch-depth: 0
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -53,15 +55,26 @@ jobs:
           printf 'storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=upload-keystore.jks\n' \
             "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
 
-      - name: Read version from pubspec.yaml
+      - name: Resolve production version from tag
         id: version
+        # The git tag is the source of truth (`v1.0.0` -> 1.0.0). On a manual
+        # workflow_dispatch run (no tag), fall back to pubspec.yaml.
+        # versionCode = commit count (monotonic, never decreases).
         run: |
-          VERSION_LINE=$(grep '^version:' pubspec.yaml)
-          VERSION_NAME=$(echo "$VERSION_LINE" | sed 's/version: *//' | cut -d+ -f1)
-          VERSION_CODE=$(echo "$VERSION_LINE" | sed 's/version: *//' | cut -d+ -f2)
-          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
-          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
-          echo "Detected version: $VERSION_NAME+$VERSION_CODE"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: *//' | cut -d+ -f1)
+          fi
+          CODE=$(git rev-list --count HEAD)
+          echo "name=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "code=${CODE}"    >> "$GITHUB_OUTPUT"
+          echo "Production version: ${VERSION}+${CODE}"
+
+      - name: Write resolved version into pubspec.yaml
+        run: |
+          sed -i "s|^version:.*|version: ${{ steps.version.outputs.name }}+${{ steps.version.outputs.code }}|" pubspec.yaml
+          grep '^version:' pubspec.yaml
 
       - name: Resolve Flutter dependencies
         run: flutter pub get
@@ -79,7 +92,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: production-v${{ steps.version.outputs.name }}
+          tag_name: v${{ steps.version.outputs.name }}
           name: JNN Mobile (Production) v${{ steps.version.outputs.name }}
           generate_release_notes: true
           files: build/app/outputs/flutter-apk/*.apk

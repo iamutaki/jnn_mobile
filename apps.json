@@ -1,0 +1,19 @@
+{
+    "name": "JNN Mobile (Staging)",
+    "identifier": "dev.iamutaki.jnn_mobile.staging",
+    "apps": [
+        {
+            "name": "JNN Mobile (Staging)",
+            "bundleIdentifier": "dev.iamutaki.jnn_mobile.staging",
+            "developerName": "IAMutaki",
+            "iconURL": "https://raw.githubusercontent.com/iamutaki/jnn_mobile/refs/heads/main/assets/icons/logo.staging.png",
+            "versions": [
+                {
+                    "version": "1.0.0",
+                    "date": "2026-06-16",
+                    "downloadURL": "https://download.jnn.my.id/jnn-mobile.ipa"
+                }
+            ]
+        }
+    ]
+}
